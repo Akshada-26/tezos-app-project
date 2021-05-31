@@ -12,6 +12,15 @@ exports.walletWrapper = (pKey) => {
         throw new Error(errorOnPKey);
     }
 
-    return null;
+    return {
+
+        "sign": () => {
+            return null;
+        },
+
+        "balance": () => {
+            return null;
+        }
+    };
 
 };

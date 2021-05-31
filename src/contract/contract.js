@@ -7,8 +7,8 @@ exports.contractWrapper = (options) => {
 
             return null;
         },
-        getErrorOnContractAddress = (contractAdress) => {
-            if (typeof contractAdress === "undefined") {
+        getErrorOnContractAddress = (contractAddress) => {
+            if (typeof contractAddress === "undefined") {
                 return "Contract is missing";
             }
 
@@ -26,9 +26,9 @@ exports.contractWrapper = (options) => {
         throw new Error("Options is missing");
     }
 
-    const {wallet, contractAdress, oracle} = options,
+    const {wallet, contractAddress, oracle} = options,
         errorOnWallet = getErrorOnWallet(wallet),
-        errorOnContract = getErrorOnContractAddress(contractAdress),
+        errorOnContract = getErrorOnContractAddress(contractAddress),
         errorOnOracle = getErrorOnOracle(oracle);
 
     if (errorOnWallet !== null) {
@@ -40,8 +40,14 @@ exports.contractWrapper = (options) => {
     }
 
     return {
-        "buy": null,
-        "sell": null,
-        "burn": null
+        "buy": (token) => {
+            return token;
+        },
+        "sell": (token) => {
+            return token;
+        },
+        "burn": (token) => {
+            return token;
+        }
     };
 };

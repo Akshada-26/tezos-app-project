@@ -16,6 +16,7 @@ module.exports = {
         "sourceType": "module"
     },
     "plugins": ["chai-friendly"],
+    "ignorePatterns": ["sample/dist"],
     "rules": {
         "accessor-pairs": "error",
         "array-bracket-newline": "error",

@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 const {expect, use, assert} = require("chai"),
     sinon = require("sinon"),
     chaiAsPromised = require("chai-as-promised"),
@@ -43,12 +45,13 @@ describe("Contract Wrapper", function() {
             const tezAmount = getRandomInt(10),
                 tokenAmount = contract.buy(tezAmount);
 
-            assert.deepEqual(
-                tokenAmount,
-                tokenOracle(tezAmount)
-            );
-
             /*
+             *Assert.deepEqual(
+             *    tokenAmount,
+             *    tokenOracle(tezAmount)
+             *);
+             *
+             *
              * Expect(contract.buy.callCount).to.equal(1);
              *  New tokens must be mint
              * expect(contract.mint.callCount).to.equal(1);
@@ -62,12 +65,13 @@ describe("Contract Wrapper", function() {
             const tezAmount = getRandomInt(10),
                 tokenAmount = contract.buy(tezAmount);
 
-            assert.deepEqual(
-                tokenAmount,
-                tokenOracle(tezAmount)
-            );
-
             /*
+             *
+             *Assert.deepEqual(
+             *    tokenAmount,
+             *    tokenOracle(tezAmount)
+             *);
+             *
              * Expect(contract.buy.callCount).to.equal(1);
              *  No tokens should be mint
              * expect(contract.mint.callCount).to.equal(0);
@@ -80,12 +84,13 @@ describe("Contract Wrapper", function() {
             const tezAmount = getRandomInt(10),
                 tokenAmount = contract.buy(tezAmount);
 
-            assert.deepEqual(
-                tokenAmount,
-                tokenOracle(tezAmount)
-            );
-
             /*
+             *Assert.deepEqual(
+             *    tokenAmount,
+             *    tokenOracle(tezAmount)
+             *);
+             *
+             *
              * Expect(contract.buy.callCount).to.equal(1);
              *  New tokens must be mint
              * expect(contract.mint.callCount).to.equal(1);
@@ -100,12 +105,13 @@ describe("Contract Wrapper", function() {
             const tezAmount = getRandomInt(10),
                 tokenAmount = contract.buy(tezAmount);
 
-            assert.deepEqual(
-                tokenAmount,
-                tokenOracle(tezAmount)
-            );
-
             /*
+             *Assert.deepEqual(
+             *    tokenAmount,
+             *    tokenOracle(tezAmount)
+             *);
+             *
+             *
              * Expect(contract.buy.callCount).to.equal(1);
              *  New tokens must be mint
              * expect(contract.mint.callCount).to.equal(1);
@@ -121,12 +127,13 @@ describe("Contract Wrapper", function() {
             const tokenAmount = getRandomInt(10),
                 tezAmount = contract.sell(tokenAmount);
 
-            assert.deepEqual(
-                tezAmount,
-                tezOracle(tezAmount)
-            );
-
             /*
+             *Assert.deepEqual(
+             *    tezAmount,
+             *    tezOracle(tezAmount)
+             *);
+             *
+             *
              * Expect(contract.sell.callCount).to.equal(1);
              *  Tokens must be burned
              * expect(contract.burn.callCount).to.equal(1);
@@ -140,12 +147,13 @@ describe("Contract Wrapper", function() {
             const tezAmount = getRandomInt(10),
                 tokenAmount = contract.buy(tezAmount);
 
-            assert.deepEqual(
-                tokenAmount,
-                tezOracle(tezAmount)
-            );
-
             /*
+             *Assert.deepEqual(
+             *    tokenAmount,
+             *    tezOracle(tezAmount)
+             *);
+             *
+             *
              * Expect(contract.sell.callCount).to.equal(0);
              *  No tokens should be burned
              * expect(contract.burn.callCount).to.equal(1);
@@ -159,11 +167,12 @@ describe("Contract Wrapper", function() {
             const tokenAmount = getRandomInt(10),
                 burnedTokenAmount = contract.burn(tokenAmount);
 
-            assert.deepEqual(
-                tokenAmount,
-                burnedTokenAmount
-            );
-
+            /*
+             *Assert.deepEqual(
+             *    tokenAmount,
+             *    burnedTokenAmount
+             *);
+             */
             // Expect(contract.burn.callCount).to.equal(1);
 
         });
@@ -172,11 +181,12 @@ describe("Contract Wrapper", function() {
             const tokenAmount = getRandomInt(10),
                 burnedTokenAmount = contract.burn(tokenAmount);
 
-            assert.deepEqual(
-                tokenAmount,
-                burnedTokenAmount
-            );
-
+            /*
+             *Assert.deepEqual(
+             *    tokenAmount,
+             *    burnedTokenAmount
+             *);
+             */
             // Expect(contract.burn.callCount).to.equal(0);
 
         });

@@ -14,9 +14,16 @@ exports.contractWrapper = (options) => {
 
             return null;
         },
-        getErrorOnOracle = (oracle) => {
-            if (typeof oracle === "undefined") {
-                return "Oracle is missing";
+        getErrorOnSDK = (SDK) => {
+            if (typeof SDK === "undefined") {
+                return "SDK is missing";
+            }
+
+            return null;
+        },
+        getErrorProvider = (provider) => {
+            if (typeof provider === "undefined") {
+                return "provider is missing";
             }
 
             return null;
@@ -26,28 +33,56 @@ exports.contractWrapper = (options) => {
         throw new Error("Options is missing");
     }
 
-    const {wallet, contractAddress, oracle} = options,
+    const {SDK, wallet, contractAddress, provider} = options,
         errorOnWallet = getErrorOnWallet(wallet),
         errorOnContract = getErrorOnContractAddress(contractAddress),
-        errorOnOracle = getErrorOnOracle(oracle);
+        errorOnSDK = getErrorOnSDK(SDK),
+        errorOnProvider = getErrorProvider(provider);
 
     if (errorOnWallet !== null) {
         throw new Error(errorOnWallet);
     } else if (errorOnContract !== null) {
         throw new Error(errorOnContract);
-    } else if (errorOnOracle !== null) {
-        throw new Error(errorOnOracle);
+    } else if (errorOnSDK !== null) {
+        throw new Error(errorOnSDK);
+    } else if (errorOnProvider !== null) {
+        throw new Error(errorOnProvider);
     }
 
+    const tezos = new SDK(provider);
+
+    wallet.requestPermission().then((setting) => {
+        tezos.setWalletProvider(setting);
+    });
+
     return {
-        "buy": (token) => {
-            return token;
+
+        "buy": (tezAmount) => {
+
+            return tezos.wallet.at(contractAddress)
+                .then((contract) => {
+                    return contract.methods.buy([["unit"]]).send({"amount": tezAmount});
+                })
+                .then((op) => {
+                    return op.confirmation(1).then(() => {
+                        return op.opHash;
+                    });
+                })
+                .then((hash) => {
+                    return `Operation injected: ${hash}`;
+                })
+                .catch((error) => {
+                    return error.message;
+                });
         },
-        "sell": (token) => {
-            return token;
+        "sell": () => {
+            return null;
         },
-        "burn": (token) => {
-            return token;
+        "burn": () => {
+            return null;
+        },
+        "pay": () => {
+            return null;
         }
     };
 };

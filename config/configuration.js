@@ -1,8 +1,9 @@
 exports.configuration = () => {
     return {
-        "contractAddress": "KT18gEQYJtJxMZ3PMcLxYRR3R77c7mnvoT1U",
+        "contractAddress": "KT1HAzXAJKv2L1orAET65gYyoZvoJtPCdPnz",
         "privateKey": "tz1hRTppkUow3wQNcj9nZ9s5snwc6sGC8QHh",
         "chain": "florencenet",
-        "apiEndpoint": "https://api.florencenet.tzkt.io/"
+        "apiEndpoint": "https://api.florencenet.tzkt.io/",
+        "provider": "https://florencenet.smartpy.io/"
     };
 };

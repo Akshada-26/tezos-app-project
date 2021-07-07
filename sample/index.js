@@ -1,5 +1,5 @@
 const jq = require("jquery"),
-    wrapper = require("../index.js");
+    wrapper = require("../index.ts");
 
 jq(document).ready(() => {
     jq("#btn_buy").click(() => {

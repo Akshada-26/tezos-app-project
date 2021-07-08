@@ -26,7 +26,8 @@ exports.walletWrapper = (options) => {
                 wallet = new options.SDK(walletOptions);
 
             return wallet
-                .requestPermissions({
+                .client
+                .checkPermissions({
                     "network": {
                         "type": options.network
                     }
@@ -34,8 +35,20 @@ exports.walletWrapper = (options) => {
                 .then(() => {
                     return wallet;
                 })
-                .catch((error) => {
-                    throw new Error(error);
+                .catch(() => {
+                    return wallet
+                        .client
+                        .requestPermissions({
+                            "network": {
+                                "type": options.network
+                            }
+                        })
+                        .then(() => {
+                            return wallet;
+                        })
+                        .catch((error) => {
+                            throw new Error(error);
+                        });
                 });
         }
     };

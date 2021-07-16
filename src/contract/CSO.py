@@ -19,7 +19,8 @@ class CSO(sp.Contract):
                 preminted = 0, 
                 I = 10, 
                 D = 10, 
-                burned_tokens = 0
+                burned_tokens = 0,
+                company_valuation = 100
                 ):
 
         self.init(
@@ -37,7 +38,8 @@ class CSO(sp.Contract):
             I            = I,   # percentage of the funds being held in the cash reserve
             D            = D,   # percentage of the revenues being funneled into cash reserve
             b            = b,   # buy slope
-            s            = s    # sell slope
+            s            = s,   # sell slope
+            company_v    = company_valuation
             )
     
     # square root for buy and sell calculus

@@ -27,51 +27,94 @@ exports.chainWrapper = (options) => {
     }
 
     const storage = () => {
-        return axios.get(`${apiEndpoint}v1/contracts/${contractAddress}/storage`)
-            .then((response) => {
-                return response.data;
-            })
-            .catch((error) => {
-                throw new Error(error);
-            });
-    };
+            return axios.get(`${apiEndpoint}v1/contracts/${contractAddress}/storage`)
+                .then((response) => {
+                    return response.data;
+                })
+                .catch((error) => {
+                    throw new Error(error);
+                });
+        },
+        transactions = (sender, entrypoint) => {
+            const url = `${apiEndpoint}v1/operations/transactions?target=${contractAddress}`,
+                senderFilter = typeof sender === "undefined"
+                    ? ""
+                    : `&sender=${sender}`,
+
+                entryFilter = typeof entrypoint === "undefined"
+                    ? ""
+                    : `&entrypoint=${entrypoint}`;
+
+            return axios.get(url + senderFilter + entryFilter)
+                .then((response) => {
+                    return response.data;
+                })
+                .catch((error) => {
+                    throw new Error(error);
+                });
+
+        };
 
     return {
         storage,
         "totalTokens": () => {
             return storage().then((data) => {
-                return data.total_supply;
+                return data.total_tokens;
             });
         },
         "totalInvestors": () => {
             return storage().then((data) => {
-                return data.operators;
+                return Object.keys(data.ledger).length - 1;
             });
         },
-        "totalInvesments": () => {
-            return null;
+        "totalInvestments": () => {
+            return transactions().then((data) => {
+                return data.reduce((all, next) => {
+                    return all + next.amount;
+                }, 0);
+            });
         },
         "companyValuation": () => {
-            return null;
+            return storage().then((data) => {
+                return data.company_v;
+            });
         },
-        "uscd": () => {
-            return null;
+        "buyPrice": () => {
+            return storage().then((data) => {
+                return data.buy_price;
+            });
+        },
+        "sellPrice": () => {
+            return storage().then((data) => {
+                return data.sell_price;
+            });
         },
         "CAFE": () => {
-            return null;
+            return storage().then((data) => {
+                return data.CAFE;
+            });
         },
-        "user": () => {
+        "user": (address) => {
             return {
-                "invested": () => {
-                    return null;
+                "buyed": () => {
+                    return transactions(address, "buy").then((data) => {
+                        return data;
+                    });
                 },
-                "deposited": () => {
-                    return null;
+                "selled": () => {
+                    return transactions(address, "sell").then((data) => {
+                        return data;
+                    });
                 },
                 "tokens": () => {
+                    return storage().then((data) => {
+                        return data.ledger[address];
+                    });
+                },
+                "tez": () => {
                     return null;
                 },
-                "uscd": () => {
+                "invested": () => {
                     return null;
                 }
             };

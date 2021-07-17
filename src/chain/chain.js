@@ -53,6 +53,15 @@ exports.chainWrapper = (options) => {
                     throw new Error(error);
                 });
 
+        },
+        balance = () => {
+            return axios.get(`${apiEndpoint}v1/accounts/${contractAddress}/balance_history`)
+                .then((response) => {
+                    return response.data;
+                })
+                .catch((error) => {
+                    throw new Error(error);
+                });
         };
 
     return {
@@ -81,17 +90,47 @@ exports.chainWrapper = (options) => {
         },
         "buyPrice": () => {
             return storage().then((data) => {
-                return data.buy_price;
+                return data.b * data.total_tokens;
             });
         },
         "sellPrice": () => {
             return storage().then((data) => {
-                return data.sell_price;
+                return data.s * data.total_tokens;
             });
         },
-        "CAFE": () => {
+        "reserveAmount": () => {
+            return balance().then((data) => {
+                return data[data.length - 1].balance;
+            });
+        },
+        "baseCurrency": () => {
             return storage().then((data) => {
-                return data.CAFE;
+                return data.base_currency;
+            });
+        },
+        "totalAllocation": () => {
+            return storage().then((data) => {
+                return data.total_allocation;
+            });
+        },
+        "stakeAllocation": () => {
+            return storage().then((data) => {
+                return data.stake_allocation;
+            });
+        },
+        "initialReserve": () => {
+            return balance().then((data) => {
+                return data[0].balance;
+            });
+        },
+        "terminationEvents": () => {
+            return storage().then((data) => {
+                return data.termination_events;
+            });
+        },
+        "govRights": () => {
+            return storage().then((data) => {
+                return data.govRights;
             });
         },
         "user": (address) => {
@@ -121,7 +160,7 @@ exports.chainWrapper = (options) => {
         },
         "administrator": () => {
             return storage().then((data) => {
-                return data.administrator;
+                return data.organization;
             });
         }
     };

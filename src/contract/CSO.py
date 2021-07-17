@@ -39,9 +39,13 @@ class CSO(sp.Contract):
             D            = D,   # percentage of the revenues being funneled into cash reserve
             b            = b,   # buy slope
             s            = s,   # sell slope
-            company_v    = company_valuation
+            company_v    = company_valuation,
+            base_currency = "tez",
+            total_allocation = 1,
+            stake_allocation = 1, 
+            termination_events = sp.map(l={event1: "event1"}),
+            govRights = "no definied"
             )
-    
     # square root for buy and sell calculus
     @sp.global_lambda
     def square_root(x):

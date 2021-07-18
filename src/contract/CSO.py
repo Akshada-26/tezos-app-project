@@ -45,7 +45,8 @@ class CSO(sp.Contract):
             stake_allocation = 1, 
             termination_events = ["event1", "event2"],
             govRights = "no definied",
-            company_name = "no defined"
+            company_name = "Company Info",
+            phase = 0
             )
     # square root for buy and sell calculus
     @sp.global_lambda
@@ -56,6 +57,10 @@ class CSO(sp.Contract):
             y.value = (x // y.value + y.value) // 2
         sp.verify((y.value * y.value <= x) & (x < (y.value + 1) * (y.value + 1)))
         sp.result(y.value)
+
+    # s calculus after each transaction
+    def modify_sell_slope(self):
+        self.data.s = 2*sp.utils.mutez_to_nat(sp.balance)/self.data.total_tokens
 
     # initial phase, the price is fix
     def buy_initial(self):
@@ -133,7 +138,9 @@ class CSO(sp.Contract):
             self.buy_initial()
         # if initialization phase is past
         sp.else:
+            self.data.phase = 1
             self.buy_slope()
+        self.modify_sell_slope()
            
     # internal burn function will be called by the entry points burn and sell
     def burn_intern(self, amount):
@@ -149,6 +156,7 @@ class CSO(sp.Contract):
     @sp.entry_point
     def burn(self, params):
         self.burn_intern(params.amount)
+        self.modify_sell_slope()
         
     @sp.entry_point
     def sell(self, params):
@@ -175,6 +183,7 @@ class CSO(sp.Contract):
                 self.burn_intern(params.amount)
                 # send pay_amount tez to the sender of the transaction
                 sp.send(sp.sender, sp.utils.nat_to_mutez(pay_amount.value))
+        self.modify_sell_slope()
                 
     @sp.entry_point
     def pay(self):
@@ -213,18 +222,18 @@ class CSO(sp.Contract):
                 )
             # mint the amount of tokens for the organization
             self.data.ledger[self.data.organization] += sp.as_nat(token_amount.value)
-            
+        self.modify_sell_slope()
             
 @sp.add_test(name= "Initialization")
 def initialization():
     
     # dummy addresses
-    organization = sp.address("tz1xorg")
+    organization = sp.address("tz1hRTppkUow3wQNcj9nZ9s5snwc6sGC8QHh")
     buyer1 = sp.address("tz1xbuyer1")
     buyer2 = sp.address("tz1xbuyer2")
         
     # init with initial_price = 1 tez, MFG = 10 tez and MPT = 1 year
-    contract= CSO(organization = organization, b = 1000000, s= 1, initial_price = sp.tez(1), MFG = sp.tez(10), MPT = 1)
+    contract= CSO(organization = organization, b = 1000000, s= 500000, initial_price = sp.tez(1), MFG = sp.tez(10), MPT = 1)
     
     scenario = sp.test_scenario()
     scenario += contract

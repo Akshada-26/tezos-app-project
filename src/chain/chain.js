@@ -95,12 +95,16 @@ exports.chainWrapper = (options) => {
         },
         "buyPrice": () => {
             return storage().then((data) => {
-                return data.b * data.total_tokens;
+                return parseInt(data.phase, 10) === 0
+                    ? data.price
+                    : data.b * data.total_tokens;
             });
         },
         "sellPrice": () => {
             return storage().then((data) => {
-                return data.s * data.total_tokens;
+                return parseInt(data.phase, 10) === 0
+                    ? data.price
+                    : data.s * data.total_tokens;
             });
         },
         "reserveAmount": () => {

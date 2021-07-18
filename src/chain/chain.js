@@ -83,6 +83,11 @@ exports.chainWrapper = (options) => {
                 }, 0);
             });
         },
+        "companyName": () => {
+            return storage().then((data) => {
+                return data.company_name;
+            });
+        },
         "companyValuation": () => {
             return storage().then((data) => {
                 return data.company_v;
@@ -150,11 +155,20 @@ exports.chainWrapper = (options) => {
                         return data.ledger[address];
                     });
                 },
-                "tez": () => {
-                    return null;
-                },
-                "invested": () => {
-                    return null;
+                "tezInvested": () => {
+                    return transactions(address, "buy").then((buyData) => {
+                        return transactions(address, "sell").then((sellData) => {
+                            const buyed = buyData.reduce((all, next) => {
+                                    return all + next.amount;
+                                }, 0),
+                                selled = sellData.reduce((all, next) => {
+                                    return all + next.amount;
+                                }, 0);
+
+
+                            return buyed - selled;
+                        });
+                    });
                 }
             };
         },

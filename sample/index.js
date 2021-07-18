@@ -98,13 +98,9 @@ jq(document).ready(() => {
             .then((data) => {
                 return jq("#selled").html(JSON.stringify(data));
             });
-        wrapper.chain.user(jq("#userAddress").val()).tez()
+        wrapper.chain.user(jq("#userAddress").val()).tezInvested()
             .then((data) => {
                 return jq("#tez").html(JSON.stringify(data));
-            });
-        wrapper.chain.user(jq("#userAddress").val()).invested()
-            .then((data) => {
-                return jq("#invested").html(JSON.stringify(data));
             });
     });
 });

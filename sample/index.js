@@ -89,6 +89,41 @@ jq(document).ready(() => {
             return jq("#administrator").html(data);
         });
     });
+    jq("#btn_mfg").click(() => {
+        wrapper.chain.mfg().then((data) => {
+            return jq("#mfg").html(data);
+        });
+    });
+    jq("#btn_buyslope").click(() => {
+        wrapper.chain.buySlope().then((data) => {
+            return jq("#buyslope").html(data);
+        });
+    });
+     jq("#btn_sellslope").click(() => {
+        wrapper.chain.sellSlope().then((data) => {
+            return jq("#sellslope").html(data);
+        });
+    });
+    jq("#btn_i").click(() => {
+        wrapper.chain.i().then((data) => {
+            return jq("#i").html(data);
+        });
+    });
+    jq("#btn_d").click(() => {
+        wrapper.chain.d().then((data) => {
+            return jq("#d").html(data);
+        });
+    });
+    jq("#btn_unlockingDate").click(() => {
+        wrapper.chain.unlockingDate().then((data) => {
+            return jq("#unlockingDate").html(data);
+        });
+    });
+    jq("#btn_burnedTokens").click(() => {
+        wrapper.chain.burnedTokens().then((data) => {
+            return jq("#burnedTokens").html(data);
+        });
+    });
     jq("#btn_user").click(() => {
         wrapper.chain.user(jq("#userAddress").val()).buyed()
             .then((data) => {

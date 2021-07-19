@@ -71,16 +71,39 @@ exports.chainWrapper = (options) => {
                 return data.total_tokens;
             });
         },
-        "totalInvestors": () => {
+        "mfg": () => {
             return storage().then((data) => {
-                return Object.keys(data.ledger).length - 1;
+                return data.MFG;
             });
         },
-        "totalInvestments": () => {
-            return transactions().then((data) => {
-                return data.reduce((all, next) => {
-                    return all + next.amount;
-                }, 0);
+        "sellSlope": () => {
+            return storage().then((data) => {
+                return data.s;
+            });
+        },
+        "buySlope": () => {
+            return storage().then((data) => {
+                return data.b;
+            });
+        },
+        "i": () => {
+            return storage().then((data) => {
+                return data.I;
+            });
+        },
+        "d": () => {
+            return storage().then((data) => {
+                return data.D;
+            });
+        },
+        "unlockingDate": () => {
+            return storage().then((data) => {
+                return data.MPT;
+            });
+        },
+        "burnedTokens": () => {
+            return storage().then((data) => {
+                return data.burned_tokens;
             });
         },
         "companyName": () => {

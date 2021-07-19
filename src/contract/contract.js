@@ -100,6 +100,9 @@ exports.contractWrapper = (options) => {
                 .then((contract) => {
                     return contract.methods.pay([["unit"]]).send({"amount": tezAmount});
                 }));
+        },
+        "user": () => {
+            return wallet.getPKH();
         }
     };
 };

@@ -18,12 +18,13 @@ exports.walletWrapper = (options) => {
         throw new Error(errorOnOptions);
     }
 
+    const walletOptions = {
+            "name": options.name
+        },
+        wallet = new options.SDK(walletOptions);
+
     return {
         "requestPermission": () => {
-            const walletOptions = {
-                    "name": options.name
-                },
-                wallet = new options.SDK(walletOptions);
 
             return wallet
                 .client
@@ -44,12 +45,16 @@ exports.walletWrapper = (options) => {
                             }
                         })
                         .then(() => {
+                            console.log("2", wallet);
                             return wallet;
                         })
                         .catch((error) => {
                             throw new Error(error);
                         });
                 });
+        },
+        "getPKH": () => {
+            return wallet.getPKH();
         }
     };
 

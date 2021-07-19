@@ -129,6 +129,11 @@ jq(document).ready(() => {
             return jq("#totalInvestors").html(data);
         });
     });
+    jq("#btn_userAdd").click(() => {
+        wrapper.contract.user().then((addr) => {
+            return jq("#userAddress").val(addr);
+        });
+    });
     jq("#btn_user").click(() => {
         wrapper.chain.user(jq("#userAddress").val()).buyed()
             .then((data) => {

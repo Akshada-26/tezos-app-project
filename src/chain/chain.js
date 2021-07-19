@@ -54,8 +54,8 @@ exports.chainWrapper = (options) => {
                 });
 
         },
-        balance = () => {
-            return axios.get(`${apiEndpoint}v1/accounts/${contractAddress}/balance_history`)
+        balance = (address) => {
+            return axios.get(`${apiEndpoint}v1/accounts/${address}/balance_history`)
                 .then((response) => {
                     return response.data;
                 })
@@ -75,7 +75,7 @@ exports.chainWrapper = (options) => {
             return transactions().then((data) => {
                 return data.reduce((all, next) => {
                     return all + next.amount;
-                }, 0)
+                }, 0);
             });
         },
         "mfg": () => {
@@ -138,7 +138,7 @@ exports.chainWrapper = (options) => {
             });
         },
         "reserveAmount": () => {
-            return balance().then((data) => {
+            return balance(contractAddress).then((data) => {
                 return data[data.length - 1].balance;
             });
         },
@@ -158,7 +158,7 @@ exports.chainWrapper = (options) => {
             });
         },
         "initialReserve": () => {
-            return balance().then((data) => {
+            return balance(contractAddress).then((data) => {
                 return data[0].balance;
             });
         },
@@ -174,7 +174,7 @@ exports.chainWrapper = (options) => {
         },
         "totalInvestors": () => {
             return storage().then((data) => {
-                return Object.keys(data.ledger).length-1;
+                return Object.keys(data.ledger).length - 1;
             });
         },
         "user": (address) => {
@@ -192,6 +192,11 @@ exports.chainWrapper = (options) => {
                 "tokens": () => {
                     return storage().then((data) => {
                         return data.ledger[address];
+                    });
+                },
+                "tez": () => {
+                    return balance(address).then((data) => {
+                        return data[data.length - 1].balance;
                     });
                 },
                 "tezInvested": () => {

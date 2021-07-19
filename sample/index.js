@@ -99,7 +99,7 @@ jq(document).ready(() => {
             return jq("#buyslope").html(data);
         });
     });
-     jq("#btn_sellslope").click(() => {
+    jq("#btn_sellslope").click(() => {
         wrapper.chain.sellSlope().then((data) => {
             return jq("#sellslope").html(data);
         });
@@ -140,7 +140,11 @@ jq(document).ready(() => {
             });
         wrapper.chain.user(jq("#userAddress").val()).tezInvested()
             .then((data) => {
-                return jq("#tez").html(JSON.stringify(data));
+                return jq("#tezInvested").html(data);
+            });
+        wrapper.chain.user(jq("#userAddress").val()).tez()
+            .then((data) => {
+                return jq("#tez").html(data);
             });
     });
 });

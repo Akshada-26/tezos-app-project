@@ -124,6 +124,11 @@ jq(document).ready(() => {
             return jq("#burnedTokens").html(data);
         });
     });
+    jq("#btn_totalInvestors").click(() => {
+        wrapper.chain.totalInvestors().then((data) => {
+            return jq("#totalInvestors").html(data);
+        });
+    });
     jq("#btn_user").click(() => {
         wrapper.chain.user(jq("#userAddress").val()).buyed()
             .then((data) => {

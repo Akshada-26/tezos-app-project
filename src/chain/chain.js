@@ -165,6 +165,11 @@ exports.chainWrapper = (options) => {
                 return data.govRights;
             });
         },
+        "totalInvestors": () => {
+            return storage().then((data) => {
+                return Object.keys(data.ledger).length-1;
+            });
+        },
         "user": (address) => {
             return {
                 "buyed": () => {

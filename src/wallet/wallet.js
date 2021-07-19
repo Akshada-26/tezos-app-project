@@ -45,7 +45,6 @@ exports.walletWrapper = (options) => {
                             }
                         })
                         .then(() => {
-                            console.log("2", wallet);
                             return wallet;
                         })
                         .catch((error) => {

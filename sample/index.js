@@ -151,5 +151,9 @@ jq(document).ready(() => {
             .then((data) => {
                 return jq("#tez").html(data);
             });
+        wrapper.chain.user(jq("#userAddress").val()).tokens()
+            .then((data) => {
+                return jq("#tokens").html(data);
+            });
     });
 });

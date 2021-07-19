@@ -191,7 +191,12 @@ exports.chainWrapper = (options) => {
                 },
                 "tokens": () => {
                     return storage().then((data) => {
-                        return data.ledger[address];
+                        const tokenAmount = data.ledger[address];
+
+
+                        return typeof tokenAmount === "undefined"
+                            ? 0
+                            : tokenAmount;
                     });
                 },
                 "tez": () => {

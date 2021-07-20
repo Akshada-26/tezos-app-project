@@ -177,14 +177,19 @@ exports.chainWrapper = (options) => {
                 return Object.keys(data.ledger).length - 1;
             });
         },
+        "minimumInvestment": () => {
+            return storage().then(data => {
+                return data.minimumInvestment;
+            });
+        },
         "user": (address) => {
             return {
-                "buyed": () => {
+                "bought": () => {
                     return transactions(address, "buy").then((data) => {
                         return data;
                     });
                 },
-                "selled": () => {
+                "sold": () => {
                     return transactions(address, "sell").then((data) => {
                         return data;
                     });
@@ -207,7 +212,7 @@ exports.chainWrapper = (options) => {
                 "tezInvested": () => {
                     return transactions(address, "buy").then((buyData) => {
                         return transactions(address, "sell").then((sellData) => {
-                            const buyed = buyData.reduce((all, next) => {
+                            const bought = buyData.reduce((all, next) => {
                                     return all + next.amount;
                                 }, 0),
                                 selled = sellData.reduce((all, next) => {
@@ -215,7 +220,7 @@ exports.chainWrapper = (options) => {
                                 }, 0);
 
 
-                            return buyed - selled;
+                            return bought - selled;
                         });
                     });
                 }

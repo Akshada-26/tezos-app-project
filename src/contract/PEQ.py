@@ -1,13 +1,13 @@
 from datetime import datetime, timedelta
 import smartpy as sp
 
-# CSO contract sample 
+# PEQ contract sample 
 # see https://github.com/C-ORG/whitepaper for the definitions
 
 # Contract needs an organization(administrator), a minimal funding goal(MFG) in mutez
 # and a minimum period of time(MPT) in years for initialization
 
-class CSO(sp.Contract):
+class PEQ(sp.Contract):
     def __init__(
                 self, 
                 organization, 
@@ -19,35 +19,44 @@ class CSO(sp.Contract):
                 preminted = 0, 
                 I = 10, 
                 D = 10, 
+                minimumInvestment =0,
                 burned_tokens = 0,
-                company_valuation = 100
+                company_valuation,
+                base_currency = "tez",
+                total_allocation,
+                stake_allocation,
+                termination_events,
+                govRights,
+                company_name
                 ):
 
         self.init(
-            organization = organization,                                     # contract administrator
-            ledger       = sp.map(l = {organization: sp.as_nat(preminted)}), # token ledger
-            price        = initial_price,                                    # initial price before MFG
-            total_tokens = preminted,
+            organization  = organization,                                     # contract administrator
+            ledger        = sp.map(l = {organization: sp.as_nat(preminted)}), # token ledger
+            price         = initial_price,                                    # initial price before MFG
+            total_tokens  = preminted,
             burned_tokens = burned_tokens,
-            MFG          = MFG, # minimal funding goal
-            MPT          = sp.timestamp(
+            MFG           = MFG,                                              # minimal funding goal
+            MPT           = sp.timestamp(
                                         int(
                                             (datetime.now() + timedelta(days = 365 * MPT)).timestamp()
                                         )
                                     ), # minimum period of time
-            I            = I,   # percentage of the funds being held in the cash reserve
-            D            = D,   # percentage of the revenues being funneled into cash reserve
-            b            = b,   # buy slope
-            s            = s,   # sell slope
-            company_v    = company_valuation,
-            base_currency = "tez",
-            total_allocation = 1,
-            stake_allocation = 1, 
-            termination_events = ["event1", "event2"],
-            govRights = "no definied",
-            company_name = "Company Info",
-            phase = 0
+            I             = I,          # percentage of the funds being held in the cash reserve
+            D             = D,          # percentage of the revenues being funneled into cash reserve
+            b             = b,          # buy slope
+            s             = s,          # sell slope
+            minimumInvestment  = minimumInvestment,
+            company_v          = company_valuation,
+            base_currency      = base_currency,
+            total_allocation   = total_allocation,
+            stake_allocation   = stake_allocation, 
+            termination_events = termination_events,
+            govRights          = govRights,
+            company_name       = company_name,
+            phase              = 0                                              # starting under MFG
             )
+
     # square root for buy and sell calculus
     @sp.global_lambda
     def square_root(x):
@@ -60,7 +69,7 @@ class CSO(sp.Contract):
 
     # s calculus after each transaction
     def modify_sell_slope(self):
-        self.data.s = 2*sp.utils.mutez_to_nat(sp.balance)/self.data.total_tokens
+        self.data.s = 2 * sp.utils.mutez_to_nat(sp.balance) / (self.data.total_tokens * self.data.total_tokens)
 
     # initial phase, the price is fix
     def buy_initial(self):
@@ -70,7 +79,7 @@ class CSO(sp.Contract):
             sp.ediv(
                 sp.amount, 
                 self.data.price
-                ).open_some()
+                ).open_some("Fatal Error: Price is zero")
             )
             
         # check if the address owns tokens
@@ -83,7 +92,10 @@ class CSO(sp.Contract):
             
         # increase total amount of the tokens
         self.data.total_tokens += sp.fst(token_amount.value)
+
         # keep received funds in this contract as buyback reserve
+        # but send back the excess
+        sp.send(self.data.organization, sp.snd(token_amount.value))
 
     # after initial phase, the price will increase
     def buy_slope(self):
@@ -115,7 +127,7 @@ class CSO(sp.Contract):
                 )
             
             # send (100-I) * sp.amount/100 of the received tez to the organization
-            sp.send(self.data.organization, sp.amount-buyback_reserve.value)
+            sp.send(self.data.organization, sp.amount - buyback_reserve.value)
             # this will keep I * sp.amount/100 in this contract as buyback reserve
             
             # check if the address owns tokens
@@ -231,9 +243,22 @@ def initialization():
     organization = sp.address("tz1hRTppkUow3wQNcj9nZ9s5snwc6sGC8QHh")
     buyer1 = sp.address("tz1xbuyer1")
     buyer2 = sp.address("tz1xbuyer2")
-        
+
     # init with initial_price = 1 tez, MFG = 10 tez and MPT = 1 year
-    contract= CSO(organization = organization, b = 1000000, s= 500000, initial_price = sp.tez(1), MFG = sp.tez(10), MPT = 1)
+    contract= PEQ(
+        organization = organization, 
+        b = 1000000, 
+        s = 500000, 
+        initial_price = sp.tez(1), 
+        MFG = sp.tez(10), 
+        MPT = 1,
+        company_valuation = 100,
+        total_allocation = 1,
+        stake_allocation = 1,
+        termination_events = ["event1", "event2"],
+        govRights = "no defined",
+        company_name = "PEQ sample"
+        )
     
     scenario = sp.test_scenario()
     scenario += contract

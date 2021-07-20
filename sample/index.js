@@ -104,6 +104,11 @@ jq(document).ready(() => {
             return jq("#sellslope").html(data);
         });
     });
+    jq("#btn_minimumInvestment").click(() => {
+        wrapper.chain.minimumInvestment().then((data) => {
+            return jq("#minimumInvestment").html(data);
+        });
+    });
     jq("#btn_i").click(() => {
         wrapper.chain.i().then((data) => {
             return jq("#i").html(data);
@@ -133,15 +138,15 @@ jq(document).ready(() => {
         wrapper.contract.user().then((addr) => {
             return jq("#userAddress").val(addr);
         });
-    });
+    }); 
     jq("#btn_user").click(() => {
-        wrapper.chain.user(jq("#userAddress").val()).buyed()
+        wrapper.chain.user(jq("#userAddress").val()).bought()
             .then((data) => {
-                return jq("#buyed").html(JSON.stringify(data));
+                return jq("#bought").html(JSON.stringify(data));
             });
-        wrapper.chain.user(jq("#userAddress").val()).selled()
+        wrapper.chain.user(jq("#userAddress").val()).sold()
             .then((data) => {
-                return jq("#selled").html(JSON.stringify(data));
+                return jq("#sold").html(JSON.stringify(data));
             });
         wrapper.chain.user(jq("#userAddress").val()).tezInvested()
             .then((data) => {

@@ -107,6 +107,7 @@ exports.contractWrapper = (options) => {
         "updatePermission": () => {
             return wallet.forcePermissionRequest().then((setting) => {
                 tezos.setWalletProvider(setting);
+
                 return setting.getPKH();
             });
         }

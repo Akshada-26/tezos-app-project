@@ -144,7 +144,9 @@ exports.chainWrapper = (options) => {
         },
         "reserveAmount": () => {
             return balance(contractAddress).then((data) => {
-                return data[data.length - 1].balance;
+                return data.length > 0
+                    ? data[data.length - 1].balance
+                    : 0;
             });
         },
         "baseCurrency": () => {
@@ -241,7 +243,9 @@ exports.chainWrapper = (options) => {
                 },
                 "tez": () => {
                     return balance(address).then((data) => {
-                        return data[data.length - 1].balance;
+                        return data.length > 0
+                            ? data[data.length - 1].balance
+                            : 0;
                     });
                 },
                 "tezInvested": () => {

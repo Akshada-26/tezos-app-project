@@ -151,6 +151,7 @@ class PEQ(sp.Contract):
             
             # set new price
             self.data.price = sp.utils.nat_to_mutez(self.data.b * self.data.total_tokens)
+            self.modify_sell_slope()
 
     # buy some tokens with sender's tez
     @sp.entry_point
@@ -162,7 +163,6 @@ class PEQ(sp.Contract):
         sp.else:
             self.data.phase = 1
             self.buy_slope()
-        self.modify_sell_slope()
            
     # internal burn function will be called by the entry points burn and sell
     def burn_intern(self, amount):
@@ -179,13 +179,19 @@ class PEQ(sp.Contract):
     def burn(self, params):
         self.burn_intern(params.amount)
         self.modify_sell_slope()
-        
-    @sp.entry_point
-    def sell(self, params):
-        # check if MPT is met, before that the tokens are locked
-        sp.verify(sp.now >= self.data.MPT)
 
-        # check if the address owns tokens
+    @sp.entry_point
+    def sell_initial(self, params):
+        sp.if self.data.ledger.contains(sp.sender):
+        # check if the address owns enough tokens
+            sp.if self.data.ledger[sp.sender] >= sp.as_nat(params.amount):
+                self.burn_intern(params.amount)
+                sp.send(sp.sender, sp.mul(sp.as_nat(params.amount),self.data.price))
+                self.modify_sell_slope()
+
+    @sp.entry_point
+    def sell_slope(self, params):
+         # check if the address owns tokens
         sp.if self.data.ledger.contains(sp.sender):
         # check if the address owns enough tokens
             sp.if self.data.ledger[sp.sender] >= sp.as_nat(params.amount):
@@ -205,7 +211,20 @@ class PEQ(sp.Contract):
                 self.burn_intern(params.amount)
                 # send pay_amount tez to the sender of the transaction
                 sp.send(sp.sender, sp.utils.nat_to_mutez(pay_amount.value))
-        self.modify_sell_slope()
+                self.modify_sell_slope()
+
+    @sp.entry_point
+    def sell(self, params):
+        # check if MPT is met, before that the tokens are locked
+        sp.verify(sp.now >= self.data.MPT)
+        # if token in intialization phase, the price is fixed and all funds are escrowed
+        sp.if sp.balance < self.data.MFG:
+            self.sell_initial(params)
+        # if initialization phase is past
+        sp.else:
+            self.sell_slope(params)
+
+        
                 
     @sp.entry_point
     def pay(self):

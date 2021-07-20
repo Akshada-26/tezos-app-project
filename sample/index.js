@@ -138,7 +138,7 @@ jq(document).ready(() => {
         wrapper.contract.user().then((addr) => {
             return jq("#userAddress").val(addr);
         });
-    }); 
+    });
     jq("#btn_user").click(() => {
         wrapper.chain.user(jq("#userAddress").val()).bought()
             .then((data) => {

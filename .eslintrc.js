@@ -92,7 +92,7 @@ module.exports = {
         "max-depth": "error",
         "max-len": [
             "error",
-            {"code": 95}
+            {"code": 110}
         ],
         "max-lines": "error",
         "max-lines-per-function": "off",

@@ -26,8 +26,11 @@ exports.chainWrapper = (options) => {
         throw new Error(errorOnContractAddress);
     }
 
-    const storage = () => {
-            return axios.get(`${apiEndpoint}v1/contracts/${contractAddress}/storage`)
+    const storage = (level) => {
+        const levelRequest = typeof level === "undefined"
+        ? ""
+        : `?level=${level}`
+            return axios.get(`${apiEndpoint}v1/contracts/${contractAddress}/storage`+levelRequest)
                 .then((response) => {
                     return response.data;
                 })
@@ -186,12 +189,38 @@ exports.chainWrapper = (options) => {
             return {
                 "bought": () => {
                     return transactions(address, "buy").then((data) => {
-                        return data;
+                        return Promise.all(data.map(transaction => {
+                            return storage(transaction.level).then(currentState=>{
+                                return storage(transaction.level-1).then(oldState=>{
+                                    const oldTokens = typeof oldState.ledger[address] === "undefined"
+                                    ? 0
+                                    : oldState.ledger[address],
+                                    currentTokens = typeof currentState.ledger[address] === "undefined"
+                                    ? 0
+                                    : currentState.ledger[address];
+                                    transaction.tokens = currentTokens - oldTokens;
+                                    return transaction;
+                                });
+                            });
+                        }));
                     });
                 },
                 "sold": () => {
                     return transactions(address, "sell").then((data) => {
-                        return data;
+                        return Promise.all(data.map(transaction => {
+                            return storage(transaction.level).then(currentState=>{
+                                return storage(transaction.level-1).then(oldState=>{
+                                    const oldTokens = typeof oldState.ledger[address] === "undefined"
+                                    ? 0
+                                    : oldState.ledger[address],
+                                    currentTokens = typeof currentState.ledger[address] === "undefined"
+                                    ? 0
+                                    : currentState.ledger[address];
+                                    transaction.tokens =  oldTokens - currentTokens;
+                                    return transaction;
+                                });
+                            });
+                        }));
                     });
                 },
                 "tokens": () => {

@@ -139,6 +139,11 @@ jq(document).ready(() => {
             return jq("#userAddress").val(addr);
         });
     });
+    jq("#btn_permission").click(() => {
+        wrapper.contract.updatePermission().then((addr) => {
+            return jq("#userAddress").val(addr);
+        });
+    });
     jq("#btn_user").click(() => {
         wrapper.chain.user(jq("#userAddress").val()).bought()
             .then((data) => {

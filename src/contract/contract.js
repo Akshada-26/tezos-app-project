@@ -103,6 +103,13 @@ exports.contractWrapper = (options) => {
         },
         "user": () => {
             return wallet.getPKH();
+        },
+        "updatePermission": () => {
+            wallet.forcePermissionRequest().then((setting) => {
+                tezos.setWalletProvider(setting);
+            });
+
+            return wallet.getPKH();
         }
     };
 };

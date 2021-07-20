@@ -21,9 +21,25 @@ exports.walletWrapper = (options) => {
     const walletOptions = {
             "name": options.name
         },
-        wallet = new options.SDK(walletOptions);
+        wallet = new options.SDK(walletOptions),
+        forcePermissionRequest = () => {
+            return wallet
+                .client
+                .requestPermissions({
+                    "network": {
+                        "type": options.network
+                    }
+                })
+                .then(() => {
+                    return wallet;
+                })
+                .catch((error) => {
+                    throw new Error(error);
+                });
+        };
 
     return {
+        forcePermissionRequest,
         "requestPermission": () => {
 
             return wallet
@@ -37,24 +53,13 @@ exports.walletWrapper = (options) => {
                     return wallet;
                 })
                 .catch(() => {
-                    return wallet
-                        .client
-                        .requestPermissions({
-                            "network": {
-                                "type": options.network
-                            }
-                        })
-                        .then(() => {
-                            return wallet;
-                        })
-                        .catch((error) => {
-                            throw new Error(error);
-                        });
+                    return forcePermissionRequest;
                 });
         },
         "getPKH": () => {
             return wallet.getPKH();
         }
+
     };
 
 };

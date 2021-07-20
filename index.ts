@@ -10,7 +10,7 @@ const config = configuration();
 const wallet = walletWrapper({
     SDK: BeaconWallet,
     network: config.chain,
-    name: "CSO App"
+    name: "PEQ App"
 });
 
 export const chain = chainWrapper(config);

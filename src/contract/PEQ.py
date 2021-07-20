@@ -69,7 +69,8 @@ class PEQ(sp.Contract):
 
     # s calculus after each transaction
     def modify_sell_slope(self):
-        self.data.s = 2 * sp.utils.mutez_to_nat(sp.balance) / (self.data.total_tokens * self.data.total_tokens)
+        sp.if self.data.total_tokens != 0:
+           self.data.s = 2 * sp.utils.mutez_to_nat(sp.balance) / (self.data.total_tokens * self.data.total_tokens)
 
     # initial phase, the price is fix
     def buy_initial(self):
@@ -81,6 +82,10 @@ class PEQ(sp.Contract):
                 self.data.price
                 ).open_some("Fatal Error: Price is zero")
             )
+
+        # fail if no tokens can be issued with this amount of tez
+        sp.if sp.fst(token_amount.value) == sp.as_nat(0):
+            sp.failwith("No token can be issued, please send more tez")
             
         # check if the address owns tokens
         sp.if self.data.ledger.contains(sp.sender):
@@ -95,7 +100,8 @@ class PEQ(sp.Contract):
 
         # keep received funds in this contract as buyback reserve
         # but send back the excess
-        sp.send(self.data.organization, sp.snd(token_amount.value))
+        sp.if sp.utils.mutez_to_nat(sp.snd(token_amount.value)) > 0:
+            sp.send(self.data.organization, sp.snd(token_amount.value))
 
     # after initial phase, the price will increase
     def buy_slope(self):
@@ -109,6 +115,10 @@ class PEQ(sp.Contract):
                 ) - self.data.total_tokens
             )
 
+        # fail if no tokens can be issued with this amount of tez
+        sp.if sp.as_nat(token_amount.value) == sp.as_nat(0):
+            sp.failwith("No token can be issued, please send more tez")
+            
         # if organization calls this function
         sp.if sp.sender == self.data.organization:
             # put tokens for the organization into the ledger
@@ -251,7 +261,7 @@ def initialization():
         s = 500000, 
         initial_price = sp.tez(1), 
         MFG = sp.tez(10), 
-        MPT = 1,
+        MPT = 0,
         company_valuation = 100,
         total_allocation = 1,
         stake_allocation = 1,

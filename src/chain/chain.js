@@ -67,6 +67,15 @@ exports.chainWrapper = (options) => {
                 .catch((error) => {
                     throw new Error(error);
                 });
+        },
+        payedAmount = (hash) => {
+            return axios.get(`${apiEndpoint}v1/operations/transactions/${hash}`)
+                .then((response) => {
+                    return response.data;
+                })
+                .catch((error) => {
+                    throw new Error(error);
+                });
         };
 
     return {
@@ -214,18 +223,27 @@ exports.chainWrapper = (options) => {
                 "sold": () => {
                     return transactions(address, "sell").then((data) => {
                         return Promise.all(data.map((transaction) => {
-                            return storage(transaction.level).then((currentState) => {
-                                return storage(transaction.level - 1).then((oldState) => {
-                                    const oldTokens = typeof oldState.ledger[address] === "undefined"
-                                            ? 0
-                                            : oldState.ledger[address],
-                                        currentTokens = typeof currentState.ledger[address] === "undefined"
-                                            ? 0
-                                            : currentState.ledger[address];
+                            return payedAmount(transaction.hash).then((batch) => {
+                                return storage(transaction.level).then((currentState) => {
+                                    return storage(transaction.level - 1).then((oldState) => {
+                                        const oldTokens = typeof oldState.ledger[address] === "undefined"
+                                                ? 0
+                                                : oldState.ledger[address],
+                                            currentTokens = typeof currentState.ledger[address] === "undefined"
+                                                ? 0
+                                                : currentState.ledger[address];
 
-                                    transaction.tokens = oldTokens - currentTokens;
+                                        transaction.tokens = oldTokens - currentTokens;
+                                        const operation = batch.find((element) => {
+                                            return element.sender.address === contractAddress;
+                                        });
 
-                                    return transaction;
+                                        transaction.amount = typeof operation === "undefined"
+                                            ? 0
+                                            : operation.amount;
+
+                                        return transaction;
+                                    });
                                 });
                             });
                         }));

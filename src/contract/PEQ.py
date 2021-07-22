@@ -107,10 +107,18 @@ class PEQ(sp.Contract):
     def buy_slope(self):
         # calculate amount of tokens from sp.amount
         # see https://github.com/C-ORG/whitepaper#buy-calculus
+        tez_amount = sp.local(
+            "tez_amount",
+            sp.ediv(sp.amount, self.data.b).open_some("Buy slope is 0")
+            )
+
+        # send tez that is too much
+        sp.send(sp.sender, sp.snd(tez_amount.value))
+
         token_amount = sp.local(
             "token_amount", 
             self.square_root(
-                2 * sp.utils.mutez_to_nat(sp.amount) / self.data.b + 
+                2 * sp.utils.mutez_to_nat(sp.fst(tez_amount.value)) + 
                 self.data.total_tokens * self.data.total_tokens
                 ) - self.data.total_tokens
             )

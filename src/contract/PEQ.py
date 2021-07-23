@@ -54,7 +54,8 @@ class PEQ(sp.Contract):
             termination_events = termination_events,
             govRights          = govRights,
             company_name       = company_name,
-            phase              = 0                                              # starting under MFG
+            phase              = 0,                                              # starting under MFG
+            total_investment   = 0
             )
 
     # square root for buy and sell calculus
@@ -101,7 +102,10 @@ class PEQ(sp.Contract):
         # keep received funds in this contract as buyback reserve
         # but send back the excess
         sp.if sp.utils.mutez_to_nat(sp.snd(token_amount.value)) > 0:
-            sp.send(self.data.organization, sp.snd(token_amount.value))
+            sp.send(sp.sender, sp.snd(token_amount.value))
+
+        # track how much is invested
+        self.data.total_investment += sp.amount - sp.snd(token_amount.value)
 
     # after initial phase, the price will increase
     def buy_slope(self):
@@ -114,6 +118,9 @@ class PEQ(sp.Contract):
 
         # send tez that is too much
         sp.send(sp.sender, sp.snd(tez_amount.value))
+
+        # track how much is invested
+        self.data.total_investment += sp.amount - sp.snd(token_amount.value)
 
         token_amount = sp.local(
             "token_amount", 

@@ -86,10 +86,8 @@ exports.chainWrapper = (options) => {
             });
         },
         "totalInvestments": () => {
-            return transactions().then((data) => {
-                return data.reduce((all, next) => {
-                    return all + next.amount;
-                }, 0);
+            return storage().then((data) => {
+                return data.total_investment;
             });
         },
         "mfg": () => {

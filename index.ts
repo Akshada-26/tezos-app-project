@@ -7,18 +7,23 @@ import { configuration } from "./config/configuration.js";
 
 const config = configuration();
 
-const wallet = walletWrapper({
-    SDK: BeaconWallet,
-    network: config.chain,
-    name: "PEQ App"
-});
+let contract: any = null;
+
+if (typeof window !== 'undefined') {
+    let wallet = walletWrapper({
+        SDK: BeaconWallet,
+        network: config.chain,
+        name: "PEQ App"
+    });
+    contract = contractWrapper({
+        SDK: TezosToolkit,
+        wallet,
+        contractAddress: config.contractAddress,
+        provider: config.provider
+    });
+}
 
 export const chain = chainWrapper(config);
 
-export const contract = contractWrapper({
-    SDK: TezosToolkit,
-    wallet,
-    contractAddress: config.contractAddress,
-    provider: config.provider
-});
+export { contract };
 

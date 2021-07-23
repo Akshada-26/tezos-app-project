@@ -137,6 +137,11 @@ exports.chainWrapper = (options) => {
                 return data.company_v;
             });
         },
+        "phase": () => {
+            return storage().then((data) => {
+                return data.phase;
+            });
+        },
         "buyPrice": () => {
             return storage().then((data) => {
                 return parseInt(data.phase, 10) === 0

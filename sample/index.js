@@ -24,6 +24,11 @@ jq(document).ready(() => {
             return jq("#totalTokens").html(data);
         });
     });
+    jq("#btn_phase").click(() => {
+        wrapper.chain.phase().then((data) => {
+            return jq("#phase").html(data);
+        });
+    });
     jq("#btn_totalInvestors").click(() => {
         wrapper.chain.totalInvestors().then((data) => {
             return jq("#totalInvestors").html(data);

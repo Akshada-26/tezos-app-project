@@ -55,7 +55,7 @@ class PEQ(sp.Contract):
             govRights          = govRights,
             company_name       = company_name,
             phase              = 0,                                              # starting under MFG
-            total_investment   = 0
+            total_investment   = sp.tez(0)
             )
 
     # square root for buy and sell calculus
@@ -119,9 +119,6 @@ class PEQ(sp.Contract):
         # send tez that is too much
         sp.send(sp.sender, sp.snd(tez_amount.value))
 
-        # track how much is invested
-        self.data.total_investment += sp.amount - sp.snd(token_amount.value)
-
         token_amount = sp.local(
             "token_amount", 
             self.square_root(
@@ -129,6 +126,9 @@ class PEQ(sp.Contract):
                 self.data.total_tokens * self.data.total_tokens
                 ) - self.data.total_tokens
             )
+
+        # track how much is invested
+        self.data.total_investment += sp.fst(tez_amount.value)
 
         # fail if no tokens can be issued with this amount of tez
         sp.if sp.as_nat(token_amount.value) == sp.as_nat(0):
@@ -148,7 +148,7 @@ class PEQ(sp.Contract):
             # calculate buyback reserve from sp.amount I*sp.amount/100
             buyback_reserve = sp.local(
                 "local_amount", 
-                sp.utils.nat_to_mutez(self.data.I * sp.utils.mutez_to_nat(sp.amount) / 100)
+                sp.utils.nat_to_mutez(self.data.I * sp.utils.mutez_to_nat(sp.fst(tez_amount.value)) / 100)
                 )
             
             # send (100-I) * sp.amount/100 of the received tez to the organization
@@ -172,7 +172,7 @@ class PEQ(sp.Contract):
     @sp.entry_point
     def buy(self):
         # if token in intialization phase, the price is fixed and all funds are escrowed
-        sp.if sp.balance < self.data.MFG:
+        sp.if self.data.total_investment < self.data.MFG:
             self.buy_initial()
         # if initialization phase is past
         sp.else:
@@ -233,7 +233,7 @@ class PEQ(sp.Contract):
         # check if MPT is met, before that the tokens are locked
         sp.verify(sp.now >= self.data.MPT)
         # if token in intialization phase, the price is fixed and all funds are escrowed
-        sp.if sp.balance < self.data.MFG:
+        sp.if self.data.total_investment < self.data.MFG:
             self.sell_initial(params)
         # if initialization phase is past
         sp.else:
@@ -308,16 +308,15 @@ def initialization():
     scenario += contract
     
     # buy some tokens till reaching MFG check the price is fix
-    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(3))
+    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(5))
     scenario += contract.buy().run(sender = buyer2, amount = sp.tez(5))
-    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(1))
     
     scenario.verify(contract.data.price == sp.tez(1))
     
     # now MFG is reached, buy more and see price increasing
-    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(10))
-    scenario += contract.buy().run(sender = buyer2, amount = sp.tez(30))
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(20))
+    scenario += contract.buy().run(sender = buyer2, amount = sp.tez(30))
+    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(50))
     
     scenario.verify(contract.data.price > sp.tez(1))
 

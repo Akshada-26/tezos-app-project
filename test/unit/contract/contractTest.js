@@ -30,9 +30,6 @@ describe("Contract Wrapper", function() {
             checkPermissionsTrue = sandbox.spy(function() {
                 return Promise.resolve(null);
             }),
-            checkPermissionsFalse = sandbox.spy(function() {
-                return Promise.reject(new Error("No permission"));
-            }),
             buy = sandbox.spy(function() {
                 return Promise.resolve(null);
             }),

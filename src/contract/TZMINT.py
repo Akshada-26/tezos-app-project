@@ -117,7 +117,8 @@ class PEQ(sp.Contract):
             )
 
         # send tez that is too much
-        sp.send(sp.sender, sp.snd(tez_amount.value))
+        sp.if sp.snd(tez_amount.value) > 0:
+            sp.send(sp.sender, sp.snd(tez_amount.value))
 
         token_amount = sp.local(
             "token_amount", 

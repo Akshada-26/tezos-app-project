@@ -13,7 +13,7 @@ if (typeof window !== 'undefined') {
     let wallet = walletWrapper({
         SDK: BeaconWallet,
         network: config.chain,
-        name: "PEQ App"
+        name: "TZMINT"
     });
     contract = contractWrapper({
         SDK: TezosToolkit,

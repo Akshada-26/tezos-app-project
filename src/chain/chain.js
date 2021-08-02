@@ -82,37 +82,37 @@ exports.chainWrapper = (options) => {
         storage,
         "totalTokens": () => {
             return storage().then((data) => {
-                return data.total_tokens;
+                return parseInt(data.total_tokens, 10);
             });
         },
         "totalInvestments": () => {
             return storage().then((data) => {
-                return data.total_investment;
+                return parseInt(data.total_investment, 10);
             });
         },
         "mfg": () => {
             return storage().then((data) => {
-                return data.MFG;
+                return parseInt(data.MFG, 10);
             });
         },
         "sellSlope": () => {
             return storage().then((data) => {
-                return data.s;
+                return parseInt(data.s, 10);
             });
         },
         "buySlope": () => {
             return storage().then((data) => {
-                return data.b;
+                return parseInt(data.b, 10);
             });
         },
         "i": () => {
             return storage().then((data) => {
-                return data.I;
+                return parseInt(data.I, 10);
             });
         },
         "d": () => {
             return storage().then((data) => {
-                return data.D;
+                return parseInt(data.D, 10);
             });
         },
         "unlockingDate": () => {
@@ -122,7 +122,7 @@ exports.chainWrapper = (options) => {
         },
         "burnedTokens": () => {
             return storage().then((data) => {
-                return data.burned_tokens;
+                return parseInt(data.burned_tokens, 10);
             });
         },
         "companyName": () => {
@@ -132,32 +132,32 @@ exports.chainWrapper = (options) => {
         },
         "companyValuation": () => {
             return storage().then((data) => {
-                return data.company_v;
+                return parseInt(data.company_v, 10);
             });
         },
         "phase": () => {
             return storage().then((data) => {
-                return data.phase;
+                return parseInt(data.phase, 10);
             });
         },
         "buyPrice": () => {
             return storage().then((data) => {
                 return parseInt(data.phase, 10) === 0
-                    ? data.price
-                    : data.b * data.total_tokens;
+                    ? parseInt(data.price, 10)
+                    : parseInt(data.b * data.total_tokens, 10);
             });
         },
         "sellPrice": () => {
             return storage().then((data) => {
                 return parseInt(data.phase, 10) === 0
-                    ? data.price
-                    : data.s * data.total_tokens;
+                    ? parseInt(data.price, 10)
+                    : parseInt(data.s * data.total_tokens, 10);
             });
         },
         "reserveAmount": () => {
             return balance(contractAddress).then((data) => {
                 return data.length > 0
-                    ? data[data.length - 1].balance
+                    ? parseInt(data[data.length - 1].balance, 10)
                     : 0;
             });
         },
@@ -168,17 +168,17 @@ exports.chainWrapper = (options) => {
         },
         "totalAllocation": () => {
             return storage().then((data) => {
-                return data.total_allocation;
+                return parseInt(data.total_allocation, 10);
             });
         },
         "stakeAllocation": () => {
             return storage().then((data) => {
-                return data.stake_allocation;
+                return parseInt(data.stake_allocation, 10);
             });
         },
         "initialReserve": () => {
             return balance(contractAddress).then((data) => {
-                return data[0].balance;
+                return parseInt(data[0].balance, 10);
             });
         },
         "terminationEvents": () => {
@@ -193,12 +193,12 @@ exports.chainWrapper = (options) => {
         },
         "totalInvestors": () => {
             return storage().then((data) => {
-                return Object.keys(data.ledger).length - 1;
+                return parseInt(Object.keys(data.ledger).length - 1, 10);
             });
         },
         "minimumInvestment": () => {
             return storage().then((data) => {
-                return data.minimumInvestment;
+                return parseInt(data.minimumInvestment, 10);
             });
         },
         "user": (address) => {
@@ -259,13 +259,13 @@ exports.chainWrapper = (options) => {
 
                         return typeof tokenAmount === "undefined"
                             ? 0
-                            : tokenAmount;
+                            : parseInt(tokenAmount, 10);
                     });
                 },
                 "tez": () => {
                     return balance(address).then((data) => {
                         return data.length > 0
-                            ? data[data.length - 1].balance
+                            ? parseInt(data[data.length - 1].balance, 10)
                             : 0;
                     });
                 },
@@ -280,7 +280,7 @@ exports.chainWrapper = (options) => {
                                 }, 0);
 
 
-                            return bought - selled;
+                            return parseInt(bought - selled, 10);
                         });
                     });
                 }

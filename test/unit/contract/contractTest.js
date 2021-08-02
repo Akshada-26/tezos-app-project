@@ -3,20 +3,15 @@
 const {expect, use, assert} = require("chai"),
     sinon = require("sinon"),
     chaiAsPromised = require("chai-as-promised"),
+    {walletWrapper} = require("../../../src/wallet/wallet.js"),
     {contractWrapper} = require("../../../src/contract/contract.js"),
     {configuration} = require("../../../config/configuration.js");
 
 use(chaiAsPromised);
 
 const getRandomInt = (max) => {
-        return Math.floor(Math.random() * max);
-    },
-    tokenOracle = (tez) => {
-        return Math.floor(tez);
-    },
-    tezOracle = (token) => {
-        return Math.floor(token);
-    };
+    return Math.floor(Math.random() * max);
+};
 
 describe("Contract Wrapper", function() {
     describe("Dummy contract", function() {
@@ -29,9 +24,70 @@ describe("Contract Wrapper", function() {
     describe("Token contract", function() {
         const config = configuration(),
             sandbox = sinon.createSandbox(),
-            contract = contractWrapper({"wallet": null,
-                "contractAddress": config.contractAddress,
-                "oracle": null});
+            requestPermission = sandbox.spy(function() {
+                return Promise.resolve(null);
+            }),
+            checkPermissionsTrue = sandbox.spy(function() {
+                return Promise.resolve(null);
+            }),
+            checkPermissionsFalse = sandbox.spy(function() {
+                return Promise.reject(new Error("No permission"));
+            }),
+            buy = sandbox.spy(function() {
+                return Promise.resolve(null);
+            }),
+            sell = sandbox.spy(function() {
+                return Promise.resolve(null);
+            }),
+            pay = sandbox.spy(function() {
+                return Promise.resolve(null);
+            }),
+            burn = sandbox.spy(function() {
+                return Promise.resolve(null);
+            }),
+            BeaconWallet = function(options) {
+                const client = {
+                    "requestPermissions": () => {
+                        return requestPermission();
+                    },
+                    "checkPermissions": () => {
+                        return checkPermissionsTrue();
+                    }
+                };
+
+                return {client,
+                    options};
+            },
+            TezosToolkit = function(options) {
+                const setWalletProvider = () => {
+                        return null;
+                    },
+                    wallet = {
+                        "at": (address) => {
+                            return Promise.resolve({
+                                "methods": {
+                                    buy,
+                                    sell,
+                                    burn,
+                                    pay
+                                }
+                            });
+                        }
+                    };
+
+                return {setWalletProvider,
+                    wallet,
+                    options};
+            },
+            wallet = walletWrapper({
+                "SDK": BeaconWallet,
+                "network": config.chain,
+                "name": "TZMINT"
+            }),
+            contract = contractWrapper({"SDK": TezosToolkit,
+                wallet,
+                "contractAddress": null,
+                "provider": null});
 
         beforeEach("Prepare", function() {
             sandbox.spy();
@@ -41,156 +97,22 @@ describe("Contract Wrapper", function() {
             sandbox.restore();
         });
 
-        it("User should be able to buy some token if enough Tez is sent", () => {
-            const tezAmount = getRandomInt(10),
-                tokenAmount = contract.buy(tezAmount);
-
-            /*
-             *Assert.deepEqual(
-             *    tokenAmount,
-             *    tokenOracle(tezAmount)
-             *);
-             *
-             *
-             * Expect(contract.buy.callCount).to.equal(1);
-             *  New tokens must be mint
-             * expect(contract.mint.callCount).to.equal(1);
-             *  New tokens must be sent
-             * expect(contract.send.callCount).to.equal(1);
-             */
-
-        });
-
-        it("User should NOT be able to buy more token than Tez is sent", () => {
-            const tezAmount = getRandomInt(10),
-                tokenAmount = contract.buy(tezAmount);
-
-            /*
-             *
-             *Assert.deepEqual(
-             *    tokenAmount,
-             *    tokenOracle(tezAmount)
-             *);
-             *
-             * Expect(contract.buy.callCount).to.equal(1);
-             *  No tokens should be mint
-             * expect(contract.mint.callCount).to.equal(0);
-             *  No tokens should be sent
-             * expect(contract.send.callCount).to.equal(0);
-             */
-        });
-
-        it("Token price should be const if in the init phase", () => {
-            const tezAmount = getRandomInt(10),
-                tokenAmount = contract.buy(tezAmount);
-
-            /*
-             *Assert.deepEqual(
-             *    tokenAmount,
-             *    tokenOracle(tezAmount)
-             *);
-             *
-             *
-             * Expect(contract.buy.callCount).to.equal(1);
-             *  New tokens must be mint
-             * expect(contract.mint.callCount).to.equal(1);
-             *  New tokens must be sent
-             * expect(contract.send.callCount).to.equal(1);
-             */
-
+        it("should contain buy, sell, pay and burn", function() {
+            expect(contract).to.have.property("buy");
+            expect(contract).to.have.property("sell");
+            expect(contract).to.have.property("burn");
+            expect(contract).to.have.property("pay");
         });
 
 
-        it("Token price should increase after the init phase", () => {
-            const tezAmount = getRandomInt(10),
-                tokenAmount = contract.buy(tezAmount);
+        it("should call only buy in the contract if buy is called", async function() {
+            expect(contract).to.have.property("buy");
+            const result = await contract.buy(getRandomInt(10));
 
-            /*
-             *Assert.deepEqual(
-             *    tokenAmount,
-             *    tokenOracle(tezAmount)
-             *);
-             *
-             *
-             * Expect(contract.buy.callCount).to.equal(1);
-             *  New tokens must be mint
-             * expect(contract.mint.callCount).to.equal(1);
-             *  New tokens must be sent
-             * expect(contract.send.callCount).to.equal(1);
-             */
-
-        });
-
-        // Special case "beneficiary organization" is missing
-
-        it("User should be able to sell some token and get Tez", () => {
-            const tokenAmount = getRandomInt(10),
-                tezAmount = contract.sell(tokenAmount);
-
-            /*
-             *Assert.deepEqual(
-             *    tezAmount,
-             *    tezOracle(tezAmount)
-             *);
-             *
-             *
-             * Expect(contract.sell.callCount).to.equal(1);
-             *  Tokens must be burned
-             * expect(contract.burn.callCount).to.equal(1);
-             *  Tez must be sent
-             * expect(contract.send.callCount).to.equal(1);
-             */
-
-        });
-
-        it("User should NOT be able to sell more token than owned", () => {
-            const tezAmount = getRandomInt(10),
-                tokenAmount = contract.buy(tezAmount);
-
-            /*
-             *Assert.deepEqual(
-             *    tokenAmount,
-             *    tezOracle(tezAmount)
-             *);
-             *
-             *
-             * Expect(contract.sell.callCount).to.equal(0);
-             *  No tokens should be burned
-             * expect(contract.burn.callCount).to.equal(1);
-             *  No tokens should be sent
-             * expect(contract.send.callCount).to.equal(1);
-             */
-
-        });
-
-        it("Organization should be able to burn its tokens", () => {
-            const tokenAmount = getRandomInt(10),
-                burnedTokenAmount = contract.burn(tokenAmount);
-
-            /*
-             *Assert.deepEqual(
-             *    tokenAmount,
-             *    burnedTokenAmount
-             *);
-             */
-            // Expect(contract.burn.callCount).to.equal(1);
-
-        });
-
-        it("Organization should NOT be able to burn more tokens than owned", () => {
-            const tokenAmount = getRandomInt(10),
-                burnedTokenAmount = contract.burn(tokenAmount);
-
-            /*
-             *Assert.deepEqual(
-             *    tokenAmount,
-             *    burnedTokenAmount
-             *);
-             */
-            // Expect(contract.burn.callCount).to.equal(0);
-
+            expect(buy.callCount).to.equal(1);
+            expect(burn.callCount).to.equal(0);
+            expect(sell.callCount).to.equal(0);
+            expect(pay.callCount).to.equal(0);
         });
     });
-
-    // No direct payment from costumer at the moment
 });

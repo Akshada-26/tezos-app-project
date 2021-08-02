@@ -53,7 +53,7 @@ exports.walletWrapper = (options) => {
                     return wallet;
                 })
                 .catch(() => {
-                    return forcePermissionRequest;
+                    return forcePermissionRequest();
                 });
         },
         "getPKH": () => {

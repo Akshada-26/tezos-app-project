@@ -6,6 +6,10 @@ exports.walletWrapper = (options) => {
                 return "Wallet SDK is missing";
             } else if (typeof factoryOptions.network === "undefined") {
                 return "Network is missing";
+            } else if (factoryOptions.network === "custom") {
+                if (typeof factoryOptions.url === "undefined") {
+                    return "RPC URL for custom network is missing";
+                }
             } else if (typeof factoryOptions.name === "undefined") {
                 return "Name is missing";
             }
@@ -27,7 +31,8 @@ exports.walletWrapper = (options) => {
                 .client
                 .requestPermissions({
                     "network": {
-                        "type": options.network
+                        "type": options.network,
+                        "rpcUrl": options.url
                     }
                 })
                 .then(() => {

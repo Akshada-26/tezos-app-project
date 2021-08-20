@@ -1,5 +1,7 @@
-tezos-client originate contract TZMINT transferring 0 from bob running TZMINT.tz \
- --init '(Pair
+#!/bin/bash
+
+tezos-client originate contract TZMINT transferring 0 from bob running "/opt/contract/TZMINT.tz" \
+--init '(Pair
     (Pair
         (Pair
             (Pair 80 80)
@@ -33,6 +35,6 @@ tezos-client originate contract TZMINT transferring 0 from bob running TZMINT.tz
             (Pair
                 1
                 (Pair 0 0)))))' \
- --fee 0.012111 \
- --gas-limit 43682 \
- --storage-limit 7611
+--fee 0.012111 \
+--gas-limit 43682 \
+--storage-limit 7611

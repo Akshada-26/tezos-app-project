@@ -55,44 +55,6 @@
                     (int %sell_slope))));
     code
         {
-            CAST
-                (pair
-                    (or
-                        (or
-                            int
-                            (or unit unit))
-                        (or
-                            int
-                            (or int int)))
-                    (pair
-                        (pair
-                            (pair
-                                (pair nat nat)
-                                (pair
-                                    mutez
-                                    (pair timestamp nat)))
-                            (pair
-                                (pair string nat)
-                                (pair
-                                    string
-                                    (pair int string))))
-                        (pair
-                            (pair
-                                (pair
-                                    (map address nat)
-                                    int)
-                                (pair
-                                    address
-                                    (pair int mutez)))
-                            (pair
-                                (pair
-                                    nat
-                                    (pair
-                                        int
-                                        (list string)))
-                                (pair
-                                    int
-                                    (pair mutez nat))))));
             LAMBDA
                 nat
                 nat
@@ -738,9 +700,8 @@
                                                     DIG 4;
                                                     DROP;
                                                     PUSH mutez 1;
-                                                    PUSH nat 100;
-                                                    PUSH mutez 1;
-                                                    DIG 5;
+                                                    DUP;
+                                                    DIG 4;
                                                     CAR;
                                                     EDIV;
                                                     IF_NONE
@@ -751,21 +712,14 @@
                                                         {
                                                         };
                                                     CAR;
+                                                    PUSH nat 10;
                                                     DUP 6;
                                                     CAR;
                                                     CAR;
                                                     CAR;
                                                     CDR;
                                                     MUL;
-                                                    EDIV;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 150;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                            CAR
-                                                        };
+                                                    MUL;
                                                     MUL;
                                                     DIG 2;
                                                     DUP 4;
@@ -1213,22 +1167,6 @@
                         {
                             DIG 2;
                             DROP;
-                            SWAP;
-                            DUP;
-                            DUG 2;
-                            CAR;
-                            CAR;
-                            GET 5;
-                            NOW;
-                            COMPARE;
-                            GE;
-                            IF
-                                {
-                                }
-                                {
-                                    PUSH string "WrongCondition: sp.now >= self.data.MPT";
-                                    FAILWITH
-                                };
                             SWAP;
                             DUP;
                             CAR;

@@ -2,10 +2,10 @@ tezos-client originate contract TZMINT transferring 0 from bob running TZMINT.tz
  --init '(Pair
     (Pair
         (Pair
-            (Pair 10 10)
+            (Pair 80 80)
             (Pair
-                10000000
-                (Pair "2021-08-04T11:55:35Z" 1000000)))
+                1000000000
+                (Pair "2021-08-04T11:55:35Z" 1300)))
         (Pair
             (Pair "tez" 0)
             (Pair
@@ -23,7 +23,7 @@ tezos-client originate contract TZMINT transferring 0 from bob running TZMINT.tz
                 (Pair 0 1000000)))
         (Pair
             (Pair
-                500000
+                1000
                 (Pair
                     1
                     {

@@ -7,34 +7,34 @@ tezos-client originate contract TZMINT transferring 0 from bob running "/opt/con
             (Pair 80 80)
             (Pair
                 1000000000
-                (Pair "2021-08-04T11:55:35Z" 1300)))
+                (Pair "2021-08-20T15:22:47Z" 1300)))
         (Pair
             (Pair "tez" 0)
             (Pair
-                "PEQ sample"
-                (Pair 100 "no defined"))))
+                "TZMINT Demo"
+                (Pair 1000000 "None"))))
     (Pair
         (Pair
             (Pair
                 {
-                    Elt "tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6" 0
+                    Elt "tz1hRTppkUow3wQNcj9nZ9s5snwc6sGC8QHh" 0
                 }
-                0)
+                1)
             (Pair
-                "tz1aSkwEot3L2kmUvcoxzjMomb9mvBNuzFK6"
+                "tz1hRTppkUow3wQNcj9nZ9s5snwc6sGC8QHh"
                 (Pair 0 1000000)))
         (Pair
             (Pair
                 1000
                 (Pair
-                    1
+                    50
                     {
-                        "event1";
-                        "event2"
+                        "Sale";
+                        "Bankruptcy"
                     }))
             (Pair
-                1
+                400
                 (Pair 0 0)))))' \
---fee 0.012111 \
---gas-limit 43682 \
---storage-limit 7611
+ --fee 0.001266 \
+ --gas-limit 10600 \
+ --storage-limit 496

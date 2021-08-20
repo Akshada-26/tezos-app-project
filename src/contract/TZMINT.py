@@ -17,9 +17,9 @@ class PEQ(sp.Contract):
                 b=1, 
                 s=1, 
                 preminted = 0, 
-                I = 10, 
-                D = 10, 
-                minimumInvestment =0,
+                I = 80, 
+                D = 80, 
+                minimumInvestment =sp.tez(1),
                 burned_tokens = 0,
                 company_valuation,
                 base_currency = "tez",
@@ -149,7 +149,7 @@ class PEQ(sp.Contract):
             # calculate buyback reserve from sp.amount I*sp.amount/100
             buyback_reserve = sp.local(
                 "local_amount", 
-                sp.utils.nat_to_mutez(self.data.I * sp.utils.mutez_to_nat(sp.fst(tez_amount.value)) / 100)
+                sp.utils.nat_to_mutez(self.data.I* 10 * sp.utils.mutez_to_nat(sp.fst(tez_amount.value)) )
                 )
             
             # send (100-I) * sp.amount/100 of the received tez to the organization
@@ -174,6 +174,7 @@ class PEQ(sp.Contract):
     def buy(self):
         # if token in intialization phase, the price is fixed and all funds are escrowed
         sp.if self.data.total_investment < self.data.MFG:
+            sp.verify(sp.amount + self.data.total_investment <= self.data.MFG)
             self.buy_initial()
         # if initialization phase is past
         sp.else:
@@ -232,7 +233,7 @@ class PEQ(sp.Contract):
     @sp.entry_point
     def sell(self, params):
         # check if MPT is met, before that the tokens are locked
-        sp.verify(sp.now >= self.data.MPT)
+        #sp.verify(sp.now > self.data.MPT)
         # if token in intialization phase, the price is fixed and all funds are escrowed
         sp.if self.data.total_investment < self.data.MFG:
             self.sell_initial(params)
@@ -292,34 +293,38 @@ def initialization():
     # init with initial_price = 1 tez, MFG = 10 tez and MPT = 1 year
     contract= PEQ(
         organization = organization, 
-        b = 1000000, 
-        s = 500000, 
+        b = 1300, 
+        s = 1000, 
         initial_price = sp.tez(1), 
-        MFG = sp.tez(10), 
+        MFG = sp.tez(1000), 
         MPT = 0,
-        company_valuation = 100,
-        total_allocation = 1,
-        stake_allocation = 1,
-        termination_events = ["event1", "event2"],
-        govRights = "no defined",
-        company_name = "PEQ sample"
+        company_valuation = 1000000,
+        total_allocation = 4000,
+        stake_allocation = 500,
+        termination_events = ["Sale", "Bankruptcy"],
+        govRights = "None",
+        company_name = "TZMINT Demo"
         )
     
     scenario = sp.test_scenario()
     scenario += contract
     
     # buy some tokens till reaching MFG check the price is fix
-    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(5))
-    scenario += contract.buy().run(sender = buyer2, amount = sp.tez(5))
+    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(500))
+    scenario += contract.buy().run(sender = buyer2, amount = sp.tez(250))
     
     scenario.verify(contract.data.price == sp.tez(1))
     
     # now MFG is reached, buy more and see price increasing
-    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(20))
-    scenario += contract.buy().run(sender = buyer2, amount = sp.tez(30))
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(50))
+    scenario += contract.buy().run(sender = buyer2, amount = sp.tez(100))
+    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(100))
     
+    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(500))
     scenario.verify(contract.data.price > sp.tez(1))
+    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(150))
+    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(150))
+    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(150))
+    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(50))
 
-    # burn some tokens and check that the price is increasing
-    scenario += contract.burn(amount=5).run(sender = buyer1)
+    scenario += contract.sell(amount=1).run(sender = buyer1)

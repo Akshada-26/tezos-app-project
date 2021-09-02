@@ -1,3 +1,5 @@
+/* eslint-disable max-lines */
+
 const axios = require("axios");
 
 exports.chainWrapper = (options) => {
@@ -26,7 +28,7 @@ exports.chainWrapper = (options) => {
         throw new Error(errorOnContractAddress);
     }
 
-    const storage = (level) => {
+    const requestStorage = (level) => {
             const levelRequest = typeof level === "undefined"
                 ? ""
                 : `?level=${level}`;
@@ -76,139 +78,135 @@ exports.chainWrapper = (options) => {
                 .catch((error) => {
                     throw new Error(error);
                 });
+        },
+        cashedData = (cashedStorage, storageFunction, functionToCash) => {
+            if (cashedStorage) {
+                return functionToCash(cashedStorage);
+            }
+
+            return storageFunction().then(functionToCash);
         };
 
     return {
-        storage,
+        "storage": requestStorage,
         "totalTokens": (storageData) => {
-            const getTotalTokens = (data) => {
+            return cashedData(storageData, requestStorage, (data) => {
                 return parseInt(data.total_tokens, 10);
-            }
-
-            if (storageData) return getTotalTokens(storageData);
-
-            return storage().then(getTotalTokens);
+            });
         },
         "totalInvestments": (storageData) => {
-            const getTotalInvestment = (data) => {
+
+            return cashedData(storageData, requestStorage, (data) => {
                 return parseInt(data.total_investment, 10);
-            }
-
-            if (storageData) return getTotalInvestment(storageData);
-
-            return storage().then(getTotalInvestment);
+            });
         },
         "mfg": (storageData) => {
-            const getMFG = (data) => {
+            return cashedData(storageData, requestStorage, (data) => {
                 return parseInt(data.MFG, 10);
-            }
-
-            if (storageData) return getMFG(storageData);
-
-            return storage().then(getMFG);
+            });
         },
         "sellSlope": (storageData) => {
-            const getSellSlope = (data) => {
+            return cashedData(storageData, requestStorage, (data) => {
                 return parseInt(data.s, 10);
-            }
-
-            if (storageData) return getSellSlope(storageData);
-
-            return storage().then(getSellSlope);
+            });
         },
         "buySlope": (storageData) => {
-            const getBuySlope = (data) => {
+            return cashedData(storageData, requestStorage, (data) => {
                 return parseInt(data.b, 10);
-            }
-
-            if (storageData) return getBuySlope(storageData);
-
-            return storage().then(getBuySlope);
+            });
         },
         "i": (storageData) => {
-            const getI = (data) => {
+            return cashedData(storageData, requestStorage, (data) => {
                 return parseInt(data.I, 10);
-            }
-
-            if (storageData) return getI(storageData);
-
-            return storage().then(getI);
+            });
         },
         "d": (storageData) => {
-            const getD = (data) => {
+            return cashedData(storageData, requestStorage, (data) => {
                 return parseInt(data.D, 10);
-            }
-
-            if (storageData) return getD(storageData);
-
-            return storage().then(getD);
+            });
         },
         "unlockingDate": (storageData) => {
-            const getMPT = (data) => {
+            return cashedData(storageData, requestStorage, (data) => {
                 return data.MPT;
-            }
-
-            if (storageData) return getMPT(storageData);
-
-            return storage().then(getMPT);
+            });
         },
         "burnedTokens": (storageData) => {
-            const getBurnedTokens = (data) => {
+            return cashedData(storageData, requestStorage, (data) => {
                 return parseInt(data.burned_tokens, 10);
-            }
-
-            if (storageData) return getBurnedTokens(storageData);
-
-            return storage().then(getBurnedTokens);
+            });
         },
         "companyName": (storageData) => {
-            const getCompanyName = (data) => {
+            return cashedData(storageData, requestStorage, (data) => {
                 return data.company_name;
-            }
-
-            if (storageData) return getCompanyName(storageData);
-
-            return storage().then(getCompanyName);
+            });
         },
         "companyValuation": (storageData) => {
-            const getCompanyValuation = (data) => {
+            return cashedData(storageData, requestStorage, (data) => {
                 return parseInt(data.company_v, 10);
-            }
-
-            if (storageData) return getCompanyValuation(storageData);
-
-            return storage().then(getCompanyValuation);
+            });
         },
         "phase": (storageData) => {
-            const getPhase = (data) => {
+            return cashedData(storageData, requestStorage, (data) => {
                 return parseInt(data.phase, 10);
-            }
+            });
 
-            if (storageData) return getPhase(storageData);
-
-            return storage().then(getPhase);
         },
         "buyPrice": (storageData) => {
-            const getBuyPrice = (data) => {
+            return cashedData(storageData, requestStorage, (data) => {
                 return parseInt(data.phase, 10) === 0
                     ? parseInt(data.price, 10)
                     : parseInt(data.b * data.total_tokens, 10);
-            }
-
-            if (storageData) return getBuyPrice(storageData);
-
-            return storage().then(getBuyPrice);
+            });
         },
         "sellPrice": (storageData) => {
-            const getSallPrice = (data) => {
+            return cashedData(storageData, requestStorage, (data) => {
                 return parseInt(data.phase, 10) === 0
                     ? parseInt(data.price, 10)
                     : parseInt(data.s * data.total_tokens, 10);
-            }
+            });
+        },
+        "baseCurrency": (storageData) => {
+            return cashedData(storageData, requestStorage, (data) => {
+                return data.base_currency;
+            });
+        },
+        "totalAllocation": (storageData) => {
+            return cashedData(storageData, requestStorage, (data) => {
+                return parseInt(data.total_allocation, 10);
+            });
+        },
+        "stakeAllocation": (storageData) => {
+            return cashedData(storageData, requestStorage, (data) => {
+                return parseInt(data.stake_allocation, 10);
+            });
+        },
+        "terminationEvents": (storageData) => {
+            return cashedData(storageData, requestStorage, (data) => {
+                return data.termination_events;
+            });
 
-            if (storageData) return getSallPrice(storageData);
+        },
+        "govRights": (storageData) => {
+            return cashedData(storageData, requestStorage, (data) => {
+                return data.govRights;
+            });
+        },
+        "totalInvestors": (storageData) => {
+            return cashedData(storageData, requestStorage, (data) => {
+                return parseInt(Object.keys(data.ledger).length - 1, 10);
+            });
+        },
+        "minimumInvestment": (storageData) => {
+            return cashedData(storageData, requestStorage, (data) => {
+                return parseInt(data.minimumInvestment, 10);
+            });
 
-            return storage().then(getSallPrice);
+        },
+        "administrator": (storageData) => {
+            return cashedData(storageData, requestStorage, (data) => {
+                return data.organization;
+            });
+
         },
         "reserveAmount": () => {
             return balance(contractAddress).then((data) => {
@@ -217,81 +215,18 @@ exports.chainWrapper = (options) => {
                     : 0;
             });
         },
-        "baseCurrency": (storageData) => {
-            const getBaseCurrency = (data) => {
-                return data.base_currency;
-            }
-
-            if (storageData) return getBaseCurrency(storageData);
-
-            return storage().then(getBaseCurrency);
-        },
-        "totalAllocation": (storageData) => {
-            const getTotalAllocation = (data) => {
-                return parseInt(data.total_allocation, 10);
-            }
-
-            if (storageData) return getTotalAllocation(storageData);
-
-            return storage().then(getTotalAllocation);
-        },
-        "stakeAllocation": (storageData) => {
-            const getStakeAllocation = (data) => {
-                return parseInt(data.stake_allocation, 10);
-            }
-
-            if (storageData) return getStakeAllocation(storageData);
-
-            return storage().then(getStakeAllocation);
-        },
         "initialReserve": () => {
             return balance(contractAddress).then((data) => {
                 return parseInt(data[0].balance, 10);
             });
-        },
-        "terminationEvents": (storageData) => {
-            const getTerminationEvents = (data) => {
-                return data.termination_events;
-            }
-
-            if (storageData) return getTerminationEvents(storageData);
-
-            return storage().then(getTerminationEvents);
-        },
-        "govRights": (storageData) => {
-            const getGovRights = (data) => {
-                return data.govRights;
-            }
-
-            if (storageData) return getGovRights(storageData);
-
-            return storage().then(getGovRights);
-        },
-        "totalInvestors": (storageData) => {
-            const getTotalInvestors = (data) => {
-                return parseInt(Object.keys(data.ledger).length - 1, 10);
-            }
-
-            if (storageData) return getTotalInvestors(storageData);
-
-            return storage().then(getTotalInvestors);
-        },
-        "minimumInvestment": (storageData) => {
-            const getMinimumInvestment = (data) => {
-                return parseInt(data.minimumInvestment, 10);
-            }
-
-            if (storageData) return getMinimumInvestment(storageData);
-
-            return storage().then(getMinimumInvestment);
         },
         "user": (address) => {
             return {
                 "bought": () => {
                     return transactions(address, "buy").then((data) => {
                         return Promise.all(data.map((transaction) => {
-                            return storage(transaction.level).then((currentState) => {
-                                return storage(transaction.level - 1).then((oldState) => {
+                            return requestStorage(transaction.level).then((currentState) => {
+                                return requestStorage(transaction.level - 1).then((oldState) => {
                                     const oldTokens = typeof oldState.ledger[address] === "undefined"
                                             ? 0
                                             : oldState.ledger[address],
@@ -311,8 +246,8 @@ exports.chainWrapper = (options) => {
                     return transactions(address, "sell").then((data) => {
                         return Promise.all(data.map((transaction) => {
                             return payedAmount(transaction.hash).then((batch) => {
-                                return storage(transaction.level).then((currentState) => {
-                                    return storage(transaction.level - 1).then((oldState) => {
+                                return requestStorage(transaction.level).then((currentState) => {
+                                    return requestStorage(transaction.level - 1).then((oldState) => {
                                         const oldTokens = typeof oldState.ledger[address] === "undefined"
                                                 ? 0
                                                 : oldState.ledger[address],
@@ -337,7 +272,7 @@ exports.chainWrapper = (options) => {
                     });
                 },
                 "tokens": () => {
-                    return storage().then((data) => {
+                    return requestStorage().then((data) => {
                         const tokenAmount = data.ledger[address];
 
 
@@ -369,15 +304,6 @@ exports.chainWrapper = (options) => {
                     });
                 }
             };
-        },
-        "administrator": (storageData) => {
-            const getAdministrator = (data) => {
-                return data.organization;
-            }
-
-            if (storageData) return getAdministrator(storageData);
-
-            return storage().then(getAdministrator);
         }
     };
 

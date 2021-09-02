@@ -1,4 +1,6 @@
-// require('dotenv').config();
+/* eslint-disable no-process-env */
+
+// Require('dotenv').config();
 
 exports.configuration = () => {
     return {

@@ -275,6 +275,10 @@ exports.chainWrapper = (options) => {
                     intervallStep = (endDate - startDate) / steps,
                     points = [];
 
+                if (history.length === 0) {
+                    return [];
+                }
+
                 for (let index = 0; index <= steps; index += 1) {
                     const timeDelta = intervallStep * index,
                         timeX = new Date(Date.parse(startDate) + timeDelta).toISOString(),

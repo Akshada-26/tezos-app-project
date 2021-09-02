@@ -147,7 +147,7 @@ jq(document).ready(() => {
     jq("#btn_priceHistory").click(() => {
         wrapper.chain.priceHistory(
             new Date("2021-07-27T14:02:43Z"),
-            new Date("2021-08-05T14:02:43Z"),
+            new Date("2021-09-05T14:02:43Z"),
             30
         ).then((data) => {
             return jq("#priceHistory").html(JSON.stringify(data));

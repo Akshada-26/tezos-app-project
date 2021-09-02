@@ -80,79 +80,135 @@ exports.chainWrapper = (options) => {
 
     return {
         storage,
-        "totalTokens": () => {
-            return storage().then((data) => {
+        "totalTokens": (storageData) => {
+            const getTotalTokens = (data) => {
                 return parseInt(data.total_tokens, 10);
-            });
+            }
+
+            if (storageData) return getTotalTokens(storageData);
+
+            return storage().then(getTotalTokens);
         },
-        "totalInvestments": () => {
-            return storage().then((data) => {
+        "totalInvestments": (storageData) => {
+            const getTotalInvestment = (data) => {
                 return parseInt(data.total_investment, 10);
-            });
+            }
+
+            if (storageData) return getTotalInvestment(storageData);
+
+            return storage().then(getTotalInvestment);
         },
-        "mfg": () => {
-            return storage().then((data) => {
+        "mfg": (storageData) => {
+            const getMFG = (data) => {
                 return parseInt(data.MFG, 10);
-            });
+            }
+
+            if (storageData) return getMFG(storageData);
+
+            return storage().then(getMFG);
         },
-        "sellSlope": () => {
-            return storage().then((data) => {
+        "sellSlope": (storageData) => {
+            const getSellSlope = (data) => {
                 return parseInt(data.s, 10);
-            });
+            }
+
+            if (storageData) return getSellSlope(storageData);
+
+            return storage().then(getSellSlope);
         },
-        "buySlope": () => {
-            return storage().then((data) => {
+        "buySlope": (storageData) => {
+            const getBuySlope = (data) => {
                 return parseInt(data.b, 10);
-            });
+            }
+
+            if (storageData) return getBuySlope(storageData);
+
+            return storage().then(getBuySlope);
         },
-        "i": () => {
-            return storage().then((data) => {
+        "i": (storageData) => {
+            const getI = (data) => {
                 return parseInt(data.I, 10);
-            });
+            }
+
+            if (storageData) return getI(storageData);
+
+            return storage().then(getI);
         },
-        "d": () => {
-            return storage().then((data) => {
+        "d": (storageData) => {
+            const getD = (data) => {
                 return parseInt(data.D, 10);
-            });
+            }
+
+            if (storageData) return getD(storageData);
+
+            return storage().then(getD);
         },
-        "unlockingDate": () => {
-            return storage().then((data) => {
+        "unlockingDate": (storageData) => {
+            const getMPT = (data) => {
                 return data.MPT;
-            });
+            }
+
+            if (storageData) return getMPT(storageData);
+
+            return storage().then(getMPT);
         },
-        "burnedTokens": () => {
-            return storage().then((data) => {
+        "burnedTokens": (storageData) => {
+            const getBurnedTokens = (data) => {
                 return parseInt(data.burned_tokens, 10);
-            });
+            }
+
+            if (storageData) return getBurnedTokens(storageData);
+
+            return storage().then(getBurnedTokens);
         },
-        "companyName": () => {
-            return storage().then((data) => {
+        "companyName": (storageData) => {
+            const getCompanyName = (data) => {
                 return data.company_name;
-            });
+            }
+
+            if (storageData) return getCompanyName(storageData);
+
+            return storage().then(getCompanyName);
         },
-        "companyValuation": () => {
-            return storage().then((data) => {
+        "companyValuation": (storageData) => {
+            const getCompanyValuation = (data) => {
                 return parseInt(data.company_v, 10);
-            });
+            }
+
+            if (storageData) return getCompanyValuation(storageData);
+
+            return storage().then(getCompanyValuation);
         },
-        "phase": () => {
-            return storage().then((data) => {
+        "phase": (storageData) => {
+            const getPhase = (data) => {
                 return parseInt(data.phase, 10);
-            });
+            }
+
+            if (storageData) return getPhase(storageData);
+
+            return storage().then(getPhase);
         },
-        "buyPrice": () => {
-            return storage().then((data) => {
+        "buyPrice": (storageData) => {
+            const getBuyPrice = (data) => {
                 return parseInt(data.phase, 10) === 0
                     ? parseInt(data.price, 10)
                     : parseInt(data.b * data.total_tokens, 10);
-            });
+            }
+
+            if (storageData) return getBuyPrice(storageData);
+
+            return storage().then(getBuyPrice);
         },
-        "sellPrice": () => {
-            return storage().then((data) => {
+        "sellPrice": (storageData) => {
+            const getSallPrice = (data) => {
                 return parseInt(data.phase, 10) === 0
                     ? parseInt(data.price, 10)
                     : parseInt(data.s * data.total_tokens, 10);
-            });
+            }
+
+            if (storageData) return getSallPrice(storageData);
+
+            return storage().then(getSallPrice);
         },
         "reserveAmount": () => {
             return balance(contractAddress).then((data) => {
@@ -161,45 +217,73 @@ exports.chainWrapper = (options) => {
                     : 0;
             });
         },
-        "baseCurrency": () => {
-            return storage().then((data) => {
+        "baseCurrency": (storageData) => {
+            const getBaseCurrency = (data) => {
                 return data.base_currency;
-            });
+            }
+
+            if (storageData) return getBaseCurrency(storageData);
+
+            return storage().then(getBaseCurrency);
         },
-        "totalAllocation": () => {
-            return storage().then((data) => {
+        "totalAllocation": (storageData) => {
+            const getTotalAllocation = (data) => {
                 return parseInt(data.total_allocation, 10);
-            });
+            }
+
+            if (storageData) return getTotalAllocation(storageData);
+
+            return storage().then(getTotalAllocation);
         },
-        "stakeAllocation": () => {
-            return storage().then((data) => {
+        "stakeAllocation": (storageData) => {
+            const getStakeAllocation = (data) => {
                 return parseInt(data.stake_allocation, 10);
-            });
+            }
+
+            if (storageData) return getStakeAllocation(storageData);
+
+            return storage().then(getStakeAllocation);
         },
         "initialReserve": () => {
             return balance(contractAddress).then((data) => {
                 return parseInt(data[0].balance, 10);
             });
         },
-        "terminationEvents": () => {
-            return storage().then((data) => {
+        "terminationEvents": (storageData) => {
+            const getTerminationEvents = (data) => {
                 return data.termination_events;
-            });
+            }
+
+            if (storageData) return getTerminationEvents(storageData);
+
+            return storage().then(getTerminationEvents);
         },
-        "govRights": () => {
-            return storage().then((data) => {
+        "govRights": (storageData) => {
+            const getGovRights = (data) => {
                 return data.govRights;
-            });
+            }
+
+            if (storageData) return getGovRights(storageData);
+
+            return storage().then(getGovRights);
         },
-        "totalInvestors": () => {
-            return storage().then((data) => {
+        "totalInvestors": (storageData) => {
+            const getTotalInvestors = (data) => {
                 return parseInt(Object.keys(data.ledger).length - 1, 10);
-            });
+            }
+
+            if (storageData) return getTotalInvestors(storageData);
+
+            return storage().then(getTotalInvestors);
         },
-        "minimumInvestment": () => {
-            return storage().then((data) => {
+        "minimumInvestment": (storageData) => {
+            const getMinimumInvestment = (data) => {
                 return parseInt(data.minimumInvestment, 10);
-            });
+            }
+
+            if (storageData) return getMinimumInvestment(storageData);
+
+            return storage().then(getMinimumInvestment);
         },
         "user": (address) => {
             return {
@@ -286,10 +370,14 @@ exports.chainWrapper = (options) => {
                 }
             };
         },
-        "administrator": () => {
-            return storage().then((data) => {
+        "administrator": (storageData) => {
+            const getAdministrator = (data) => {
                 return data.organization;
-            });
+            }
+
+            if (storageData) return getAdministrator(storageData);
+
+            return storage().then(getAdministrator);
         }
     };
 

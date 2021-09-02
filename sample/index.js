@@ -144,6 +144,15 @@ jq(document).ready(() => {
             return jq("#userAddress").val(addr);
         });
     });
+    jq("#btn_priceHistory").click(() => {
+        wrapper.chain.priceHistory(
+            new Date("2021-07-27T14:02:43Z"),
+            new Date("2021-08-05T14:02:43Z"),
+            30
+        ).then((data) => {
+            return jq("#priceHistory").html(JSON.stringify(data));
+        });
+    });
     jq("#btn_permission").click(() => {
         wrapper.contract.updatePermission().then((addr) => {
             return jq("#userAddress").val(addr);

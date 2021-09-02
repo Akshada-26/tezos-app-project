@@ -42,6 +42,20 @@ exports.chainWrapper = (options) => {
                     throw new Error(error);
                 });
         },
+        requestStorageHistory = (limit) => {
+            const limitRequest = typeof limit === "undefined"
+                ? ""
+                : `?limit=${limit}`;
+
+
+            return axios.get(`${apiEndpoint}v1/contracts/${contractAddress}/storage/history?${limitRequest}`)
+                .then((response) => {
+                    return response.data;
+                })
+                .catch((error) => {
+                    throw new Error(error);
+                });
+        },
         transactions = (sender, entrypoint) => {
             const url = `${apiEndpoint}v1/operations/transactions?target=${contractAddress}`,
                 senderFilter = typeof sender === "undefined"
@@ -95,7 +109,6 @@ exports.chainWrapper = (options) => {
             });
         },
         "totalInvestments": (storageData) => {
-
             return cashedData(storageData, requestStorage, (data) => {
                 return parseInt(data.total_investment, 10);
             });
@@ -218,6 +231,60 @@ exports.chainWrapper = (options) => {
         "initialReserve": () => {
             return balance(contractAddress).then((data) => {
                 return parseInt(data[0].balance, 10);
+            });
+        },
+        "priceHistory": (start, end, steps) => {
+            return requestStorageHistory().then((data) => {
+                let startDate = start,
+                    endDate = end;
+
+                if (typeof start === "undefined") {
+                    startDate = new Date(0);
+                }
+
+                if (typeof end === "undefined") {
+                    endDate = new Date();
+                }
+
+                const getClosePrice = (history, timeX) => {
+                    const timeDifference = history.map((historicalStorage) => {
+                            return {"timestamp": historicalStorage.timestamp,
+                                "price": historicalStorage.price,
+                                "difference": (Date.parse(historicalStorage.timestamp) - Date.parse(timeX)) ** 2};
+                        }),
+                        [closestDifference] = timeDifference.sort((firstTime, secondTime) => {
+                            return firstTime.difference - secondTime.difference;
+                        }),
+                        [closestPrice] = history.filter((historicalStorage) => {
+                            return historicalStorage.timestamp === closestDifference.timestamp;
+                        });
+
+
+                    return closestPrice.price;
+                };
+
+                const history = data
+                        .filter((historicalStorage) => {
+                            return historicalStorage.timestamp > startDate.toISOString() &&
+                    historicalStorage.timestamp < endDate.toISOString();
+                        })
+                        .map((historicalStorage) => {
+                            return {"timestamp": historicalStorage.timestamp,
+                                "price": historicalStorage.value.price};
+                        }),
+                    intervallStep = (endDate - startDate) / steps,
+                    points = [];
+
+                for (let index = 0; index <= steps; index += 1) {
+                    const timeDelta = intervallStep * index,
+                        timeX = new Date(Date.parse(startDate) + timeDelta).toISOString(),
+                        priceY = getClosePrice(history, timeX);
+
+                    points.push({"time": timeX,
+                        "price": priceY});
+                }
+
+                return points;
             });
         },
         "user": (address) => {

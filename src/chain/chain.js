@@ -247,20 +247,16 @@ exports.chainWrapper = (options) => {
                 }
 
                 const getClosePrice = (history, timeX) => {
-                    const timeDifference = history.map((historicalStorage) => {
-                            return {"timestamp": historicalStorage.timestamp,
-                                "price": historicalStorage.price,
-                                "difference": (Date.parse(historicalStorage.timestamp) - Date.parse(timeX)) ** 2};
+                    const pricesBefore = history.filter((historicalStorage) => {
+                            return historicalStorage.timestamp < timeX;
                         }),
-                        [closestDifference] = timeDifference.sort((firstTime, secondTime) => {
-                            return firstTime.difference - secondTime.difference;
-                        }),
-                        [closestPrice] = history.filter((historicalStorage) => {
-                            return historicalStorage.timestamp === closestDifference.timestamp;
+                        [lastPrice] = pricesBefore.sort((firstTime, secondTime) => {
+                            return firstTime.timestamp - secondTime.timestampM;
                         });
 
+                    if(typeof lastPrice === "undefined") return 0;
 
-                    return closestPrice.price;
+                    return lastPrice.price;
                 };
 
                 const history = data

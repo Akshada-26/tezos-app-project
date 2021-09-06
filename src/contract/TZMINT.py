@@ -14,11 +14,11 @@ class PEQ(sp.Contract):
                 initial_price, 
                 MFG, 
                 MPT, 
-                b=1, 
-                s=1, 
-                preminted = 0, 
-                I = 80, 
-                D = 80, 
+                b, 
+                s, 
+                preminted, 
+                I, 
+                D, 
                 minimumInvestment =sp.tez(1),
                 burned_tokens = 0,
                 company_valuation,
@@ -74,12 +74,12 @@ class PEQ(sp.Contract):
            self.data.s = 2 * sp.utils.mutez_to_nat(sp.balance) / (self.data.total_tokens * self.data.total_tokens)
 
     # initial phase, the price is fix
-    def buy_initial(self):
+    def buy_initial(self, amount):
         # calculate amount of tokens from sp.amount and the price
         token_amount = sp.local(
             "token_amount", 
             sp.ediv(
-                sp.amount, 
+                amount, 
                 self.data.price
                 ).open_some("Fatal Error: Price is zero")
             )
@@ -105,7 +105,7 @@ class PEQ(sp.Contract):
             sp.send(sp.sender, sp.snd(token_amount.value))
 
         # track how much is invested
-        self.data.total_investment += sp.amount - sp.snd(token_amount.value)
+        self.data.total_investment += amount - sp.snd(token_amount.value)
 
     # after initial phase, the price will increase
     def buy_slope(self):
@@ -174,8 +174,11 @@ class PEQ(sp.Contract):
     def buy(self):
         # if token in intialization phase, the price is fixed and all funds are escrowed
         sp.if self.data.total_investment < self.data.MFG:
-            sp.verify(sp.amount + self.data.total_investment <= self.data.MFG, message= "Tez amount is too high for the initial phase")
-            self.buy_initial()
+            sp.if sp.utils.mutez_to_nat(self.data.MFG - sp.amount - self.data.total_investment) < 0:
+                sp.send(sp.sender, sp.amount - self.data.MFG + self.data.total_investment)
+                self.buy_initial(self.data.MFG - self.data.total_investment)
+            sp.else:
+                self.buy_initial(sp.amount)
         # if initialization phase is past
         sp.else:
             self.data.phase = 1
@@ -294,11 +297,14 @@ def initialization():
     # init with initial_price = 1 tez, MFG = 10 tez and MPT = 1 year
     contract= PEQ(
         organization = organization, 
-        b = 1300, 
+        b = 2000, 
         s = 1000, 
         initial_price = sp.tez(1), 
         MFG = sp.tez(1000), 
+        preminted = 0,
         MPT = 0,
+        I = 80,
+        D = 80, 
         company_valuation = 1000000,
         total_allocation = 4000,
         stake_allocation = 500,
@@ -313,18 +319,13 @@ def initialization():
     # buy some tokens till reaching MFG check the price is fix
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(500))
     scenario += contract.buy().run(sender = buyer2, amount = sp.tez(200))
-    
-    # sell some tokens
-    scenario += contract.sell(amount=1).run(sender = buyer2)
 
-    scenario.verify(contract.data.price == sp.tez(1))
-    
     # now MFG is reached, buy more and see price increasing
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(50))
-    scenario += contract.buy().run(sender = buyer2, amount = sp.tez(100))
+    scenario += contract.buy().run(sender = buyer2, amount = sp.tez(400))
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(100))
     
-    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(51))
+    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(50))
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(100))
     scenario.verify(contract.data.price > sp.tez(1))
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(150))

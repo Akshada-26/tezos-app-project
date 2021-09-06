@@ -35,6 +35,6 @@ tezos-client originate contract TZMINT transferring 0 from bob running "/opt/con
             (Pair
                 4000
                 (Pair 0 0)))))' \
- --fee 0.001266 \
- --gas-limit 10600 \
- --storage-limit 496
+ --fee 0.01266 \
+ --gas-limit 106000 \
+ --storage-limit 4960

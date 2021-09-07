@@ -4,7 +4,7 @@
 
 exports.configuration = () => {
     return {
-        "contractAddress": process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "KT1PPrqZhYAa3rbAfrSSLZehAY6i6KBvXNBh",
+        "contractAddress": process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "KT1WLBd9ondwqy41PWszsoBvswoL6NPZ4ooF",
         "orgAccount": "tz1hRTppkUow3wQNcj9nZ9s5snwc6sGC8QHh",
         "chain": process.env.NEXT_PUBLIC_CHAIN || "florencenet",
         "apiEndpoint": process.env.NEXT_PUBLIC_INDEXER_API_ENDPOINT || "https://api.florencenet.tzkt.io/",

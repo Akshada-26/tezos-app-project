@@ -297,7 +297,7 @@ def initialization():
     # init with initial_price = 1 tez, MFG = 10 tez and MPT = 1 year
     contract= PEQ(
         organization = organization, 
-        b = 2000, 
+        b = 3000, 
         s = 1000, 
         initial_price = sp.tez(1), 
         MFG = sp.tez(1000), 

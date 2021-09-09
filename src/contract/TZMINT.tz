@@ -910,6 +910,19 @@
                 {
                     DIG 2;
                     DROP;
+                    PUSH int 1;
+                    DUP 3;
+                    GET 3;
+                    GET 5;
+                    COMPARE;
+                    EQ;
+                    IF
+                        {
+                        }
+                        {
+                            PUSH string "WrongCondition: self.data.phase == 1";
+                            FAILWITH
+                        };
                     SWAP;
                     DUP;
                     DUG 2;
@@ -924,7 +937,7 @@
                             ISNAT;
                             IF_NONE
                                 {
-                                    PUSH int 196;
+                                    PUSH int 198;
                                     FAILWITH
                                 }
                                 {
@@ -937,7 +950,7 @@
                             GET;
                             IF_NONE
                                 {
-                                    PUSH int 196;
+                                    PUSH int 198;
                                     FAILWITH
                                 }
                                 {
@@ -961,7 +974,7 @@
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 199;
+                                            PUSH int 201;
                                             FAILWITH
                                         }
                                         {
@@ -981,7 +994,7 @@
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 199;
+                                            PUSH int 201;
                                             FAILWITH
                                         }
                                         {
@@ -995,7 +1008,7 @@
                                     EDIV;
                                     IF_NONE
                                         {
-                                            PUSH int 199;
+                                            PUSH int 201;
                                             FAILWITH
                                         }
                                         {
@@ -1013,7 +1026,7 @@
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 199;
+                                            PUSH int 201;
                                             FAILWITH
                                         }
                                         {
@@ -1022,7 +1035,7 @@
                                     EDIV;
                                     IF_NONE
                                         {
-                                            PUSH int 199;
+                                            PUSH int 201;
                                             FAILWITH
                                         }
                                         {
@@ -1035,7 +1048,7 @@
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 199;
+                                            PUSH int 201;
                                             FAILWITH
                                         }
                                         {
@@ -1048,7 +1061,7 @@
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 199;
+                                            PUSH int 201;
                                             FAILWITH
                                         }
                                         {
@@ -1171,7 +1184,7 @@
                                     CONTRACT unit;
                                     IF_NONE
                                         {
-                                            PUSH int 212;
+                                            PUSH int 214;
                                             FAILWITH
                                         }
                                         {

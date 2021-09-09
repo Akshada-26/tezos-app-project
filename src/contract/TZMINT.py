@@ -190,7 +190,9 @@ class PEQ(sp.Contract):
 
     @sp.entry_point
     def sell(self, params):
-         # check if the address owns tokens
+        # check that the initial phase is over
+        sp.verify(self.data.phase == 1)
+        # check if the address owns tokens
         sp.if self.data.ledger.contains(sp.sender):
         # check if the address owns enough tokens
             sp.if self.data.ledger[sp.sender] >= sp.as_nat(params.amount):
@@ -220,7 +222,6 @@ def initialization():
     buyer1 = sp.address("tz1xbuyer1")
     buyer2 = sp.address("tz1xbuyer2")
 
-    # init with initial_price = 1 tez, MFG = 10 tez and MPT = 1 year
     contract= PEQ(
         organization = organization, 
         b = 2000, 
@@ -244,6 +245,10 @@ def initialization():
     
     # buy some tokens till reaching MFG check the price is fix
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(500))
+    
+    # try to sell some before phase 1
+    scenario += contract.sell(amount=1).run(sender = buyer1, valid=False)
+
     scenario += contract.buy().run(sender = buyer2, amount = sp.tez(200))
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(300))
     scenario.verify(contract.data.price == sp.tez(1))

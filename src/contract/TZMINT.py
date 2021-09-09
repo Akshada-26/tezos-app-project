@@ -69,9 +69,9 @@ class PEQ(sp.Contract):
         sp.result(y.value)
 
     # s calculus after each transaction
-    def modify_sell_slope(self):
+    def modify_sell_slope(self, sendback):
         sp.if self.data.total_tokens != 0:
-           self.data.s = 2 * sp.utils.mutez_to_nat(sp.balance) / (self.data.total_tokens * self.data.total_tokens)
+           self.data.s = 2 * sp.utils.mutez_to_nat(sp.balance - sendback) / (self.data.total_tokens * self.data.total_tokens)
 
     # initial phase, the price is fix
     def buy_initial(self, amount):
@@ -105,69 +105,63 @@ class PEQ(sp.Contract):
             sp.send(sp.sender, sp.snd(token_amount.value))
 
         # track how much is invested
-        self.data.total_investment += amount - sp.snd(token_amount.value)
+        self.data.total_investment = self.data.total_investment + amount - sp.snd(token_amount.value)
 
     # after initial phase, the price will increase
     def buy_slope(self):
         # calculate amount of tokens from sp.amount
         # see https://github.com/C-ORG/whitepaper#buy-calculus
-        tez_amount = sp.local(
-            "tez_amount",
+        back_amount = sp.local(
+            "back_amount",
             sp.ediv(sp.amount, self.data.b).open_some("Buy slope is 0")
             )
 
         # send tez that is too much
-        sp.if sp.utils.mutez_to_nat(sp.snd(tez_amount.value)) > 0:
-            sp.send(sp.sender, sp.snd(tez_amount.value))
+        sp.if sp.utils.mutez_to_nat(sp.snd(back_amount.value)) > 0:
+            sp.send(sp.sender, sp.snd(back_amount.value))
+
+        tez_amount = sp.local(
+            "tez_amount",
+            sp.amount - sp.snd(back_amount.value)
+            )
 
         token_amount = sp.local(
             "token_amount", 
             self.square_root(
-                2 * sp.utils.mutez_to_nat(sp.fst(tez_amount.value)) + 
+                2 * sp.utils.mutez_to_nat(sp.fst(back_amount.value)) + 
                 self.data.total_tokens * self.data.total_tokens
                 ) - self.data.total_tokens
             )
 
         # track how much is invested
-        self.data.total_investment += sp.fst(tez_amount.value)
+        self.data.total_investment += (tez_amount.value)
 
         # fail if no tokens can be issued with this amount of tez
         sp.if sp.as_nat(token_amount.value) == sp.as_nat(0):
             sp.failwith("No token can be issued, please send more tez")
             
-        # if organization calls this function
-        sp.if sp.sender == self.data.organization:
-            # put tokens for the organization into the ledger
-            self.data.ledger[self.data.organization] += sp.as_nat(token_amount.value)
-            # increase total amount of the tokens
-            self.data.total_tokens += sp.as_nat(token_amount.value)
-            # this will keep all received tez in this contract as buyback reserve
+        # calculate buyback reserve from sp.amount I*sp.amount/100
+        buyback_reserve = sp.local(
+            "local_amount", 
+            sp.utils.nat_to_mutez(self.data.I * sp.utils.mutez_to_nat(tez_amount.value)/100)
+            )
             
-        # if someone else is calling this function
+        # send (100-I) * sp.amount/100 of the received tez to the organization
+        sp.send(self.data.organization, sp.amount - buyback_reserve.value)
+        # this will keep I * sp.amount/100 in this contract as buyback reserve
+            
+        # check if the address owns tokens
+        sp.if self.data.ledger.contains(sp.sender):
+            self.data.ledger[sp.sender] += sp.as_nat(token_amount.value)
         sp.else:
-            
-            # calculate buyback reserve from sp.amount I*sp.amount/100
-            buyback_reserve = sp.local(
-                "local_amount", 
-                sp.utils.nat_to_mutez(self.data.I* 10 * sp.utils.mutez_to_nat(sp.fst(tez_amount.value)) )
-                )
-            
-            # send (100-I) * sp.amount/100 of the received tez to the organization
-            sp.send(self.data.organization, sp.amount - buyback_reserve.value)
-            # this will keep I * sp.amount/100 in this contract as buyback reserve
-            
-            # check if the address owns tokens
-            sp.if self.data.ledger.contains(sp.sender):
-                self.data.ledger[sp.sender] += sp.as_nat(token_amount.value)
-            sp.else:
-                 self.data.ledger[sp.sender] = sp.as_nat(token_amount.value)
+            self.data.ledger[sp.sender] = sp.as_nat(token_amount.value)
                  
-            # increase total amount of the tokens
-            self.data.total_tokens += sp.as_nat(token_amount.value)
-            
-            # set new price
-            self.data.price = sp.utils.nat_to_mutez(self.data.b * self.data.total_tokens)
-            self.modify_sell_slope()
+        # increase total amount of the tokens
+        self.data.total_tokens += sp.as_nat(token_amount.value)
+
+        # set new price
+        self.data.price = sp.utils.nat_to_mutez(self.data.b * self.data.total_tokens)
+        self.modify_sell_slope(sp.amount - buyback_reserve.value)
 
     # buy some tokens with sender's tez
     @sp.entry_point
@@ -194,24 +188,8 @@ class PEQ(sp.Contract):
                 self.data.ledger[sp.sender] = sp.as_nat(self.data.ledger[sp.sender] - sp.as_nat(amount))
                 self.data.burned_tokens += sp.as_nat(amount)
 
-    # token holder can at anytime take the decision to burn its tokens            
     @sp.entry_point
-    def burn(self, params):
-        self.burn_intern(params.amount)
-        self.modify_sell_slope()
-
-    @sp.entry_point
-    def sell_initial(self, params):
-        sp.if self.data.ledger.contains(sp.sender):
-        # check if the address owns enough tokens
-            sp.if self.data.ledger[sp.sender] >= sp.as_nat(params.amount):
-                sp.send(sp.sender, sp.mul(sp.as_nat(params.amount),self.data.price))
-                self.data.ledger[sp.sender] = sp.as_nat(self.data.ledger[sp.sender] - sp.as_nat(params.amount))
-                self.data.total_investment -= sp.mul(sp.as_nat(params.amount),self.data.price)
-                self.modify_sell_slope()
-
-    @sp.entry_point
-    def sell_slope(self, params):
+    def sell(self, params):
          # check if the address owns tokens
         sp.if self.data.ledger.contains(sp.sender):
         # check if the address owns enough tokens
@@ -232,59 +210,7 @@ class PEQ(sp.Contract):
                 self.burn_intern(params.amount)
                 # send pay_amount tez to the sender of the transaction
                 sp.send(sp.sender, sp.utils.nat_to_mutez(pay_amount.value))
-                self.modify_sell_slope()
-
-    @sp.entry_point
-    def sell(self, params):
-        # check if MPT is met, before that the tokens are locked
-        #sp.verify(sp.now > self.data.MPT)
-        # if token in intialization phase, the price is fixed and all funds are escrowed
-        sp.if self.data.total_investment < self.data.MFG:
-            self.sell_initial(params)
-        # if initialization phase is past
-        sp.else:
-            self.sell_slope(params)
-
-        
-                
-    @sp.entry_point
-    def pay(self):
-        # see https://github.com/C-ORG/whitepaper#-revenues---pay
-        buyback_reserve = sp.local(
-            "local_amount", 
-            sp.utils.nat_to_mutez(
-                sp.utils.mutez_to_nat(sp.amount) * self.data.D / 100
-                )
-            )
-        # send sp.amount - buyback_reserve to organization
-        sp.send(self.data.organization, sp.amount - buyback_reserve.value)
-        # rest will be hold in this contract as buyback reserve
-
-        # issue tokens for the amount of buyback_reserve
-        # check the phase to calculate the token amount
-        sp.if sp.balance < self.data.MFG:
-            token_amount = sp.local(
-                "token_amount", 
-                sp.ediv(
-                    sp.amount, 
-                    self.data.price
-                    ).open_some()
-                )
-            # mint the amount of tokens for the organization
-            self.data.ledger[self.data.organization] += sp.fst(token_amount.value)
-
-        # if initialization phase is past
-        sp.else:
-            token_amount = sp.local(
-                "token_amount", 
-                self.square_root(
-                    2 * sp.utils.mutez_to_nat(sp.amount) / self.data.b + 
-                    self.data.total_tokens * self.data.total_tokens
-                    ) - self.data.total_tokens
-                )
-            # mint the amount of tokens for the organization
-            self.data.ledger[self.data.organization] += sp.as_nat(token_amount.value)
-        self.modify_sell_slope()
+                self.modify_sell_slope(sp.utils.nat_to_mutez(pay_amount.value))
             
 @sp.add_test(name= "Initialization")
 def initialization():
@@ -297,7 +223,7 @@ def initialization():
     # init with initial_price = 1 tez, MFG = 10 tez and MPT = 1 year
     contract= PEQ(
         organization = organization, 
-        b = 3000, 
+        b = 2000, 
         s = 1000, 
         initial_price = sp.tez(1), 
         MFG = sp.tez(1000), 
@@ -319,18 +245,26 @@ def initialization():
     # buy some tokens till reaching MFG check the price is fix
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(500))
     scenario += contract.buy().run(sender = buyer2, amount = sp.tez(200))
+    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(300))
+    scenario.verify(contract.data.price == sp.tez(1))
 
     # now MFG is reached, buy more and see price increasing
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(50))
     scenario += contract.buy().run(sender = buyer2, amount = sp.tez(400))
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(100))
+    scenario.verify(contract.data.price > sp.tez(1))
     
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(50))
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(100))
-    scenario.verify(contract.data.price > sp.tez(1))
+    
+    # now sell some tokens
+    scenario += contract.sell(amount=100).run(sender = buyer1)
+
+    # and see how the price changes if you buy again
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(150))
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(150))
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(150))
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(50))
 
+    # Check price for selling 1 token
     scenario += contract.sell(amount=1).run(sender = buyer1)

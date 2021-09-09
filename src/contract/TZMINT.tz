@@ -4,7 +4,7 @@
             (pair
                 (pair
                     (pair
-                        (nat %D)
+                        (int %D)
                         (nat %I))
                     (pair
                         (mutez %MFG)
@@ -43,16 +43,8 @@
                             (nat %total_tokens))))));
     parameter
         (or
-            (or
-                (int %burn)
-                (or
-                    (unit %buy)
-                    (unit %pay)))
-            (or
-                (int %sell)
-                (or
-                    (int %sell_initial)
-                    (int %sell_slope))));
+            (unit %buy)
+            (int %sell));
     code
         {
             LAMBDA
@@ -157,25 +149,111 @@
             UNPAIR;
             IF_LEFT
                 {
-                    IF_LEFT
+                    SWAP;
+                    DUP;
+                    CAR;
+                    CAR;
+                    GET 3;
+                    SWAP;
+                    DUP;
+                    DUG 3;
+                    GET 9;
+                    COMPARE;
+                    LT;
+                    IF
                         {
-                            DIG 2;
                             DROP;
                             SWAP;
-                            DUP;
-                            DUG 2;
+                            DROP;
+                            PUSH nat 0;
+                            PUSH mutez 1;
+                            DUP 3;
+                            GET 9;
+                            AMOUNT;
+                            DUP 5;
+                            CAR;
+                            CAR;
                             GET 3;
+                            SUB;
+                            SUB;
+                            EDIV;
+                            IF_NONE
+                                {
+                                    UNIT;
+                                    FAILWITH
+                                }
+                                {
+                                };
                             CAR;
-                            CAR;
-                            SENDER;
-                            MEM;
+                            COMPARE;
+                            LT;
                             IF
                                 {
+                                    NIL operation;
+                                    SENDER;
+                                    CONTRACT unit;
+                                    IF_NONE
+                                        {
+                                            PUSH int 172;
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    DIG 2;
                                     DUP;
+                                    GET 9;
+                                    SWAP;
+                                    DUP;
+                                    DUG 4;
+                                    CAR;
+                                    CAR;
+                                    GET 3;
+                                    AMOUNT;
+                                    SUB;
+                                    ADD;
+                                    UNIT;
+                                    TRANSFER_TOKENS;
+                                    CONS;
+                                    SWAP;
+                                    DUP;
+                                    GET 3;
+                                    GET 6;
+                                    SWAP;
+                                    DUP;
+                                    GET 9;
+                                    SWAP;
+                                    DUP;
+                                    DUG 4;
+                                    CAR;
+                                    CAR;
+                                    GET 3;
+                                    SUB;
+                                    EDIV;
+                                    IF_NONE
+                                        {
+                                            PUSH string "Fatal Error: Price is zero";
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    PUSH int 0;
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 192;
+                                            PUSH int 88;
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    SWAP;
+                                    DUP;
+                                    DUG 2;
+                                    CAR;
+                                    COMPARE;
+                                    EQ;
+                                    IF
+                                        {
+                                            PUSH string "No token can be issued, please send more tez";
                                             FAILWITH
                                         }
                                         {
@@ -185,57 +263,49 @@
                                     CAR;
                                     CAR;
                                     SENDER;
-                                    GET;
-                                    IF_NONE
-                                        {
-                                            PUSH int 192;
-                                            FAILWITH
-                                        }
-                                        {
-                                        };
-                                    COMPARE;
-                                    GE;
+                                    MEM;
                                     IF
                                         {
+                                            DIG 2;
+                                            UNPAIR;
                                             SWAP;
+                                            UNPAIR;
+                                            UNPAIR;
+                                            UNPAIR;
+                                            DUP;
+                                            SENDER;
                                             DUP;
                                             DUG 2;
+                                            GET;
+                                            IF_NONE
+                                                {
+                                                    PUSH int 94;
+                                                    FAILWITH
+                                                }
+                                                {
+                                                };
+                                            DUP 8;
+                                            CAR;
+                                            ADD;
+                                            SOME;
+                                            SWAP;
+                                            UPDATE;
+                                            PAIR;
+                                            PAIR;
+                                            PAIR;
+                                            SWAP;
+                                            PAIR;
+                                            DUG 2
+                                        }
+                                        {
+                                            DIG 2;
                                             UNPAIR;
                                             SWAP;
                                             UNPAIR;
                                             UNPAIR;
                                             UNPAIR;
                                             DUP 6;
-                                            ISNAT;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 194;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            DIG 7;
-                                            GET 3;
                                             CAR;
-                                            CAR;
-                                            SENDER;
-                                            GET;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 194;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            SUB;
-                                            ISNAT;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 194;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
                                             SOME;
                                             SENDER;
                                             UPDATE;
@@ -243,57 +313,561 @@
                                             PAIR;
                                             PAIR;
                                             SWAP;
-                                            UNPAIR;
+                                            PAIR;
+                                            DUG 2
+                                        };
+                                    DIG 2;
+                                    DUP;
+                                    GET 10;
+                                    DUP 3;
+                                    CAR;
+                                    ADD;
+                                    UPDATE 10;
+                                    DUG 2;
+                                    PUSH nat 0;
+                                    PUSH mutez 1;
+                                    DUP 3;
+                                    CDR;
+                                    EDIV;
+                                    IF_NONE
+                                        {
+                                            UNIT;
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    CAR;
+                                    COMPARE;
+                                    GT;
+                                    IF
+                                        {
                                             SWAP;
-                                            UNPAIR;
-                                            UNPAIR;
-                                            SWAP;
-                                            DIG 5;
-                                            ISNAT;
+                                            SENDER;
+                                            CONTRACT unit;
                                             IF_NONE
                                                 {
-                                                    PUSH int 195;
+                                                    PUSH int 105;
                                                     FAILWITH
                                                 }
                                                 {
                                                 };
-                                            ADD;
-                                            SWAP;
-                                            PAIR;
-                                            PAIR;
-                                            SWAP;
-                                            PAIR;
-                                            PAIR
+                                            DUP 3;
+                                            CDR;
+                                            UNIT;
+                                            TRANSFER_TOKENS;
+                                            CONS;
+                                            SWAP
                                         }
                                         {
-                                            DROP
-                                        }
+                                        };
+                                    DUP 3;
+                                    DUP;
+                                    GET 9;
+                                    DIG 2;
+                                    CDR;
+                                    DIG 4;
+                                    DUP;
+                                    GET 9;
+                                    SWAP;
+                                    CAR;
+                                    CAR;
+                                    GET 3;
+                                    SUB;
+                                    SUB;
+                                    ADD;
+                                    UPDATE 9;
+                                    SWAP
                                 }
                                 {
-                                    DROP
+                                    DUP;
+                                    GET 3;
+                                    GET 6;
+                                    AMOUNT;
+                                    EDIV;
+                                    IF_NONE
+                                        {
+                                            PUSH string "Fatal Error: Price is zero";
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    PUSH int 0;
+                                    ISNAT;
+                                    IF_NONE
+                                        {
+                                            PUSH int 88;
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    SWAP;
+                                    DUP;
+                                    DUG 2;
+                                    CAR;
+                                    COMPARE;
+                                    EQ;
+                                    IF
+                                        {
+                                            PUSH string "No token can be issued, please send more tez";
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    SWAP;
+                                    DUP;
+                                    DUG 2;
+                                    GET 3;
+                                    CAR;
+                                    CAR;
+                                    SENDER;
+                                    MEM;
+                                    IF
+                                        {
+                                            SWAP;
+                                            UNPAIR;
+                                            SWAP;
+                                            UNPAIR;
+                                            UNPAIR;
+                                            UNPAIR;
+                                            DUP;
+                                            SENDER;
+                                            DUP;
+                                            DUG 2;
+                                            GET;
+                                            IF_NONE
+                                                {
+                                                    PUSH int 94;
+                                                    FAILWITH
+                                                }
+                                                {
+                                                };
+                                            DUP 8;
+                                            CAR;
+                                            ADD;
+                                            SOME;
+                                            SWAP;
+                                            UPDATE;
+                                            PAIR;
+                                            PAIR;
+                                            PAIR;
+                                            SWAP;
+                                            PAIR;
+                                            SWAP
+                                        }
+                                        {
+                                            SWAP;
+                                            UNPAIR;
+                                            SWAP;
+                                            UNPAIR;
+                                            UNPAIR;
+                                            UNPAIR;
+                                            DUP 6;
+                                            CAR;
+                                            SOME;
+                                            SENDER;
+                                            UPDATE;
+                                            PAIR;
+                                            PAIR;
+                                            PAIR;
+                                            SWAP;
+                                            PAIR;
+                                            SWAP
+                                        };
+                                    SWAP;
+                                    DUP;
+                                    GET 10;
+                                    DUP 3;
+                                    CAR;
+                                    ADD;
+                                    UPDATE 10;
+                                    SWAP;
+                                    PUSH nat 0;
+                                    PUSH mutez 1;
+                                    DUP 3;
+                                    CDR;
+                                    EDIV;
+                                    IF_NONE
+                                        {
+                                            UNIT;
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    CAR;
+                                    COMPARE;
+                                    GT;
+                                    IF
+                                        {
+                                            NIL operation;
+                                            SENDER;
+                                            CONTRACT unit;
+                                            IF_NONE
+                                                {
+                                                    PUSH int 105;
+                                                    FAILWITH
+                                                }
+                                                {
+                                                };
+                                            DUP 3;
+                                            CDR;
+                                            UNIT;
+                                            TRANSFER_TOKENS;
+                                            CONS
+                                        }
+                                        {
+                                            NIL operation
+                                        };
+                                    DIG 2;
+                                    DUP;
+                                    GET 9;
+                                    DIG 3;
+                                    CDR;
+                                    AMOUNT;
+                                    SUB;
+                                    ADD;
+                                    UPDATE 9;
+                                    SWAP
+                                }
+                        }
+                        {
+                            SWAP;
+                            UNPAIR;
+                            SWAP;
+                            UNPAIR;
+                            UNPAIR;
+                            SWAP;
+                            UNPAIR;
+                            SWAP;
+                            CDR;
+                            PUSH int 1;
+                            PAIR;
+                            SWAP;
+                            PAIR;
+                            SWAP;
+                            PAIR;
+                            PAIR;
+                            SWAP;
+                            PAIR;
+                            DUP;
+                            DUG 2;
+                            CAR;
+                            CAR;
+                            GET 6;
+                            AMOUNT;
+                            EDIV;
+                            IF_NONE
+                                {
+                                    PUSH string "Buy slope is 0";
+                                    FAILWITH
+                                }
+                                {
                                 };
+                            PUSH nat 0;
+                            PUSH mutez 1;
+                            DUP 3;
+                            CDR;
+                            EDIV;
+                            IF_NONE
+                                {
+                                    UNIT;
+                                    FAILWITH
+                                }
+                                {
+                                };
+                            CAR;
+                            COMPARE;
+                            GT;
+                            IF
+                                {
+                                    NIL operation;
+                                    SENDER;
+                                    CONTRACT unit;
+                                    IF_NONE
+                                        {
+                                            PUSH int 121;
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    DUP 3;
+                                    CDR;
+                                    UNIT;
+                                    TRANSFER_TOKENS;
+                                    CONS
+                                }
+                                {
+                                    NIL operation
+                                };
+                            SWAP;
+                            DUP;
+                            DUG 2;
+                            CDR;
+                            AMOUNT;
+                            SUB;
+                            DUP 5;
+                            GET 10;
+                            DUP 7;
+                            DIG 6;
                             DUP;
                             GET 10;
+                            SWAP;
+                            DUP;
+                            DUG 8;
+                            GET 10;
+                            MUL;
+                            PUSH mutez 1;
+                            DUP 7;
+                            CAR;
+                            EDIV;
+                            IF_NONE
+                                {
+                                    UNIT;
+                                    FAILWITH
+                                }
+                                {
+                                };
+                            CAR;
+                            PUSH nat 2;
+                            MUL;
+                            ADD;
+                            EXEC;
+                            SUB;
+                            DIG 5;
+                            DUP;
+                            GET 9;
+                            DUP 4;
+                            ADD;
+                            UPDATE 9;
+                            DUG 5;
+                            PUSH int 0;
+                            ISNAT;
+                            IF_NONE
+                                {
+                                    PUSH int 140;
+                                    FAILWITH
+                                }
+                                {
+                                };
+                            SWAP;
+                            DUP;
+                            DUG 2;
+                            ISNAT;
+                            IF_NONE
+                                {
+                                    PUSH int 140;
+                                    FAILWITH
+                                }
+                                {
+                                };
+                            COMPARE;
+                            EQ;
+                            IF
+                                {
+                                    PUSH string "No token can be issued, please send more tez";
+                                    FAILWITH
+                                }
+                                {
+                                };
+                            PUSH mutez 1;
+                            PUSH nat 100;
+                            PUSH mutez 1;
+                            DUP 5;
+                            EDIV;
+                            IF_NONE
+                                {
+                                    UNIT;
+                                    FAILWITH
+                                }
+                                {
+                                };
+                            CAR;
+                            DUP 9;
+                            CAR;
+                            CAR;
+                            CAR;
+                            CDR;
+                            MUL;
+                            EDIV;
+                            IF_NONE
+                                {
+                                    PUSH int 144;
+                                    FAILWITH
+                                }
+                                {
+                                    CAR
+                                };
+                            MUL;
+                            DIG 3;
+                            DUP 7;
+                            GET 3;
+                            GET 3;
+                            CONTRACT unit;
+                            IF_NONE
+                                {
+                                    PUSH int 150;
+                                    FAILWITH
+                                }
+                                {
+                                };
+                            DUP 3;
+                            AMOUNT;
+                            SUB;
+                            UNIT;
+                            TRANSFER_TOKENS;
+                            CONS;
+                            DUG 3;
+                            DUP 7;
+                            GET 3;
+                            CAR;
+                            CAR;
+                            SENDER;
+                            MEM;
+                            IF
+                                {
+                                    DIG 6;
+                                    UNPAIR;
+                                    SWAP;
+                                    UNPAIR;
+                                    UNPAIR;
+                                    UNPAIR;
+                                    DUP;
+                                    SENDER;
+                                    DUP;
+                                    DUG 2;
+                                    GET;
+                                    IF_NONE
+                                        {
+                                            PUSH int 155;
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    DUP 9;
+                                    ISNAT;
+                                    IF_NONE
+                                        {
+                                            PUSH int 155;
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    ADD;
+                                    SOME;
+                                    SWAP;
+                                    UPDATE;
+                                    PAIR;
+                                    PAIR;
+                                    PAIR;
+                                    SWAP;
+                                    PAIR;
+                                    DUG 6
+                                }
+                                {
+                                    DIG 6;
+                                    UNPAIR;
+                                    SWAP;
+                                    UNPAIR;
+                                    UNPAIR;
+                                    UNPAIR;
+                                    DUP 7;
+                                    ISNAT;
+                                    IF_NONE
+                                        {
+                                            PUSH int 157;
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    SOME;
+                                    SENDER;
+                                    UPDATE;
+                                    PAIR;
+                                    PAIR;
+                                    PAIR;
+                                    SWAP;
+                                    PAIR;
+                                    DUG 6
+                                };
+                            DIG 6;
+                            DUP;
+                            GET 10;
+                            DUP 4;
+                            ISNAT;
+                            IF_NONE
+                                {
+                                    PUSH int 160;
+                                    FAILWITH
+                                }
+                                {
+                                };
+                            ADD;
+                            UPDATE 10;
+                            DUP;
+                            DUG 7;
+                            UNPAIR;
+                            SWAP;
+                            UNPAIR;
+                            UNPAIR;
+                            SWAP;
+                            UNPAIR;
+                            SWAP;
+                            CAR;
+                            PUSH mutez 1;
+                            DIG 12;
+                            DUP;
+                            GET 10;
+                            SWAP;
+                            CAR;
+                            CAR;
+                            GET 6;
+                            MUL;
+                            MUL;
+                            SWAP;
+                            PAIR;
+                            SWAP;
+                            PAIR;
+                            SWAP;
+                            PAIR;
+                            PAIR;
+                            SWAP;
+                            PAIR;
+                            DUG 6;
                             PUSH nat 0;
+                            DUP 8;
+                            GET 10;
                             COMPARE;
                             NEQ;
                             IF
                                 {
-                                    DUP;
+                                    SWAP;
+                                    DROP;
+                                    SWAP;
+                                    DROP;
+                                    DIG 2;
+                                    DROP;
+                                    DIG 2;
+                                    DROP;
+                                    DIG 3;
+                                    DROP;
+                                    DUP 3;
                                     UNPAIR;
                                     SWAP;
                                     UNPAIR;
                                     SWAP;
                                     UNPAIR;
                                     CDR;
-                                    DIG 4;
+                                    DIG 6;
                                     DUP;
                                     GET 10;
                                     SWAP;
                                     GET 10;
                                     MUL;
                                     PUSH mutez 1;
+                                    DIG 6;
+                                    AMOUNT;
+                                    SUB;
                                     BALANCE;
+                                    SUB;
                                     EDIV;
                                     IF_NONE
                                         {
@@ -319,1031 +893,321 @@
                                     SWAP;
                                     PAIR;
                                     SWAP;
-                                    PAIR
+                                    PAIR;
+                                    SWAP
+                                }
+                                {
+                                    DROP 3;
+                                    SWAP;
+                                    DROP;
+                                    SWAP;
+                                    DROP;
+                                    DIG 2;
+                                    DROP
+                                }
+                        }
+                }
+                {
+                    DIG 2;
+                    DROP;
+                    SWAP;
+                    DUP;
+                    DUG 2;
+                    GET 3;
+                    CAR;
+                    CAR;
+                    SENDER;
+                    MEM;
+                    IF
+                        {
+                            DUP;
+                            ISNAT;
+                            IF_NONE
+                                {
+                                    PUSH int 196;
+                                    FAILWITH
                                 }
                                 {
                                 };
-                            NIL operation
-                        }
-                        {
-                            IF_LEFT
+                            DUP 3;
+                            GET 3;
+                            CAR;
+                            CAR;
+                            SENDER;
+                            GET;
+                            IF_NONE
+                                {
+                                    PUSH int 196;
+                                    FAILWITH
+                                }
+                                {
+                                };
+                            COMPARE;
+                            GE;
+                            IF
                                 {
                                     SWAP;
                                     DUP;
                                     CAR;
-                                    CAR;
                                     GET 3;
+                                    CDR;
                                     SWAP;
                                     DUP;
                                     DUG 3;
-                                    GET 9;
-                                    COMPARE;
-                                    LT;
-                                    IF
-                                        {
-                                            DROP;
-                                            SWAP;
-                                            DROP;
-                                            PUSH nat 0;
-                                            PUSH mutez 1;
-                                            DUP 3;
-                                            GET 9;
-                                            AMOUNT;
-                                            DUP 5;
-                                            CAR;
-                                            CAR;
-                                            GET 3;
-                                            SUB;
-                                            SUB;
-                                            EDIV;
-                                            IF_NONE
-                                                {
-                                                    UNIT;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            CAR;
-                                            COMPARE;
-                                            LT;
-                                            IF
-                                                {
-                                                    NIL operation;
-                                                    SENDER;
-                                                    CONTRACT unit;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 178;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DIG 2;
-                                                    DUP;
-                                                    GET 9;
-                                                    SWAP;
-                                                    DUP;
-                                                    DUG 4;
-                                                    CAR;
-                                                    CAR;
-                                                    GET 3;
-                                                    AMOUNT;
-                                                    SUB;
-                                                    ADD;
-                                                    UNIT;
-                                                    TRANSFER_TOKENS;
-                                                    CONS;
-                                                    SWAP;
-                                                    DUP;
-                                                    GET 3;
-                                                    GET 6;
-                                                    SWAP;
-                                                    DUP;
-                                                    GET 9;
-                                                    SWAP;
-                                                    DUP;
-                                                    DUG 4;
-                                                    CAR;
-                                                    CAR;
-                                                    GET 3;
-                                                    SUB;
-                                                    EDIV;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH string "Fatal Error: Price is zero";
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    PUSH int 0;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 88;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    SWAP;
-                                                    DUP;
-                                                    DUG 2;
-                                                    CAR;
-                                                    COMPARE;
-                                                    EQ;
-                                                    IF
-                                                        {
-                                                            PUSH string "No token can be issued, please send more tez";
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DUP 3;
-                                                    GET 3;
-                                                    CAR;
-                                                    CAR;
-                                                    SENDER;
-                                                    MEM;
-                                                    IF
-                                                        {
-                                                            DIG 2;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            UNPAIR;
-                                                            UNPAIR;
-                                                            DUP;
-                                                            SENDER;
-                                                            DUP;
-                                                            DUG 2;
-                                                            GET;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 94;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            DUP 8;
-                                                            CAR;
-                                                            ADD;
-                                                            SOME;
-                                                            SWAP;
-                                                            UPDATE;
-                                                            PAIR;
-                                                            PAIR;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            DUG 2
-                                                        }
-                                                        {
-                                                            DIG 2;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            UNPAIR;
-                                                            UNPAIR;
-                                                            DUP 6;
-                                                            CAR;
-                                                            SOME;
-                                                            SENDER;
-                                                            UPDATE;
-                                                            PAIR;
-                                                            PAIR;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            DUG 2
-                                                        };
-                                                    DIG 2;
-                                                    DUP;
-                                                    GET 10;
-                                                    DUP 3;
-                                                    CAR;
-                                                    ADD;
-                                                    UPDATE 10;
-                                                    DUG 2;
-                                                    PUSH nat 0;
-                                                    PUSH mutez 1;
-                                                    DUP 3;
-                                                    CDR;
-                                                    EDIV;
-                                                    IF_NONE
-                                                        {
-                                                            UNIT;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    CAR;
-                                                    COMPARE;
-                                                    GT;
-                                                    IF
-                                                        {
-                                                            SWAP;
-                                                            SENDER;
-                                                            CONTRACT unit;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 105;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            DUP 3;
-                                                            CDR;
-                                                            UNIT;
-                                                            TRANSFER_TOKENS;
-                                                            CONS;
-                                                            SWAP
-                                                        }
-                                                        {
-                                                        };
-                                                    DUP 3;
-                                                    DUP;
-                                                    GET 9;
-                                                    DIG 2;
-                                                    CDR;
-                                                    DIG 4;
-                                                    DUP;
-                                                    GET 9;
-                                                    SWAP;
-                                                    CAR;
-                                                    CAR;
-                                                    GET 3;
-                                                    SUB;
-                                                    SUB;
-                                                    ADD;
-                                                    UPDATE 9;
-                                                    SWAP
-                                                }
-                                                {
-                                                    DUP;
-                                                    GET 3;
-                                                    GET 6;
-                                                    AMOUNT;
-                                                    EDIV;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH string "Fatal Error: Price is zero";
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    PUSH int 0;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 88;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    SWAP;
-                                                    DUP;
-                                                    DUG 2;
-                                                    CAR;
-                                                    COMPARE;
-                                                    EQ;
-                                                    IF
-                                                        {
-                                                            PUSH string "No token can be issued, please send more tez";
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    SWAP;
-                                                    DUP;
-                                                    DUG 2;
-                                                    GET 3;
-                                                    CAR;
-                                                    CAR;
-                                                    SENDER;
-                                                    MEM;
-                                                    IF
-                                                        {
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            UNPAIR;
-                                                            UNPAIR;
-                                                            DUP;
-                                                            SENDER;
-                                                            DUP;
-                                                            DUG 2;
-                                                            GET;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 94;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            DUP 8;
-                                                            CAR;
-                                                            ADD;
-                                                            SOME;
-                                                            SWAP;
-                                                            UPDATE;
-                                                            PAIR;
-                                                            PAIR;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            SWAP
-                                                        }
-                                                        {
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            UNPAIR;
-                                                            UNPAIR;
-                                                            DUP 6;
-                                                            CAR;
-                                                            SOME;
-                                                            SENDER;
-                                                            UPDATE;
-                                                            PAIR;
-                                                            PAIR;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            SWAP
-                                                        };
-                                                    SWAP;
-                                                    DUP;
-                                                    GET 10;
-                                                    DUP 3;
-                                                    CAR;
-                                                    ADD;
-                                                    UPDATE 10;
-                                                    SWAP;
-                                                    PUSH nat 0;
-                                                    PUSH mutez 1;
-                                                    DUP 3;
-                                                    CDR;
-                                                    EDIV;
-                                                    IF_NONE
-                                                        {
-                                                            UNIT;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    CAR;
-                                                    COMPARE;
-                                                    GT;
-                                                    IF
-                                                        {
-                                                            NIL operation;
-                                                            SENDER;
-                                                            CONTRACT unit;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 105;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            DUP 3;
-                                                            CDR;
-                                                            UNIT;
-                                                            TRANSFER_TOKENS;
-                                                            CONS
-                                                        }
-                                                        {
-                                                            NIL operation
-                                                        };
-                                                    DIG 2;
-                                                    DUP;
-                                                    GET 9;
-                                                    DIG 3;
-                                                    CDR;
-                                                    AMOUNT;
-                                                    SUB;
-                                                    ADD;
-                                                    UPDATE 9;
-                                                    SWAP
-                                                }
-                                        }
-                                        {
-                                            SWAP;
-                                            UNPAIR;
-                                            SWAP;
-                                            UNPAIR;
-                                            UNPAIR;
-                                            SWAP;
-                                            UNPAIR;
-                                            SWAP;
-                                            CDR;
-                                            PUSH int 1;
-                                            PAIR;
-                                            SWAP;
-                                            PAIR;
-                                            SWAP;
-                                            PAIR;
-                                            PAIR;
-                                            SWAP;
-                                            PAIR;
-                                            DUP;
-                                            DUG 2;
-                                            CAR;
-                                            CAR;
-                                            GET 6;
-                                            AMOUNT;
-                                            EDIV;
-                                            IF_NONE
-                                                {
-                                                    PUSH string "Buy slope is 0";
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            PUSH nat 0;
-                                            PUSH mutez 1;
-                                            DUP 3;
-                                            CDR;
-                                            EDIV;
-                                            IF_NONE
-                                                {
-                                                    UNIT;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            CAR;
-                                            COMPARE;
-                                            GT;
-                                            IF
-                                                {
-                                                    NIL operation;
-                                                    SENDER;
-                                                    CONTRACT unit;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 121;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DUP 3;
-                                                    CDR;
-                                                    UNIT;
-                                                    TRANSFER_TOKENS;
-                                                    CONS
-                                                }
-                                                {
-                                                    NIL operation
-                                                };
-                                            DUP 4;
-                                            GET 10;
-                                            DUP 6;
-                                            DIG 5;
-                                            DUP;
-                                            GET 10;
-                                            SWAP;
-                                            DUP;
-                                            DUG 7;
-                                            GET 10;
-                                            MUL;
-                                            PUSH mutez 1;
-                                            DUP 6;
-                                            CAR;
-                                            EDIV;
-                                            IF_NONE
-                                                {
-                                                    UNIT;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            CAR;
-                                            PUSH nat 2;
-                                            MUL;
-                                            ADD;
-                                            EXEC;
-                                            SUB;
-                                            DIG 4;
-                                            DUP;
-                                            GET 9;
-                                            DUP 5;
-                                            CAR;
-                                            ADD;
-                                            UPDATE 9;
-                                            DUG 4;
-                                            PUSH int 0;
-                                            ISNAT;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 135;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            SWAP;
-                                            DUP;
-                                            DUG 2;
-                                            ISNAT;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 135;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            COMPARE;
-                                            EQ;
-                                            IF
-                                                {
-                                                    PUSH string "No token can be issued, please send more tez";
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            DUP 5;
-                                            GET 3;
-                                            GET 3;
-                                            SENDER;
-                                            COMPARE;
-                                            EQ;
-                                            IF
-                                                {
-                                                    DIG 2;
-                                                    DROP;
-                                                    DIG 2;
-                                                    DROP;
-                                                    DIG 3;
-                                                    DROP;
-                                                    DUP 3;
-                                                    UNPAIR;
-                                                    SWAP;
-                                                    UNPAIR;
-                                                    UNPAIR;
-                                                    UNPAIR;
-                                                    DUP;
-                                                    DIG 8;
-                                                    GET 3;
-                                                    GET 3;
-                                                    DUP;
-                                                    DUG 2;
-                                                    GET;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 141;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DUP 8;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 141;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    ADD;
-                                                    SOME;
-                                                    SWAP;
-                                                    UPDATE;
-                                                    PAIR;
-                                                    PAIR;
-                                                    PAIR;
-                                                    SWAP;
-                                                    PAIR;
-                                                    DUP;
-                                                    GET 10;
-                                                    DIG 2;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 143;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    ADD;
-                                                    UPDATE 10;
-                                                    SWAP
-                                                }
-                                                {
-                                                    DIG 3;
-                                                    DROP;
-                                                    DIG 4;
-                                                    DROP;
-                                                    PUSH mutez 1;
-                                                    DUP;
-                                                    DIG 4;
-                                                    CAR;
-                                                    EDIV;
-                                                    IF_NONE
-                                                        {
-                                                            UNIT;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    CAR;
-                                                    PUSH nat 10;
-                                                    DUP 6;
-                                                    CAR;
-                                                    CAR;
-                                                    CAR;
-                                                    CDR;
-                                                    MUL;
-                                                    MUL;
-                                                    MUL;
-                                                    DIG 2;
-                                                    DUP 4;
-                                                    GET 3;
-                                                    GET 3;
-                                                    CONTRACT unit;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 156;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DIG 2;
-                                                    AMOUNT;
-                                                    SUB;
-                                                    UNIT;
-                                                    TRANSFER_TOKENS;
-                                                    CONS;
-                                                    SWAP;
-                                                    DUP 3;
-                                                    GET 3;
-                                                    CAR;
-                                                    CAR;
-                                                    SENDER;
-                                                    MEM;
-                                                    IF
-                                                        {
-                                                            DIG 2;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            UNPAIR;
-                                                            UNPAIR;
-                                                            DUP;
-                                                            SENDER;
-                                                            DUP;
-                                                            DUG 2;
-                                                            GET;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 161;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            DUP 8;
-                                                            ISNAT;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 161;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            ADD;
-                                                            SOME;
-                                                            SWAP;
-                                                            UPDATE;
-                                                            PAIR;
-                                                            PAIR;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            DUG 2
-                                                        }
-                                                        {
-                                                            DIG 2;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            UNPAIR;
-                                                            UNPAIR;
-                                                            DUP 6;
-                                                            ISNAT;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 163;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            SOME;
-                                                            SENDER;
-                                                            UPDATE;
-                                                            PAIR;
-                                                            PAIR;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            DUG 2
-                                                        };
-                                                    DIG 2;
-                                                    DUP;
-                                                    GET 10;
-                                                    DIG 2;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 166;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    ADD;
-                                                    UPDATE 10;
-                                                    DUP;
-                                                    DUG 2;
-                                                    UNPAIR;
-                                                    SWAP;
-                                                    UNPAIR;
-                                                    UNPAIR;
-                                                    SWAP;
-                                                    UNPAIR;
-                                                    SWAP;
-                                                    CAR;
-                                                    PUSH mutez 1;
-                                                    DIG 7;
-                                                    DUP;
-                                                    GET 10;
-                                                    SWAP;
-                                                    CAR;
-                                                    CAR;
-                                                    GET 6;
-                                                    MUL;
-                                                    MUL;
-                                                    SWAP;
-                                                    PAIR;
-                                                    SWAP;
-                                                    PAIR;
-                                                    SWAP;
-                                                    PAIR;
-                                                    PAIR;
-                                                    SWAP;
-                                                    PAIR;
-                                                    SWAP;
-                                                    PUSH nat 0;
-                                                    DUP 3;
-                                                    GET 10;
-                                                    COMPARE;
-                                                    NEQ;
-                                                    IF
-                                                        {
-                                                            SWAP;
-                                                            DUP;
-                                                            DUG 2;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            CDR;
-                                                            DIG 5;
-                                                            DUP;
-                                                            GET 10;
-                                                            SWAP;
-                                                            GET 10;
-                                                            MUL;
-                                                            PUSH mutez 1;
-                                                            BALANCE;
-                                                            EDIV;
-                                                            IF_NONE
-                                                                {
-                                                                    UNIT;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            CAR;
-                                                            PUSH nat 2;
-                                                            MUL;
-                                                            EDIV;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 74;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                    CAR
-                                                                };
-                                                            PAIR;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            SWAP
-                                                        }
-                                                        {
-                                                        }
-                                                }
-                                        }
-                                }
-                                {
-                                    DROP;
-                                    PUSH mutez 1;
-                                    PUSH nat 100;
-                                    DUP 3;
-                                    CAR;
-                                    CAR;
-                                    CAR;
-                                    CAR;
-                                    PUSH mutez 1;
-                                    AMOUNT;
-                                    EDIV;
-                                    IF_NONE
-                                        {
-                                            UNIT;
-                                            FAILWITH
-                                        }
-                                        {
-                                        };
-                                    CAR;
+                                    GET 10;
+                                    SUB;
+                                    PUSH int 2;
                                     MUL;
-                                    EDIV;
+                                    ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 253;
-                                            FAILWITH
-                                        }
-                                        {
-                                            CAR
-                                        };
-                                    MUL;
-                                    NIL operation;
-                                    DUP 3;
-                                    GET 3;
-                                    GET 3;
-                                    CONTRACT unit;
-                                    IF_NONE
-                                        {
-                                            PUSH int 260;
+                                            PUSH int 199;
                                             FAILWITH
                                         }
                                         {
                                         };
                                     DIG 2;
-                                    AMOUNT;
-                                    SUB;
-                                    UNIT;
-                                    TRANSFER_TOKENS;
-                                    CONS;
-                                    SWAP;
                                     DUP;
-                                    DUG 2;
-                                    CAR;
                                     CAR;
                                     GET 3;
-                                    BALANCE;
-                                    COMPARE;
-                                    LT;
-                                    IF
+                                    CDR;
+                                    SWAP;
+                                    DUP;
+                                    DUG 4;
+                                    CAR;
+                                    GET 3;
+                                    CDR;
+                                    DUP 4;
+                                    ISNAT;
+                                    IF_NONE
                                         {
-                                            DIG 2;
-                                            DROP;
-                                            SWAP;
-                                            DUP;
-                                            DUG 2;
-                                            GET 3;
-                                            GET 6;
-                                            AMOUNT;
-                                            EDIV;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 266;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            DUP 3;
-                                            UNPAIR;
-                                            SWAP;
-                                            UNPAIR;
-                                            UNPAIR;
-                                            UNPAIR;
-                                            DUP;
-                                            DIG 8;
-                                            GET 3;
-                                            GET 3;
-                                            DUP;
-                                            DUG 2;
-                                            GET;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 274;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            DIG 7;
-                                            CAR;
-                                            ADD;
-                                            SOME;
-                                            SWAP;
-                                            UPDATE;
-                                            PAIR;
-                                            PAIR;
-                                            PAIR;
-                                            SWAP;
-                                            PAIR;
-                                            SWAP
+                                            PUSH int 199;
+                                            FAILWITH
                                         }
                                         {
+                                        };
+                                    DUP 6;
+                                    GET 5;
+                                    CAR;
+                                    MUL;
+                                    MUL;
+                                    MUL;
+                                    EDIV;
+                                    IF_NONE
+                                        {
+                                            PUSH int 199;
+                                            FAILWITH
+                                        }
+                                        {
+                                            CAR
+                                        };
+                                    PUSH nat 2;
+                                    DUP 4;
+                                    GET 5;
+                                    CAR;
+                                    DIG 3;
+                                    DUP;
+                                    DUP;
+                                    DUG 5;
+                                    MUL;
+                                    ISNAT;
+                                    IF_NONE
+                                        {
+                                            PUSH int 199;
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    MUL;
+                                    EDIV;
+                                    IF_NONE
+                                        {
+                                            PUSH int 199;
+                                            FAILWITH
+                                        }
+                                        {
+                                            CAR
+                                        };
+                                    DUP 4;
+                                    GET 5;
+                                    CAR;
+                                    DUP 4;
+                                    ISNAT;
+                                    IF_NONE
+                                        {
+                                            PUSH int 199;
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    DUP 6;
+                                    GET 10;
+                                    MUL;
+                                    MUL;
+                                    SUB;
+                                    ISNAT;
+                                    IF_NONE
+                                        {
+                                            PUSH int 199;
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    ADD;
+                                    DUP 3;
+                                    GET 3;
+                                    CAR;
+                                    CAR;
+                                    SENDER;
+                                    MEM;
+                                    IF
+                                        {
                                             SWAP;
                                             DUP;
                                             DUG 2;
-                                            GET 10;
-                                            DIG 3;
-                                            DIG 3;
-                                            DUP;
-                                            GET 10;
-                                            SWAP;
-                                            DUP;
-                                            DUG 5;
-                                            GET 10;
-                                            MUL;
-                                            DUP 5;
-                                            CAR;
-                                            CAR;
-                                            GET 6;
-                                            PUSH mutez 1;
-                                            AMOUNT;
-                                            EDIV;
-                                            IF_NONE
-                                                {
-                                                    UNIT;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            CAR;
-                                            PUSH nat 2;
-                                            MUL;
-                                            EDIV;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 278;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                    CAR
-                                                };
-                                            ADD;
-                                            EXEC;
-                                            SUB;
-                                            DUP 3;
-                                            UNPAIR;
-                                            SWAP;
-                                            UNPAIR;
-                                            UNPAIR;
-                                            UNPAIR;
-                                            DUP;
-                                            DIG 8;
-                                            GET 3;
-                                            GET 3;
-                                            DUP;
-                                            DUG 2;
-                                            GET;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 286;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            DIG 7;
                                             ISNAT;
                                             IF_NONE
                                                 {
-                                                    PUSH int 286;
+                                                    PUSH int 186;
                                                     FAILWITH
                                                 }
                                                 {
                                                 };
-                                            ADD;
-                                            SOME;
+                                            DUP 4;
+                                            GET 3;
+                                            CAR;
+                                            CAR;
+                                            SENDER;
+                                            GET;
+                                            IF_NONE
+                                                {
+                                                    PUSH int 186;
+                                                    FAILWITH
+                                                }
+                                                {
+                                                };
+                                            COMPARE;
+                                            GE;
+                                            IF
+                                                {
+                                                    DUP 3;
+                                                    UNPAIR;
+                                                    SWAP;
+                                                    UNPAIR;
+                                                    UNPAIR;
+                                                    UNPAIR;
+                                                    DUP 7;
+                                                    ISNAT;
+                                                    IF_NONE
+                                                        {
+                                                            PUSH int 188;
+                                                            FAILWITH
+                                                        }
+                                                        {
+                                                        };
+                                                    DIG 8;
+                                                    GET 3;
+                                                    CAR;
+                                                    CAR;
+                                                    SENDER;
+                                                    GET;
+                                                    IF_NONE
+                                                        {
+                                                            PUSH int 188;
+                                                            FAILWITH
+                                                        }
+                                                        {
+                                                        };
+                                                    SUB;
+                                                    ISNAT;
+                                                    IF_NONE
+                                                        {
+                                                            PUSH int 188;
+                                                            FAILWITH
+                                                        }
+                                                        {
+                                                        };
+                                                    SOME;
+                                                    SENDER;
+                                                    UPDATE;
+                                                    PAIR;
+                                                    PAIR;
+                                                    PAIR;
+                                                    SWAP;
+                                                    UNPAIR;
+                                                    SWAP;
+                                                    UNPAIR;
+                                                    UNPAIR;
+                                                    SWAP;
+                                                    DIG 6;
+                                                    ISNAT;
+                                                    IF_NONE
+                                                        {
+                                                            PUSH int 189;
+                                                            FAILWITH
+                                                        }
+                                                        {
+                                                        };
+                                                    ADD;
+                                                    SWAP;
+                                                    PAIR;
+                                                    PAIR;
+                                                    SWAP;
+                                                    PAIR;
+                                                    PAIR;
+                                                    SWAP
+                                                }
+                                                {
+                                                    SWAP;
+                                                    DROP
+                                                }
+                                        }
+                                        {
                                             SWAP;
-                                            UPDATE;
-                                            PAIR;
-                                            PAIR;
-                                            PAIR;
-                                            SWAP;
-                                            PAIR;
-                                            SWAP
+                                            DROP
                                         };
+                                    NIL operation;
+                                    SENDER;
+                                    CONTRACT unit;
+                                    IF_NONE
+                                        {
+                                            PUSH int 212;
+                                            FAILWITH
+                                        }
+                                        {
+                                        };
+                                    PUSH mutez 1;
+                                    DUP 4;
+                                    MUL;
+                                    UNIT;
+                                    TRANSFER_TOKENS;
+                                    CONS;
                                     PUSH nat 0;
-                                    DUP 3;
+                                    DUP 4;
                                     GET 10;
                                     COMPARE;
                                     NEQ;
                                     IF
                                         {
-                                            SWAP;
-                                            DUP;
-                                            DUG 2;
+                                            DUP 3;
                                             UNPAIR;
                                             SWAP;
                                             UNPAIR;
                                             SWAP;
                                             UNPAIR;
                                             CDR;
-                                            DIG 5;
+                                            DIG 6;
                                             DUP;
                                             GET 10;
                                             SWAP;
                                             GET 10;
                                             MUL;
                                             PUSH mutez 1;
+                                            DUP;
+                                            DIG 8;
+                                            MUL;
                                             BALANCE;
+                                            SUB;
                                             EDIV;
                                             IF_NONE
                                                 {
@@ -1373,1098 +1237,18 @@
                                             SWAP
                                         }
                                         {
+                                            SWAP;
+                                            DROP
                                         }
                                 }
+                                {
+                                    DROP;
+                                    NIL operation
+                                }
                         }
-                }
-                {
-                    IF_LEFT
                         {
-                            DIG 2;
                             DROP;
-                            SWAP;
-                            DUP;
-                            CAR;
-                            CAR;
-                            GET 3;
-                            SWAP;
-                            DUP;
-                            DUG 3;
-                            GET 9;
-                            COMPARE;
-                            LT;
-                            IF
-                                {
-                                    SWAP;
-                                    DUP;
-                                    DUG 2;
-                                    GET 3;
-                                    CAR;
-                                    CAR;
-                                    SENDER;
-                                    MEM;
-                                    IF
-                                        {
-                                            DUP;
-                                            ISNAT;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 207;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            DUP 3;
-                                            GET 3;
-                                            CAR;
-                                            CAR;
-                                            SENDER;
-                                            GET;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 207;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            COMPARE;
-                                            GE;
-                                            IF
-                                                {
-                                                    NIL operation;
-                                                    SENDER;
-                                                    CONTRACT unit;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 208;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DUP 4;
-                                                    GET 3;
-                                                    GET 6;
-                                                    DUP 4;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 208;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    MUL;
-                                                    UNIT;
-                                                    TRANSFER_TOKENS;
-                                                    CONS;
-                                                    DUP 3;
-                                                    UNPAIR;
-                                                    SWAP;
-                                                    UNPAIR;
-                                                    UNPAIR;
-                                                    UNPAIR;
-                                                    DUP 7;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 209;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DIG 8;
-                                                    GET 3;
-                                                    CAR;
-                                                    CAR;
-                                                    SENDER;
-                                                    GET;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 209;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    SUB;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 209;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    SOME;
-                                                    SENDER;
-                                                    UPDATE;
-                                                    PAIR;
-                                                    PAIR;
-                                                    PAIR;
-                                                    SWAP;
-                                                    PAIR;
-                                                    DUP;
-                                                    DUG 3;
-                                                    DUP;
-                                                    GET 9;
-                                                    DIG 4;
-                                                    GET 3;
-                                                    GET 6;
-                                                    DIG 4;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 210;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    MUL;
-                                                    SWAP;
-                                                    SUB;
-                                                    UPDATE 9;
-                                                    SWAP;
-                                                    PUSH nat 0;
-                                                    DUP 3;
-                                                    GET 10;
-                                                    COMPARE;
-                                                    NEQ;
-                                                    IF
-                                                        {
-                                                            SWAP;
-                                                            DUP;
-                                                            DUG 2;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            CDR;
-                                                            DIG 5;
-                                                            DUP;
-                                                            GET 10;
-                                                            SWAP;
-                                                            GET 10;
-                                                            MUL;
-                                                            PUSH mutez 1;
-                                                            BALANCE;
-                                                            EDIV;
-                                                            IF_NONE
-                                                                {
-                                                                    UNIT;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            CAR;
-                                                            PUSH nat 2;
-                                                            MUL;
-                                                            EDIV;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 74;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                    CAR
-                                                                };
-                                                            PAIR;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            SWAP
-                                                        }
-                                                        {
-                                                        }
-                                                }
-                                                {
-                                                    DROP;
-                                                    NIL operation
-                                                }
-                                        }
-                                        {
-                                            DROP;
-                                            NIL operation
-                                        }
-                                }
-                                {
-                                    SWAP;
-                                    DUP;
-                                    DUG 2;
-                                    GET 3;
-                                    CAR;
-                                    CAR;
-                                    SENDER;
-                                    MEM;
-                                    IF
-                                        {
-                                            DUP;
-                                            ISNAT;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 218;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            DUP 3;
-                                            GET 3;
-                                            CAR;
-                                            CAR;
-                                            SENDER;
-                                            GET;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 218;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            COMPARE;
-                                            GE;
-                                            IF
-                                                {
-                                                    SWAP;
-                                                    DUP;
-                                                    CAR;
-                                                    GET 3;
-                                                    CDR;
-                                                    SWAP;
-                                                    DUP;
-                                                    DUG 3;
-                                                    GET 10;
-                                                    SUB;
-                                                    PUSH int 2;
-                                                    MUL;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 221;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DIG 2;
-                                                    DUP;
-                                                    CAR;
-                                                    GET 3;
-                                                    CDR;
-                                                    SWAP;
-                                                    DUP;
-                                                    DUG 4;
-                                                    CAR;
-                                                    GET 3;
-                                                    CDR;
-                                                    DUP 4;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 221;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DUP 6;
-                                                    GET 5;
-                                                    CAR;
-                                                    MUL;
-                                                    MUL;
-                                                    MUL;
-                                                    EDIV;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 221;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                            CAR
-                                                        };
-                                                    PUSH nat 2;
-                                                    DUP 4;
-                                                    GET 5;
-                                                    CAR;
-                                                    DIG 3;
-                                                    DUP;
-                                                    DUP;
-                                                    DUG 5;
-                                                    MUL;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 221;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    MUL;
-                                                    EDIV;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 221;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                            CAR
-                                                        };
-                                                    DUP 4;
-                                                    GET 5;
-                                                    CAR;
-                                                    DUP 4;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 221;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DUP 6;
-                                                    GET 10;
-                                                    MUL;
-                                                    MUL;
-                                                    SUB;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 221;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    ADD;
-                                                    DUP 3;
-                                                    GET 3;
-                                                    CAR;
-                                                    CAR;
-                                                    SENDER;
-                                                    MEM;
-                                                    IF
-                                                        {
-                                                            SWAP;
-                                                            DUP;
-                                                            DUG 2;
-                                                            ISNAT;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 192;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            DUP 4;
-                                                            GET 3;
-                                                            CAR;
-                                                            CAR;
-                                                            SENDER;
-                                                            GET;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 192;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            COMPARE;
-                                                            GE;
-                                                            IF
-                                                                {
-                                                                    DUP 3;
-                                                                    UNPAIR;
-                                                                    SWAP;
-                                                                    UNPAIR;
-                                                                    UNPAIR;
-                                                                    UNPAIR;
-                                                                    DUP 7;
-                                                                    ISNAT;
-                                                                    IF_NONE
-                                                                        {
-                                                                            PUSH int 194;
-                                                                            FAILWITH
-                                                                        }
-                                                                        {
-                                                                        };
-                                                                    DIG 8;
-                                                                    GET 3;
-                                                                    CAR;
-                                                                    CAR;
-                                                                    SENDER;
-                                                                    GET;
-                                                                    IF_NONE
-                                                                        {
-                                                                            PUSH int 194;
-                                                                            FAILWITH
-                                                                        }
-                                                                        {
-                                                                        };
-                                                                    SUB;
-                                                                    ISNAT;
-                                                                    IF_NONE
-                                                                        {
-                                                                            PUSH int 194;
-                                                                            FAILWITH
-                                                                        }
-                                                                        {
-                                                                        };
-                                                                    SOME;
-                                                                    SENDER;
-                                                                    UPDATE;
-                                                                    PAIR;
-                                                                    PAIR;
-                                                                    PAIR;
-                                                                    SWAP;
-                                                                    UNPAIR;
-                                                                    SWAP;
-                                                                    UNPAIR;
-                                                                    UNPAIR;
-                                                                    SWAP;
-                                                                    DIG 6;
-                                                                    ISNAT;
-                                                                    IF_NONE
-                                                                        {
-                                                                            PUSH int 195;
-                                                                            FAILWITH
-                                                                        }
-                                                                        {
-                                                                        };
-                                                                    ADD;
-                                                                    SWAP;
-                                                                    PAIR;
-                                                                    PAIR;
-                                                                    SWAP;
-                                                                    PAIR;
-                                                                    PAIR;
-                                                                    SWAP
-                                                                }
-                                                                {
-                                                                    SWAP;
-                                                                    DROP
-                                                                }
-                                                        }
-                                                        {
-                                                            SWAP;
-                                                            DROP
-                                                        };
-                                                    NIL operation;
-                                                    SENDER;
-                                                    CONTRACT unit;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 234;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    PUSH mutez 1;
-                                                    DIG 3;
-                                                    MUL;
-                                                    UNIT;
-                                                    TRANSFER_TOKENS;
-                                                    CONS;
-                                                    PUSH nat 0;
-                                                    DUP 3;
-                                                    GET 10;
-                                                    COMPARE;
-                                                    NEQ;
-                                                    IF
-                                                        {
-                                                            SWAP;
-                                                            DUP;
-                                                            DUG 2;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            CDR;
-                                                            DIG 5;
-                                                            DUP;
-                                                            GET 10;
-                                                            SWAP;
-                                                            GET 10;
-                                                            MUL;
-                                                            PUSH mutez 1;
-                                                            BALANCE;
-                                                            EDIV;
-                                                            IF_NONE
-                                                                {
-                                                                    UNIT;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            CAR;
-                                                            PUSH nat 2;
-                                                            MUL;
-                                                            EDIV;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 74;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                    CAR
-                                                                };
-                                                            PAIR;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            SWAP
-                                                        }
-                                                        {
-                                                        }
-                                                }
-                                                {
-                                                    DROP;
-                                                    NIL operation
-                                                }
-                                        }
-                                        {
-                                            DROP;
-                                            NIL operation
-                                        }
-                                }
-                        }
-                        {
-                            IF_LEFT
-                                {
-                                    DIG 2;
-                                    DROP;
-                                    SWAP;
-                                    DUP;
-                                    DUG 2;
-                                    GET 3;
-                                    CAR;
-                                    CAR;
-                                    SENDER;
-                                    MEM;
-                                    IF
-                                        {
-                                            DUP;
-                                            ISNAT;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 207;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            DUP 3;
-                                            GET 3;
-                                            CAR;
-                                            CAR;
-                                            SENDER;
-                                            GET;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 207;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            COMPARE;
-                                            GE;
-                                            IF
-                                                {
-                                                    NIL operation;
-                                                    SENDER;
-                                                    CONTRACT unit;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 208;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DUP 4;
-                                                    GET 3;
-                                                    GET 6;
-                                                    DUP 4;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 208;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    MUL;
-                                                    UNIT;
-                                                    TRANSFER_TOKENS;
-                                                    CONS;
-                                                    DUP 3;
-                                                    UNPAIR;
-                                                    SWAP;
-                                                    UNPAIR;
-                                                    UNPAIR;
-                                                    UNPAIR;
-                                                    DUP 7;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 209;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DIG 8;
-                                                    GET 3;
-                                                    CAR;
-                                                    CAR;
-                                                    SENDER;
-                                                    GET;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 209;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    SUB;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 209;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    SOME;
-                                                    SENDER;
-                                                    UPDATE;
-                                                    PAIR;
-                                                    PAIR;
-                                                    PAIR;
-                                                    SWAP;
-                                                    PAIR;
-                                                    DUP;
-                                                    DUG 3;
-                                                    DUP;
-                                                    GET 9;
-                                                    DIG 4;
-                                                    GET 3;
-                                                    GET 6;
-                                                    DIG 4;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 210;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    MUL;
-                                                    SWAP;
-                                                    SUB;
-                                                    UPDATE 9;
-                                                    SWAP;
-                                                    PUSH nat 0;
-                                                    DUP 3;
-                                                    GET 10;
-                                                    COMPARE;
-                                                    NEQ;
-                                                    IF
-                                                        {
-                                                            SWAP;
-                                                            DUP;
-                                                            DUG 2;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            CDR;
-                                                            DIG 5;
-                                                            DUP;
-                                                            GET 10;
-                                                            SWAP;
-                                                            GET 10;
-                                                            MUL;
-                                                            PUSH mutez 1;
-                                                            BALANCE;
-                                                            EDIV;
-                                                            IF_NONE
-                                                                {
-                                                                    UNIT;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            CAR;
-                                                            PUSH nat 2;
-                                                            MUL;
-                                                            EDIV;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 74;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                    CAR
-                                                                };
-                                                            PAIR;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            SWAP
-                                                        }
-                                                        {
-                                                        }
-                                                }
-                                                {
-                                                    DROP;
-                                                    NIL operation
-                                                }
-                                        }
-                                        {
-                                            DROP;
-                                            NIL operation
-                                        }
-                                }
-                                {
-                                    DIG 2;
-                                    DROP;
-                                    SWAP;
-                                    DUP;
-                                    DUG 2;
-                                    GET 3;
-                                    CAR;
-                                    CAR;
-                                    SENDER;
-                                    MEM;
-                                    IF
-                                        {
-                                            DUP;
-                                            ISNAT;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 218;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            DUP 3;
-                                            GET 3;
-                                            CAR;
-                                            CAR;
-                                            SENDER;
-                                            GET;
-                                            IF_NONE
-                                                {
-                                                    PUSH int 218;
-                                                    FAILWITH
-                                                }
-                                                {
-                                                };
-                                            COMPARE;
-                                            GE;
-                                            IF
-                                                {
-                                                    SWAP;
-                                                    DUP;
-                                                    CAR;
-                                                    GET 3;
-                                                    CDR;
-                                                    SWAP;
-                                                    DUP;
-                                                    DUG 3;
-                                                    GET 10;
-                                                    SUB;
-                                                    PUSH int 2;
-                                                    MUL;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 221;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DIG 2;
-                                                    DUP;
-                                                    CAR;
-                                                    GET 3;
-                                                    CDR;
-                                                    SWAP;
-                                                    DUP;
-                                                    DUG 4;
-                                                    CAR;
-                                                    GET 3;
-                                                    CDR;
-                                                    DUP 4;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 221;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DUP 6;
-                                                    GET 5;
-                                                    CAR;
-                                                    MUL;
-                                                    MUL;
-                                                    MUL;
-                                                    EDIV;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 221;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                            CAR
-                                                        };
-                                                    PUSH nat 2;
-                                                    DUP 4;
-                                                    GET 5;
-                                                    CAR;
-                                                    DIG 3;
-                                                    DUP;
-                                                    DUP;
-                                                    DUG 5;
-                                                    MUL;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 221;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    MUL;
-                                                    EDIV;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 221;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                            CAR
-                                                        };
-                                                    DUP 4;
-                                                    GET 5;
-                                                    CAR;
-                                                    DUP 4;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 221;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    DUP 6;
-                                                    GET 10;
-                                                    MUL;
-                                                    MUL;
-                                                    SUB;
-                                                    ISNAT;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 221;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    ADD;
-                                                    DUP 3;
-                                                    GET 3;
-                                                    CAR;
-                                                    CAR;
-                                                    SENDER;
-                                                    MEM;
-                                                    IF
-                                                        {
-                                                            SWAP;
-                                                            DUP;
-                                                            DUG 2;
-                                                            ISNAT;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 192;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            DUP 4;
-                                                            GET 3;
-                                                            CAR;
-                                                            CAR;
-                                                            SENDER;
-                                                            GET;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 192;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            COMPARE;
-                                                            GE;
-                                                            IF
-                                                                {
-                                                                    DUP 3;
-                                                                    UNPAIR;
-                                                                    SWAP;
-                                                                    UNPAIR;
-                                                                    UNPAIR;
-                                                                    UNPAIR;
-                                                                    DUP 7;
-                                                                    ISNAT;
-                                                                    IF_NONE
-                                                                        {
-                                                                            PUSH int 194;
-                                                                            FAILWITH
-                                                                        }
-                                                                        {
-                                                                        };
-                                                                    DIG 8;
-                                                                    GET 3;
-                                                                    CAR;
-                                                                    CAR;
-                                                                    SENDER;
-                                                                    GET;
-                                                                    IF_NONE
-                                                                        {
-                                                                            PUSH int 194;
-                                                                            FAILWITH
-                                                                        }
-                                                                        {
-                                                                        };
-                                                                    SUB;
-                                                                    ISNAT;
-                                                                    IF_NONE
-                                                                        {
-                                                                            PUSH int 194;
-                                                                            FAILWITH
-                                                                        }
-                                                                        {
-                                                                        };
-                                                                    SOME;
-                                                                    SENDER;
-                                                                    UPDATE;
-                                                                    PAIR;
-                                                                    PAIR;
-                                                                    PAIR;
-                                                                    SWAP;
-                                                                    UNPAIR;
-                                                                    SWAP;
-                                                                    UNPAIR;
-                                                                    UNPAIR;
-                                                                    SWAP;
-                                                                    DIG 6;
-                                                                    ISNAT;
-                                                                    IF_NONE
-                                                                        {
-                                                                            PUSH int 195;
-                                                                            FAILWITH
-                                                                        }
-                                                                        {
-                                                                        };
-                                                                    ADD;
-                                                                    SWAP;
-                                                                    PAIR;
-                                                                    PAIR;
-                                                                    SWAP;
-                                                                    PAIR;
-                                                                    PAIR;
-                                                                    SWAP
-                                                                }
-                                                                {
-                                                                    SWAP;
-                                                                    DROP
-                                                                }
-                                                        }
-                                                        {
-                                                            SWAP;
-                                                            DROP
-                                                        };
-                                                    NIL operation;
-                                                    SENDER;
-                                                    CONTRACT unit;
-                                                    IF_NONE
-                                                        {
-                                                            PUSH int 234;
-                                                            FAILWITH
-                                                        }
-                                                        {
-                                                        };
-                                                    PUSH mutez 1;
-                                                    DIG 3;
-                                                    MUL;
-                                                    UNIT;
-                                                    TRANSFER_TOKENS;
-                                                    CONS;
-                                                    PUSH nat 0;
-                                                    DUP 3;
-                                                    GET 10;
-                                                    COMPARE;
-                                                    NEQ;
-                                                    IF
-                                                        {
-                                                            SWAP;
-                                                            DUP;
-                                                            DUG 2;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            SWAP;
-                                                            UNPAIR;
-                                                            CDR;
-                                                            DIG 5;
-                                                            DUP;
-                                                            GET 10;
-                                                            SWAP;
-                                                            GET 10;
-                                                            MUL;
-                                                            PUSH mutez 1;
-                                                            BALANCE;
-                                                            EDIV;
-                                                            IF_NONE
-                                                                {
-                                                                    UNIT;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                };
-                                                            CAR;
-                                                            PUSH nat 2;
-                                                            MUL;
-                                                            EDIV;
-                                                            IF_NONE
-                                                                {
-                                                                    PUSH int 74;
-                                                                    FAILWITH
-                                                                }
-                                                                {
-                                                                    CAR
-                                                                };
-                                                            PAIR;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            SWAP;
-                                                            PAIR;
-                                                            SWAP
-                                                        }
-                                                        {
-                                                        }
-                                                }
-                                                {
-                                                    DROP;
-                                                    NIL operation
-                                                }
-                                        }
-                                        {
-                                            DROP;
-                                            NIL operation
-                                        }
-                                }
+                            NIL operation
                         }
                 };
             NIL operation;

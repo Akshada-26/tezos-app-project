@@ -171,13 +171,6 @@ exports.chainWrapper = (options) => {
                     : parseInt(data.b * data.total_tokens, 10);
             });
         },
-        "sellPrice": (storageData) => {
-            return cashedData(storageData, requestStorage, (data) => {
-                return parseInt(data.phase, 10) === 0
-                    ? parseInt(data.price, 10)
-                    : parseInt(data.s * data.total_tokens, 10);
-            });
-        },
         "baseCurrency": (storageData) => {
             return cashedData(storageData, requestStorage, (data) => {
                 return data.base_currency;
@@ -233,6 +226,25 @@ exports.chainWrapper = (options) => {
                 return parseInt(data[0].balance, 10);
             });
         },
+        "sellPrice": () => {
+            return balance(contractAddress).then((data) => {
+                return data.length > 0
+                    ? parseInt(data[data.length - 1].balance, 10)
+                    : 0;
+            })
+                .then((recentBalance) => {
+                    return requestStorage().then((data) => {
+                        const factor = 1 / (2 * data.total_tokens),
+                            subtract = 1 - factor;
+
+                        if (data.total_tokens > 0) {
+                            return parseInt(2 * recentBalance / data.total_tokens * subtract, 10);
+                        }
+
+                        return 0;
+                    });
+                });
+        },
         "priceHistory": (start, end, steps) => {
             return requestStorageHistory().then((data) => {
                 let startDate = start,
@@ -254,7 +266,9 @@ exports.chainWrapper = (options) => {
                             return firstTime.timestamp - secondTime.timestampM;
                         });
 
-                    if(typeof lastPrice === "undefined") return 0;
+                    if (typeof lastPrice === "undefined") {
+                        return 0;
+                    }
 
                     return lastPrice.price;
                 };

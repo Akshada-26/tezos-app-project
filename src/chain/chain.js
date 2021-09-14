@@ -45,8 +45,7 @@ exports.chainWrapper = (options) => {
         requestStorageHistory = (limit) => {
             const limitRequest = typeof limit === "undefined"
                 ? ""
-                : `?limit=${limit}`;
-
+                : `limit=${limit}`;
 
             return axios.get(`${apiEndpoint}v1/contracts/${contractAddress}/storage/history?${limitRequest}`)
                 .then((response) => {
@@ -249,7 +248,7 @@ exports.chainWrapper = (options) => {
                 });
         },
         "priceHistory": (start, end, steps) => {
-            return requestStorageHistory().then((data) => {
+            return requestStorageHistory(1000).then((data) => {
                 let startDate = start,
                     endDate = end;
 
@@ -266,7 +265,7 @@ exports.chainWrapper = (options) => {
                             return historicalStorage.timestamp < timeX;
                         }),
                         [lastPrice] = pricesBefore.sort((firstTime, secondTime) => {
-                            return firstTime.timestamp - secondTime.timestampM;
+                            return firstTime.timestamp - secondTime.timestamp;
                         });
 
                     if (typeof lastPrice === "undefined") {

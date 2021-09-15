@@ -51,10 +51,6 @@ exports.contractWrapper = (options) => {
 
     const tezos = new SDK(provider);
 
-    wallet.requestPermission().then((setting) => {
-        tezos.setWalletProvider(setting);
-    });
-
     const confirm = (call, numberBlocks) => {
             return call.then((op) => {
                 return op.confirmation(numberBlocks).then(() => {
@@ -69,37 +65,33 @@ exports.contractWrapper = (options) => {
                 });
         },
         confirmDefault = (call) => {
-            return confirm(call, 1);
+            return wallet.requestPermission().then((setting) => {
+                tezos.setWalletProvider(setting);
+                return confirm(tezos.wallet.at(contractAddress).then(call), 1);
+            });
         };
 
     return {
 
         "buy": (tezAmount) => {
-
-            return confirmDefault(tezos.wallet.at(contractAddress)
-                .then((contract) => {
-                    return contract.methods.buy([["unit"]]).send({"amount": tezAmount});
-                }));
-
+            return confirmDefault((contract) => {
+                return contract.methods.buy([["unit"]]).send({"amount": tezAmount});
+            });
         },
         "sell": (tokenAmount) => {
-            return confirmDefault(tezos.wallet.at(contractAddress)
-                .then((contract) => {
-                    return contract.methods.sell(tokenAmount).send();
-                }));
+            return confirmDefault((contract) => {
+                return contract.methods.sell(tokenAmount).send();
+            });
         },
         "burn": (tokenAmount) => {
-            return confirmDefault(tezos.wallet.at(contractAddress)
-                .then((contract) => {
-                    return contract.methods.burn(tokenAmount).send();
-                }));
+            return confirmDefault((contract) => {
+                return contract.methods.burn(tokenAmount).send();
+            });
         },
         "pay": (tezAmount) => {
-
-            return confirmDefault(tezos.wallet.at(contractAddress)
-                .then((contract) => {
-                    return contract.methods.pay([["unit"]]).send({"amount": tezAmount});
-                }));
+            return confirmDefault((contract) => {
+                return contract.methods.pay([["unit"]]).send({"amount": tezAmount});
+            });
         },
         "user": () => {
             return wallet.getPKH();
@@ -107,7 +99,6 @@ exports.contractWrapper = (options) => {
         "updatePermission": () => {
             return wallet.forcePermissionRequest().then((setting) => {
                 tezos.setWalletProvider(setting);
-
                 return setting.getPKH();
             });
         }

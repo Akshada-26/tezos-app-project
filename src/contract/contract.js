@@ -83,16 +83,6 @@ exports.contractWrapper = (options) => {
                 return contract.methods.sell(tokenAmount).send();
             });
         },
-        "burn": (tokenAmount) => {
-            return confirmDefault((contract) => {
-                return contract.methods.burn(tokenAmount).send();
-            });
-        },
-        "pay": (tezAmount) => {
-            return confirmDefault((contract) => {
-                return contract.methods.pay([["unit"]]).send({"amount": tezAmount});
-            });
-        },
         "user": () => {
             return wallet.getPKH();
         },

@@ -45,12 +45,13 @@ jq(document).ready(() => {
         });
     });
     jq("#btn_buyPrice").click(() => {
-        wrapper.chain.buyPrice().then((data) => {
+        // eslint-disable-next-line no-undefined
+        wrapper.chain.buyPrice(undefined, 1).then((data) => {
             return jq("#buyPrice").html(data);
         });
     });
     jq("#btn_sellPrice").click(() => {
-        wrapper.chain.sellPrice().then((data) => {
+        wrapper.chain.sellPrice(2).then((data) => {
             return jq("#sellPrice").html(data);
         });
     });
@@ -146,9 +147,9 @@ jq(document).ready(() => {
     });
     jq("#btn_priceHistory").click(() => {
         wrapper.chain.priceHistory(
-            new Date("2021-07-27T14:02:43Z"),
-            new Date("2021-09-05T14:02:43Z"),
-            30
+            new Date("2021-09-09T14:02:43Z"),
+            new Date("2021-09-12T14:02:43Z"),
+            5
         ).then((data) => {
             return jq("#priceHistory").html(JSON.stringify(data));
         });

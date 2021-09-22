@@ -165,9 +165,14 @@ exports.chainWrapper = (options) => {
         },
         "buyPrice": (storageData, tokens) => {
             return cashedData(storageData, requestStorage, (data) => {
+                const firstPart = data.b * data.total_tokens * tokens / 2,
+                    secondPart = data.b * tokens * (parseInt(data.total_tokens, 10) + tokens) / 2,
+                    tempPrice = firstPart + secondPart;
+
+
                 return parseInt(data.phase, 10) === 0
                     ? parseInt(data.price, 10)
-                    : parseInt(data.b * (data.total_tokens + tokens), 10);
+                    : parseInt(tempPrice, 10);
             });
         },
         "baseCurrency": (storageData) => {
@@ -236,11 +241,11 @@ exports.chainWrapper = (options) => {
                         if (parseInt(data.phase, 10) === 0) {
                             return data.price;
                         }
-                        const factor = 1 / (2 * (data.total_tokens + tokens)),
+                        const factor = tokens / (2 * data.total_tokens),
                             subtract = 1 - factor;
 
                         if (data.total_tokens > 0) {
-                            return parseInt(2 * recentBalance / (data.total_tokens + tokens) * subtract, 10);
+                            return parseInt(2 * recentBalance * tokens / data.total_tokens * subtract, 10);
                         }
 
                         return 0;

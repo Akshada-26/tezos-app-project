@@ -163,11 +163,11 @@ exports.chainWrapper = (options) => {
             });
 
         },
-        "buyPrice": (storageData) => {
+        "buyPrice": (storageData, tokens) => {
             return cashedData(storageData, requestStorage, (data) => {
                 return parseInt(data.phase, 10) === 0
                     ? parseInt(data.price, 10)
-                    : parseInt(data.b * data.total_tokens, 10);
+                    : parseInt(data.b * (data.total_tokens + tokens), 10);
             });
         },
         "baseCurrency": (storageData) => {

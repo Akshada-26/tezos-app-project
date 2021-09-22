@@ -371,6 +371,20 @@ exports.chainWrapper = (options) => {
                             : 0;
                     });
                 },
+                "fund": () => {
+                    return balance(address).then((data) => {
+                        return data.length > 0
+                            ? parseInt(data[data.length - 1].balance, 10)
+                            : 0;
+                    });
+                },
+                "withdrawal": () => {
+                    return balance(address).then((data) => {
+                        return data.length > 0
+                            ? parseInt(data[data.length - 1].balance, 10)
+                            : 0;
+                    });
+                },
                 "tezInvested": () => {
                     return transactions(address, "buy").then((buyData) => {
                         return transactions(address, "sell").then((sellData) => {

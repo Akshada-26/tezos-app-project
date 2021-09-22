@@ -225,7 +225,7 @@ exports.chainWrapper = (options) => {
                 return parseInt(data[0].balance, 10);
             });
         },
-        "sellPrice": () => {
+        "sellPrice": (tokens) => {
             return balance(contractAddress).then((data) => {
                 return data.length > 0
                     ? parseInt(data[data.length - 1].balance, 10)
@@ -236,11 +236,11 @@ exports.chainWrapper = (options) => {
                         if (parseInt(data.phase, 10) === 0) {
                             return data.price;
                         }
-                        const factor = 1 / (2 * data.total_tokens),
+                        const factor = 1 / (2 * (data.total_tokens+tokens)),
                             subtract = 1 - factor;
 
                         if (data.total_tokens > 0) {
-                            return parseInt(2 * recentBalance / data.total_tokens * subtract, 10);
+                            return parseInt(2 * recentBalance / (data.total_tokens+tokens) * subtract, 10);
                         }
 
                         return 0;

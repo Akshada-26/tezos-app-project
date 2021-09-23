@@ -36,12 +36,6 @@ describe("Contract Wrapper", function() {
             sell = sandbox.spy(function() {
                 return Promise.resolve(null);
             }),
-            pay = sandbox.spy(function() {
-                return Promise.resolve(null);
-            }),
-            burn = sandbox.spy(function() {
-                return Promise.resolve(null);
-            }),
             BeaconWallet = function(options) {
                 const client = {
                     "requestPermissions": () => {
@@ -64,9 +58,7 @@ describe("Contract Wrapper", function() {
                             return Promise.resolve({
                                 "methods": {
                                     buy,
-                                    sell,
-                                    burn,
-                                    pay
+                                    sell
                                 }
                             });
                         }
@@ -94,22 +86,13 @@ describe("Contract Wrapper", function() {
             sandbox.restore();
         });
 
-        it("should contain buy, sell, pay and burn", function() {
-            expect(contract).to.have.property("buy");
-            expect(contract).to.have.property("sell");
-            expect(contract).to.have.property("burn");
-            expect(contract).to.have.property("pay");
-        });
-
 
         it("should call only buy in the contract if buy is called", async function() {
             expect(contract).to.have.property("buy");
             const result = await contract.buy(getRandomInt(10));
 
             expect(buy.callCount).to.equal(1);
-            expect(burn.callCount).to.equal(0);
             expect(sell.callCount).to.equal(0);
-            expect(pay.callCount).to.equal(0);
         });
     });
 });

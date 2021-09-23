@@ -317,8 +317,7 @@ exports.chainWrapper = (options) => {
         },
         sentBack,
         "user": (address) => {
-            return {
-                "bought": () => {
+            const bought = () => {
                     return transactions(address, "buy").then((data) => {
                         return Promise.all(data.map((transaction) => {
                             return requestStorage(transaction.level).then((currentState) => {
@@ -342,7 +341,7 @@ exports.chainWrapper = (options) => {
                         }));
                     });
                 },
-                "sold": () => {
+                sold = () => {
                     return transactions(address, "sell").then((data) => {
                         return Promise.all(data.map((transaction) => {
                             return payedAmount(transaction.hash).then((batch) => {
@@ -371,6 +370,26 @@ exports.chainWrapper = (options) => {
                         }));
                     });
                 },
+                fund = () => {
+                    return bought().then((list) => {
+                        return list.reduce((acc, val) => {
+                            return acc + val.amount;
+                        }, 0);
+                    });
+                },
+                withdraw = () => {
+                    return sold().then((list) => {
+                        return list.reduce((acc, val) => {
+                            return acc + val.amount;
+                        }, 0);
+                    });
+                };
+
+            return {
+                bought,
+                sold,
+                fund,
+                withdraw,
                 "tokens": () => {
                     return requestStorage().then((data) => {
                         const tokenAmount = data.ledger[address];
@@ -389,17 +408,9 @@ exports.chainWrapper = (options) => {
                     });
                 },
                 "tezInvested": () => {
-                    return transactions(address, "buy").then((buyData) => {
-                        return transactions(address, "sell").then((sellData) => {
-                            const bought = buyData.reduce((all, next) => {
-                                    return all + next.amount;
-                                }, 0),
-                                selled = sellData.reduce((all, next) => {
-                                    return all + next.amount;
-                                }, 0);
-
-
-                            return parseInt(bought - selled, 10);
+                    return fund().then((fundTotal) => {
+                        return sold().then((soldTotal) => {
+                            return parseInt(fundTotal - soldTotal, 10);
                         });
                     });
                 }

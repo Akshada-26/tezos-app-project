@@ -180,5 +180,13 @@ jq(document).ready(() => {
             .then((data) => {
                 return jq("#tokens").html(data);
             });
+        wrapper.chain.user(jq("#userAddress").val()).fund()
+            .then((data) => {
+                return jq("#fund").html(data);
+            });
+        wrapper.chain.user(jq("#userAddress").val()).withdraw()
+            .then((data) => {
+                return jq("#withdraw").html(data);
+            });
     });
 });

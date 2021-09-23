@@ -239,7 +239,7 @@ exports.chainWrapper = (options) => {
                 .then((recentBalance) => {
                     return requestStorage().then((data) => {
                         if (parseInt(data.phase, 10) === 0) {
-                            return data.price * data.tokens;
+                            return data.price * tokens;
                         }
                         const factor = tokens / (2 * data.total_tokens),
                             subtract = 1 - factor;

@@ -100,10 +100,18 @@ exports.chainWrapper = (options) => {
             return storageFunction().then(functionToCash);
         },
         sentBack = (address, hash) => {
-            return payedAmount(hash).then((target) => {
+            const sentBackTx = payedAmount(hash).then((target) => {
                 return target.filter((tx) => {
                     return tx.target.address === address;
                 });
+            });
+
+            return sentBackTx.then((tx) => {
+                if (tx.length === 0) {
+                    return 0;
+                }
+
+                return tx[0].amount;
             });
         };
 
@@ -332,7 +340,7 @@ exports.chainWrapper = (options) => {
                                     transaction.tokens = currentTokens - oldTokens;
 
                                     return sentBack(address, transaction.hash).then((adjustment) => {
-                                        transaction.amount -= adjustment[0].amount;
+                                        transaction.amount -= adjustment;
 
                                         return transaction;
                                     });
@@ -409,8 +417,8 @@ exports.chainWrapper = (options) => {
                 },
                 "tezInvested": () => {
                     return fund().then((fundTotal) => {
-                        return sold().then((soldTotal) => {
-                            return parseInt(fundTotal - soldTotal, 10);
+                        return withdraw().then((withdrawTotal) => {
+                            return parseInt(fundTotal - withdrawTotal, 10);
                         });
                     });
                 }

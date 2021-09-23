@@ -58,7 +58,7 @@ exports.contractWrapper = (options) => {
                 });
             })
                 .then((hash) => {
-                    return `Operation injected: ${hash}`;
+                    return hash;
                 })
                 .catch((error) => {
                     return error.message;
@@ -67,6 +67,7 @@ exports.contractWrapper = (options) => {
         confirmDefault = (call) => {
             return wallet.requestPermission().then((setting) => {
                 tezos.setWalletProvider(setting);
+
                 return confirm(tezos.wallet.at(contractAddress).then(call), 1);
             });
         };
@@ -89,6 +90,7 @@ exports.contractWrapper = (options) => {
         "updatePermission": () => {
             return wallet.forcePermissionRequest().then((setting) => {
                 tezos.setWalletProvider(setting);
+
                 return setting.getPKH();
             });
         }

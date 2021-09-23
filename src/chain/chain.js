@@ -171,7 +171,7 @@ exports.chainWrapper = (options) => {
 
 
                 return parseInt(data.phase, 10) === 0
-                    ? parseInt(data.price, 10)
+                    ? parseInt(data.price * tokens, 10)
                     : parseInt(tempPrice, 10);
             });
         },
@@ -239,7 +239,7 @@ exports.chainWrapper = (options) => {
                 .then((recentBalance) => {
                     return requestStorage().then((data) => {
                         if (parseInt(data.phase, 10) === 0) {
-                            return data.price;
+                            return data.price * data.tokens;
                         }
                         const factor = tokens / (2 * data.total_tokens),
                             subtract = 1 - factor;

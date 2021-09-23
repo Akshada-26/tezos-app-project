@@ -98,6 +98,13 @@ exports.chainWrapper = (options) => {
             }
 
             return storageFunction().then(functionToCash);
+        },
+        sentBack = (address, hash) => {
+            return payedAmount(hash).then((target) => {
+                return target.filter((tx) => {
+                    return tx.target.address === address;
+                });
+            });
         };
 
     return {
@@ -308,6 +315,7 @@ exports.chainWrapper = (options) => {
                 return points;
             });
         },
+        sentBack,
         "user": (address) => {
             return {
                 "bought": () => {
@@ -324,7 +332,11 @@ exports.chainWrapper = (options) => {
 
                                     transaction.tokens = currentTokens - oldTokens;
 
-                                    return transaction;
+                                    return sentBack(address, transaction.hash).then((adjustment) => {
+                                        transaction.amount -= adjustment[0].amount;
+
+                                        return transaction;
+                                    });
                                 });
                             });
                         }));

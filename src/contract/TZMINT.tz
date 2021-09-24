@@ -194,7 +194,7 @@
                                     CONTRACT unit;
                                     IF_NONE
                                         {
-                                            PUSH int 172;
+                                            PUSH int 179;
                                             FAILWITH
                                         }
                                         {
@@ -550,22 +550,122 @@
                             PAIR;
                             DUP;
                             DUG 2;
+                            GET 10;
+                            DUP 4;
+                            DIG 3;
+                            DUP;
+                            GET 10;
+                            SWAP;
+                            DUP;
+                            DUG 5;
+                            GET 10;
+                            MUL;
+                            DUP 5;
                             CAR;
                             CAR;
                             GET 6;
+                            PUSH mutez 1;
                             AMOUNT;
                             EDIV;
                             IF_NONE
                                 {
-                                    PUSH string "Buy slope is 0";
+                                    UNIT;
                                     FAILWITH
                                 }
                                 {
                                 };
+                            CAR;
+                            PUSH nat 2;
+                            MUL;
+                            EDIV;
+                            IF_NONE
+                                {
+                                    PUSH int 115;
+                                    FAILWITH
+                                }
+                                {
+                                    CAR
+                                };
+                            ADD;
+                            EXEC;
+                            SUB;
+                            PUSH nat 2;
+                            DUP 4;
+                            CAR;
+                            CAR;
+                            GET 6;
+                            DUP 3;
+                            ISNAT;
+                            IF_NONE
+                                {
+                                    PUSH int 123;
+                                    FAILWITH
+                                }
+                                {
+                                };
+                            DUP 6;
+                            GET 10;
+                            DUP 5;
+                            ISNAT;
+                            IF_NONE
+                                {
+                                    PUSH int 123;
+                                    FAILWITH
+                                }
+                                {
+                                };
+                            ADD;
+                            MUL;
+                            MUL;
+                            EDIV;
+                            IF_NONE
+                                {
+                                    PUSH int 123;
+                                    FAILWITH
+                                }
+                                {
+                                    CAR
+                                };
+                            PUSH nat 2;
+                            DIG 4;
+                            DUP;
+                            CAR;
+                            CAR;
+                            GET 6;
+                            SWAP;
+                            DUP;
+                            DUG 6;
+                            GET 10;
+                            DUP 5;
+                            ISNAT;
+                            IF_NONE
+                                {
+                                    PUSH int 123;
+                                    FAILWITH
+                                }
+                                {
+                                };
+                            MUL;
+                            MUL;
+                            EDIV;
+                            IF_NONE
+                                {
+                                    PUSH int 123;
+                                    FAILWITH
+                                }
+                                {
+                                    CAR
+                                };
+                            ADD;
+                            DUP;
+                            PUSH mutez 1;
+                            SWAP;
+                            MUL;
+                            AMOUNT;
+                            SUB;
                             PUSH nat 0;
                             PUSH mutez 1;
                             DUP 3;
-                            CDR;
                             EDIV;
                             IF_NONE
                                 {
@@ -584,13 +684,12 @@
                                     CONTRACT unit;
                                     IF_NONE
                                         {
-                                            PUSH int 121;
+                                            PUSH int 136;
                                             FAILWITH
                                         }
                                         {
                                         };
                                     DUP 3;
-                                    CDR;
                                     UNIT;
                                     TRANSFER_TOKENS;
                                     CONS
@@ -598,44 +697,12 @@
                                 {
                                     NIL operation
                                 };
-                            SWAP;
-                            DUP;
-                            DUG 2;
-                            CDR;
-                            AMOUNT;
-                            SUB;
-                            DUP 5;
-                            GET 10;
-                            DUP 7;
-                            DIG 6;
-                            DUP;
-                            GET 10;
-                            SWAP;
-                            DUP;
-                            DUG 8;
-                            GET 10;
-                            MUL;
-                            PUSH mutez 1;
-                            DUP 7;
-                            CAR;
-                            EDIV;
-                            IF_NONE
-                                {
-                                    UNIT;
-                                    FAILWITH
-                                }
-                                {
-                                };
-                            CAR;
-                            PUSH nat 2;
-                            MUL;
-                            ADD;
-                            EXEC;
-                            SUB;
                             DIG 5;
                             DUP;
                             GET 9;
-                            DUP 4;
+                            PUSH mutez 1;
+                            DUP 6;
+                            MUL;
                             ADD;
                             UPDATE 9;
                             DUG 5;
@@ -643,18 +710,16 @@
                             ISNAT;
                             IF_NONE
                                 {
-                                    PUSH int 140;
+                                    PUSH int 142;
                                     FAILWITH
                                 }
                                 {
                                 };
-                            SWAP;
-                            DUP;
-                            DUG 2;
+                            DUP 5;
                             ISNAT;
                             IF_NONE
                                 {
-                                    PUSH int 140;
+                                    PUSH int 142;
                                     FAILWITH
                                 }
                                 {
@@ -669,18 +734,16 @@
                                 {
                                 };
                             PUSH mutez 1;
-                            PUSH nat 100;
-                            PUSH mutez 1;
-                            DUP 5;
-                            EDIV;
+                            PUSH int 100;
+                            ISNAT;
                             IF_NONE
                                 {
-                                    UNIT;
+                                    PUSH int 146;
                                     FAILWITH
                                 }
                                 {
                                 };
-                            CAR;
+                            DUP 5;
                             DUP 9;
                             CAR;
                             CAR;
@@ -690,33 +753,34 @@
                             EDIV;
                             IF_NONE
                                 {
-                                    PUSH int 144;
+                                    PUSH int 146;
                                     FAILWITH
                                 }
                                 {
                                     CAR
                                 };
                             MUL;
-                            DIG 3;
-                            DUP 7;
+                            DUP;
+                            AMOUNT;
+                            SUB;
+                            DIG 2;
+                            DUP 8;
                             GET 3;
                             GET 3;
                             CONTRACT unit;
                             IF_NONE
                                 {
-                                    PUSH int 150;
+                                    PUSH int 157;
                                     FAILWITH
                                 }
                                 {
                                 };
                             DUP 3;
-                            AMOUNT;
-                            SUB;
                             UNIT;
                             TRANSFER_TOKENS;
                             CONS;
-                            DUG 3;
-                            DUP 7;
+                            DUG 2;
+                            DUP 8;
                             GET 3;
                             CAR;
                             CAR;
@@ -724,7 +788,7 @@
                             MEM;
                             IF
                                 {
-                                    DIG 6;
+                                    DIG 7;
                                     UNPAIR;
                                     SWAP;
                                     UNPAIR;
@@ -737,16 +801,16 @@
                                     GET;
                                     IF_NONE
                                         {
-                                            PUSH int 155;
+                                            PUSH int 162;
                                             FAILWITH
                                         }
                                         {
                                         };
-                                    DUP 9;
+                                    DUP 13;
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 155;
+                                            PUSH int 162;
                                             FAILWITH
                                         }
                                         {
@@ -760,20 +824,20 @@
                                     PAIR;
                                     SWAP;
                                     PAIR;
-                                    DUG 6
+                                    DUG 7
                                 }
                                 {
-                                    DIG 6;
+                                    DIG 7;
                                     UNPAIR;
                                     SWAP;
                                     UNPAIR;
                                     UNPAIR;
                                     UNPAIR;
-                                    DUP 7;
+                                    DUP 11;
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 157;
+                                            PUSH int 164;
                                             FAILWITH
                                         }
                                         {
@@ -786,16 +850,16 @@
                                     PAIR;
                                     SWAP;
                                     PAIR;
-                                    DUG 6
+                                    DUG 7
                                 };
-                            DIG 6;
+                            DIG 7;
                             DUP;
                             GET 10;
-                            DUP 4;
+                            DUP 8;
                             ISNAT;
                             IF_NONE
                                 {
-                                    PUSH int 160;
+                                    PUSH int 167;
                                     FAILWITH
                                 }
                                 {
@@ -803,7 +867,7 @@
                             ADD;
                             UPDATE 10;
                             DUP;
-                            DUG 7;
+                            DUG 8;
                             UNPAIR;
                             SWAP;
                             UNPAIR;
@@ -813,7 +877,7 @@
                             SWAP;
                             CAR;
                             PUSH mutez 1;
-                            DIG 12;
+                            DIG 13;
                             DUP;
                             GET 10;
                             SWAP;
@@ -831,9 +895,9 @@
                             PAIR;
                             SWAP;
                             PAIR;
-                            DUG 6;
+                            DUG 7;
                             PUSH nat 0;
-                            DUP 8;
+                            DUP 9;
                             GET 10;
                             COMPARE;
                             NEQ;
@@ -841,22 +905,22 @@
                                 {
                                     SWAP;
                                     DROP;
-                                    SWAP;
-                                    DROP;
-                                    DIG 2;
-                                    DROP;
-                                    DIG 2;
+                                    DIG 3;
                                     DROP;
                                     DIG 3;
                                     DROP;
-                                    DUP 3;
+                                    DIG 3;
+                                    DROP;
+                                    DIG 4;
+                                    DROP;
+                                    DUP 4;
                                     UNPAIR;
                                     SWAP;
                                     UNPAIR;
                                     SWAP;
                                     UNPAIR;
                                     CDR;
-                                    DIG 6;
+                                    DIG 7;
                                     DUP;
                                     GET 10;
                                     SWAP;
@@ -864,8 +928,8 @@
                                     MUL;
                                     PUSH mutez 1;
                                     DIG 6;
-                                    AMOUNT;
-                                    SUB;
+                                    DIG 8;
+                                    ADD;
                                     BALANCE;
                                     SUB;
                                     EDIV;
@@ -897,7 +961,11 @@
                                     SWAP
                                 }
                                 {
-                                    DROP 3;
+                                    DROP 2;
+                                    SWAP;
+                                    DROP;
+                                    SWAP;
+                                    DROP;
                                     SWAP;
                                     DROP;
                                     SWAP;
@@ -937,7 +1005,7 @@
                             ISNAT;
                             IF_NONE
                                 {
-                                    PUSH int 198;
+                                    PUSH int 205;
                                     FAILWITH
                                 }
                                 {
@@ -950,7 +1018,7 @@
                             GET;
                             IF_NONE
                                 {
-                                    PUSH int 198;
+                                    PUSH int 205;
                                     FAILWITH
                                 }
                                 {
@@ -974,7 +1042,7 @@
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 201;
+                                            PUSH int 208;
                                             FAILWITH
                                         }
                                         {
@@ -994,7 +1062,7 @@
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 201;
+                                            PUSH int 208;
                                             FAILWITH
                                         }
                                         {
@@ -1008,7 +1076,7 @@
                                     EDIV;
                                     IF_NONE
                                         {
-                                            PUSH int 201;
+                                            PUSH int 208;
                                             FAILWITH
                                         }
                                         {
@@ -1026,7 +1094,7 @@
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 201;
+                                            PUSH int 208;
                                             FAILWITH
                                         }
                                         {
@@ -1035,7 +1103,7 @@
                                     EDIV;
                                     IF_NONE
                                         {
-                                            PUSH int 201;
+                                            PUSH int 208;
                                             FAILWITH
                                         }
                                         {
@@ -1048,7 +1116,7 @@
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 201;
+                                            PUSH int 208;
                                             FAILWITH
                                         }
                                         {
@@ -1061,7 +1129,7 @@
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 201;
+                                            PUSH int 208;
                                             FAILWITH
                                         }
                                         {
@@ -1081,7 +1149,7 @@
                                             ISNAT;
                                             IF_NONE
                                                 {
-                                                    PUSH int 186;
+                                                    PUSH int 193;
                                                     FAILWITH
                                                 }
                                                 {
@@ -1094,7 +1162,7 @@
                                             GET;
                                             IF_NONE
                                                 {
-                                                    PUSH int 186;
+                                                    PUSH int 193;
                                                     FAILWITH
                                                 }
                                                 {
@@ -1113,7 +1181,7 @@
                                                     ISNAT;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 188;
+                                                            PUSH int 195;
                                                             FAILWITH
                                                         }
                                                         {
@@ -1126,7 +1194,7 @@
                                                     GET;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 188;
+                                                            PUSH int 195;
                                                             FAILWITH
                                                         }
                                                         {
@@ -1135,7 +1203,7 @@
                                                     ISNAT;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 188;
+                                                            PUSH int 195;
                                                             FAILWITH
                                                         }
                                                         {
@@ -1156,7 +1224,7 @@
                                                     ISNAT;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 189;
+                                                            PUSH int 196;
                                                             FAILWITH
                                                         }
                                                         {
@@ -1184,7 +1252,7 @@
                                     CONTRACT unit;
                                     IF_NONE
                                         {
-                                            PUSH int 214;
+                                            PUSH int 221;
                                             FAILWITH
                                         }
                                         {

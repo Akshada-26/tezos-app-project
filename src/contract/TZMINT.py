@@ -111,30 +111,32 @@ class PEQ(sp.Contract):
     def buy_slope(self):
         # calculate amount of tokens from sp.amount
         # see https://github.com/C-ORG/whitepaper#buy-calculus
-        back_amount = sp.local(
-            "back_amount",
-            sp.ediv(sp.amount, self.data.b).open_some("Buy slope is 0")
-            )
-
-        # send tez that is too much
-        sp.if sp.utils.mutez_to_nat(sp.snd(back_amount.value)) > 0:
-            sp.send(sp.sender, sp.snd(back_amount.value))
-
-        tez_amount = sp.local(
-            "tez_amount",
-            sp.amount - sp.snd(back_amount.value)
-            )
 
         token_amount = sp.local(
             "token_amount", 
             self.square_root(
-                2 * sp.utils.mutez_to_nat(sp.fst(back_amount.value)) + 
+                2 * sp.utils.mutez_to_nat(sp.amount) /self.data.b + 
                 self.data.total_tokens * self.data.total_tokens
                 ) - self.data.total_tokens
             )
 
+        tez_amount = sp.local(
+            "tez_amount",
+            sp.as_nat(token_amount.value) * self.data.total_tokens * self.data.b   /2 + 
+            (sp.as_nat(token_amount.value) + self.data.total_tokens) * sp.as_nat(token_amount.value) * self.data.b/2
+            )
+
+        send_back = sp.local(
+            "send_back",
+            sp.amount - sp.utils.nat_to_mutez(tez_amount.value)
+            )
+
+        # send tez that is too much
+        sp.if sp.utils.mutez_to_nat(send_back.value) > 0:
+            sp.send(sp.sender, send_back.value)
+
         # track how much is invested
-        self.data.total_investment += (tez_amount.value)
+        self.data.total_investment += sp.utils.nat_to_mutez(tez_amount.value)
 
         # fail if no tokens can be issued with this amount of tez
         sp.if sp.as_nat(token_amount.value) == sp.as_nat(0):
@@ -143,7 +145,7 @@ class PEQ(sp.Contract):
         # calculate buyback reserve from sp.amount I*sp.amount/100
         buyback_reserve = sp.local(
             "local_amount", 
-            sp.utils.nat_to_mutez(self.data.I * sp.utils.mutez_to_nat(tez_amount.value)/100)
+            sp.utils.nat_to_mutez(self.data.I * tez_amount.value / sp.as_nat(100))
             )
             
         # send (100-I) * sp.amount/100 of the received tez to the organization
@@ -244,12 +246,12 @@ def initialization():
     scenario += contract
     
     # buy some tokens till reaching MFG check the price is fix
-    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(500))
+    scenario += contract.buy().run(sender = buyer1, amount = sp.mutez(500001000))
     
     # try to sell some before phase 1
     scenario += contract.sell(amount=1).run(sender = buyer1, valid=False)
 
-    scenario += contract.buy().run(sender = buyer2, amount = sp.tez(200))
+    scenario += contract.buy().run(sender = buyer2, amount = sp.mutez(200003000))
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(300))
     scenario.verify(contract.data.price == sp.tez(1))
 
@@ -259,7 +261,7 @@ def initialization():
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(100))
     scenario.verify(contract.data.price > sp.tez(1))
     
-    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(50))
+    scenario += contract.buy().run(sender = buyer1, amount = sp.mutez(51245389))
     scenario += contract.buy().run(sender = buyer1, amount = sp.tez(100))
     
     # now sell some tokens

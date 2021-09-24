@@ -1,13 +1,13 @@
 #!/bin/bash
 
 tezos-client originate contract TZMINT transferring 0 from bob running "/opt/contract/TZMINT.tz" \
- --init '(Pair
+--init '(Pair
     (Pair
         (Pair
-            (Pair 80 80)
+            (Pair 80 90)
             (Pair
                 1000000000
-                (Pair "2021-09-09T12:37:28Z" 2000)))
+                (Pair "2021-09-24T14:49:50Z" 2000)))
         (Pair
             (Pair "tez" 0)
             (Pair

@@ -7,7 +7,7 @@ tezos-client originate contract TZMINT transferring 0 from bob running "/opt/con
             (Pair 80 90)
             (Pair
                 1000000000
-                (Pair "2021-09-24T14:49:50Z" 2000)))
+                (Pair "2021-10-11T13:29:14Z" 2000)))
         (Pair
             (Pair "tez" 0)
             (Pair

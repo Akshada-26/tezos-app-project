@@ -4,7 +4,7 @@
 
 exports.configuration = () => {
     return {
-        "contractAddress": process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "KT18pGiK671xC583tYN5FXtjBBu6EeGdV69c",
+        "contractAddress": process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "KT1WAMSkFRd8U1E5qafqf8cDrippiHfcn9uM",
         "orgAccount": "tz1hRTppkUow3wQNcj9nZ9s5snwc6sGC8QHh",
         "chain": process.env.NEXT_PUBLIC_CHAIN || "granadanet",
         "apiEndpoint": process.env.NEXT_PUBLIC_INDEXER_API_ENDPOINT || "https://api.granadanet.tzkt.io/",

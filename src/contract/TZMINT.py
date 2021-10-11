@@ -69,9 +69,9 @@ class PEQ(sp.Contract):
         sp.result(y.value)
 
     # s calculus after each transaction
-    def modify_sell_slope(self, sendback):
+    def modify_sell_slope(self, send_back):
         sp.if self.data.total_tokens != 0:
-           self.data.s = 2 * sp.utils.mutez_to_nat(sp.balance - sendback) / (self.data.total_tokens * self.data.total_tokens)
+           self.data.s = 2 * sp.utils.mutez_to_nat(sp.balance - send_back) / (self.data.total_tokens * self.data.total_tokens)
 
     # initial phase, the price is fix
     def buy_initial(self, amount):
@@ -144,12 +144,17 @@ class PEQ(sp.Contract):
             
         # calculate buyback reserve from sp.amount I*sp.amount/100
         buyback_reserve = sp.local(
-            "local_amount", 
+            "buyback_reserve", 
             sp.utils.nat_to_mutez(self.data.I * tez_amount.value / sp.as_nat(100))
             )
-            
+        
+        company_pay = sp.local(
+            "company_pay",
+            sp.amount - buyback_reserve.value
+            )
+
         # send (100-I) * sp.amount/100 of the received tez to the organization
-        sp.send(self.data.organization, sp.amount - buyback_reserve.value)
+        sp.send(self.data.organization, company_pay.value)
         # this will keep I * sp.amount/100 in this contract as buyback reserve
             
         # check if the address owns tokens
@@ -163,22 +168,25 @@ class PEQ(sp.Contract):
 
         # set new price
         self.data.price = sp.utils.nat_to_mutez(self.data.b * self.data.total_tokens)
-        self.modify_sell_slope(sp.amount - buyback_reserve.value)
+        self.modify_sell_slope(send_back.value + company_pay.value)
 
     # buy some tokens with sender's tez
     @sp.entry_point
     def buy(self):
-        # if token in intialization phase, the price is fixed and all funds are escrowed
-        sp.if self.data.total_investment < self.data.MFG:
-            sp.if sp.utils.mutez_to_nat(self.data.MFG - sp.amount - self.data.total_investment) < 0:
-                sp.send(sp.sender, sp.amount - self.data.MFG + self.data.total_investment)
-                self.buy_initial(self.data.MFG - self.data.total_investment)
+    #check the phase, dont sell or buy if closed
+        sp.if self.data.phase != 2:
+            # if token in intialization phase, the price is fixed and all funds are escrowed
+            sp.if self.data.total_investment < self.data.MFG:
+                # check the excess above MFG and send back
+                sp.if sp.utils.mutez_to_nat(self.data.MFG - sp.amount - self.data.total_investment) < 0:
+                    sp.send(sp.sender, sp.amount - self.data.MFG + self.data.total_investment)
+                    self.buy_initial(self.data.MFG - self.data.total_investment)
+                sp.else:
+                    self.buy_initial(sp.amount)
+            # if initialization phase is past
             sp.else:
-                self.buy_initial(sp.amount)
-        # if initialization phase is past
-        sp.else:
-            self.data.phase = 1
-            self.buy_slope()
+                self.data.phase = 1
+                self.buy_slope()
            
     # internal burn function will be called by the entry points burn and sell
     def burn_intern(self, amount):
@@ -192,7 +200,7 @@ class PEQ(sp.Contract):
 
     @sp.entry_point
     def sell(self, params):
-        # check that the initial phase is over
+        # check that the initial phase is over but not closed
         sp.verify(self.data.phase == 1)
         # check if the address owns tokens
         sp.if self.data.ledger.contains(sp.sender):
@@ -215,7 +223,35 @@ class PEQ(sp.Contract):
                 # send pay_amount tez to the sender of the transaction
                 sp.send(sp.sender, sp.utils.nat_to_mutez(pay_amount.value))
                 self.modify_sell_slope(sp.utils.nat_to_mutez(pay_amount.value))
-            
+
+    @sp.entry_point
+    def close(self):
+        # check that the initial phase is over but not closed
+        sp.verify(self.data.phase == 1)
+
+        # verify this is called by the org
+        sp.verify(sp.sender == self.data.organization)
+
+        # check the correct amount of tez is sent
+        closing_sell_price= sp.local(
+            "closing_sell_price",
+            self.data.b * self.data.total_tokens
+            )
+
+        closing_sell_amount= sp.local(
+            "closing_sell_amount",
+            closing_sell_price.value * sp.as_nat(self.data.total_tokens - self.data.burned_tokens)
+            )
+
+        sp.if sp.balance < sp.utils.nat_to_mutez(closing_sell_amount.value):
+            sp.failwith("Please send more tez for the closing")
+
+        sp.for account in self.data.ledger.items():
+            sp.send(account.key, sp.utils.nat_to_mutez(account.value * closing_sell_price.value))
+        
+        self.data.phase = 2
+
+
 @sp.add_test(name= "Initialization")
 def initialization():
     
@@ -232,7 +268,7 @@ def initialization():
         MFG = sp.tez(1000), 
         preminted = 0,
         MPT = 0,
-        I = 80,
+        I = 90,
         D = 80, 
         company_valuation = 1000000,
         total_allocation = 4000,
@@ -275,3 +311,10 @@ def initialization():
 
     # Check price for selling 1 token
     scenario += contract.sell(amount=1).run(sender = buyer1)
+
+    # Check closing with wrong account
+    scenario += contract.close().run(sender = buyer1, valid=False)
+    # Check closing with too less tez
+    scenario += contract.close().run(sender = organization, valid=False, amount = sp.tez(300))
+    # Check closing with correct amount of tez
+    scenario += contract.close().run(sender = organization, amount = sp.tez(2400))

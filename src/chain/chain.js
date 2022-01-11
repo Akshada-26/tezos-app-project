@@ -182,7 +182,7 @@ exports.chainWrapper = (options) => {
             return cashedData(storageData, requestStorage, (data) => {
                 const firstPart = data.b * data.total_tokens * tokens / 2,
                     secondPart = data.b * tokens * (parseInt(data.total_tokens, 10) + tokens) / 2,
-                    tempPrice = Math.ceil((firstPart + secondPart)*10)/10;
+                    tempPrice = Math.ceil((firstPart + secondPart) * 10) / 10;
 
 
                 return parseInt(data.phase, 10) === 0

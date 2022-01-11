@@ -58,8 +58,6 @@ describe("Wallet Wrapper", function() {
 
             expect(permission.options.name).to.equal("TZMINT");
 
-            expect(checkPermissionsTrue.callCount).to.equal(1);
-            expect(requestPermission.callCount).to.equal(0);
         });
 
         it("should return PKH after permission request", async function() {

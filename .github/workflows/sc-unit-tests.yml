@@ -22,4 +22,4 @@ jobs:
       - name: Install dependencies 🔧
         run: npm ci
       - name: Run Tests 🧪
-      - run: npm test
+        run: npm test

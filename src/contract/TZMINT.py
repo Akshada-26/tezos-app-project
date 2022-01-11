@@ -177,8 +177,8 @@ class PEQ(sp.Contract):
             # if token in intialization phase, the price is fixed and all funds are escrowed
             sp.if self.data.total_investment < self.data.MFG:
                 # check the excess above MFG and send back
-                sp.if sp.utils.mutez_to_nat(self.data.MFG - sp.amount - self.data.total_investment) < 0:
-                    sp.send(sp.sender, sp.amount - self.data.MFG + self.data.total_investment)
+                sp.if self.data.MFG - sp.amount < self.data.total_investment:
+                    sp.send(sp.sender, sp.amount - (self.data.MFG - self.data.total_investment))
                     self.buy_initial(self.data.MFG - self.data.total_investment)
                 sp.else:
                     self.buy_initial(sp.amount)
@@ -280,17 +280,10 @@ class PEQ(sp.Contract):
         
         self.data.phase = 2
 
-
-    def pay_initial(self):
-        # see https://github.com/C-ORG/whitepaper#-revenues---pay
-        buyback_reserve = sp.local(
-            "local_amount", 
-            sp.utils.nat_to_mutez(
-                sp.utils.mutez_to_nat(sp.amount) * self.data.D / 100
-                )
-            )
-
-    def pay_slope(self):
+    @sp.entry_point
+    def pay(self):
+        # check that the initial phase is over but not closed
+        sp.verify(self.data.phase == 1)
         # see https://github.com/C-ORG/whitepaper#-revenues---pay
         buyback_reserve = sp.local(
             "local_amount", 
@@ -316,14 +309,6 @@ class PEQ(sp.Contract):
                 
         # increase total amount of the tokens
         self.data.total_tokens += sp.as_nat(token_amount.value)
-        
-    @sp.entry_point
-    def pay(self):
-        #check the phase
-        sp.if self.data.phase == 1:
-            self.pay_initial()
-        sp.if self.data.phase == 2:
-            self.pay_slope()
 
 @sp.add_test(name= "Initialization")
 def initialization():
@@ -361,7 +346,7 @@ def initialization():
     scenario += contract.sell(amount=1).run(sender = buyer1)
 
     scenario += contract.buy().run(sender = buyer2, amount = sp.mutez(200003000))
-    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(300))
+    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(299))
     scenario.verify(contract.data.price == sp.tez(1))
 
     # now MFG is reached, buy more and see price increasing

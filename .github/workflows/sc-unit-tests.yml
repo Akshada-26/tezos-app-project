@@ -1,0 +1,21 @@
+name: Smart Contract Wrapper Unit Tests
+
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Node.js 14 🔧
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.x'
+      - name: Install dependencies 🔧
+        run: npm ci
+      - name: Run Tests 🧪
+        run: npm test

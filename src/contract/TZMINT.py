@@ -76,7 +76,7 @@ class PEQ(sp.Contract, Utils):
             )
 
     # sell_slope calculation after each transaction
-    def modify_sell_slope(self, send_back= sp.tez(0)):
+    def modify_sell_slope(self, send_back = sp.tez(0)):
         sp.if self.data.total_tokens != 0:
            self.data.sell_slope = 2 * sp.utils.mutez_to_nat(sp.balance - send_back) / (self.data.total_tokens * self.data.total_tokens)
     # initial phase, the price is fix
@@ -121,14 +121,14 @@ class PEQ(sp.Contract, Utils):
         token_amount = sp.local(
             "token_amount",
             self.square_root(
-                2 * sp.utils.mutez_to_nat(amount) /self.data.buy_slope +
+                2 * sp.utils.mutez_to_nat(amount) / self.data.buy_slope +
                 self.data.total_tokens * self.data.total_tokens
                 ) - self.data.total_tokens
             )
 
         tez_amount = sp.local(
             "tez_amount",
-            sp.as_nat(token_amount.value) * self.data.total_tokens * self.data.buy_slope /2 +
+            sp.as_nat(token_amount.value) * self.data.total_tokens * self.data.buy_slope / 2 +
             (sp.as_nat(token_amount.value) + self.data.total_tokens) * sp.as_nat(token_amount.value) * self.data.buy_slope / 2
             )
 
@@ -306,7 +306,7 @@ class PEQ(sp.Contract, Utils):
         token_amount = sp.local(
         "token_amount",
         self.square_root(
-            2 * sp.utils.mutez_to_nat(d) /self.data.buy_slope +
+            2 * sp.utils.mutez_to_nat(d) / self.data.buy_slope +
             self.data.total_tokens * self.data.total_tokens
             ) - self.data.total_tokens
         )
@@ -318,7 +318,7 @@ class PEQ(sp.Contract, Utils):
         self.data.total_tokens += sp.as_nat(token_amount.value)
 
 def buy_price_helper_left(tez_amount, scenario, contract):
-    return scenario.compute(2*sp.utils.mutez_to_nat(tez_amount)/contract.data.buy_slope + contract.data.total_tokens*contract.data.total_tokens)
+    return scenario.compute(2 * sp.utils.mutez_to_nat(tez_amount) / contract.data.buy_slope + contract.data.total_tokens * contract.data.total_tokens)
 
 def buy_price_helper_right(buyer, buyer_amount_of_last_buyed_tokens, total_amount, scenario, contract):
     return scenario.compute(buyer_amount_of_last_buyed_tokens*buyer_amount_of_last_buyed_tokens + total_amount*total_amount + 2*total_amount*buyer_amount_of_last_buyed_tokens)

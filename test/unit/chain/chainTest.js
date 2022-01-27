@@ -23,8 +23,8 @@ describe("TzKTI Wrapper", function() {
 
             expect(storage).to.have.property("I");
             expect(storage).to.have.property("D");
-            expect(storage).to.have.property("b");
-            expect(storage).to.have.property("s");
+            expect(storage).to.have.property("buy_slope");
+            expect(storage).to.have.property("sell_slope");
             expect(storage).to.have.property("MFG");
             expect(storage).to.have.property("MPT");
             expect(storage).to.have.property("phase");

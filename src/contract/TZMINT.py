@@ -316,20 +316,44 @@ class PEQ(sp.Contract):
         # increase total amount of the tokens
         self.data.total_tokens += sp.as_nat(token_amount.value)
 
+def buy_price_helper_initial(buyer, tez_amount, buyer_amount_of_tokens, const_price, scenario, contract, first=False):
+    buyer_amount_of_tokens = 0
+    # check if user is in the ledger
+    if not first:
+        buyer_amount_of_tokens = scenario.compute(contract.data.ledger[buyer])
+    balance = scenario.compute(contract.balance)
+    # call the buy entrypoint
+    scenario += contract.buy().run(sender = buyer, amount = tez_amount)
+    # check that the excess is sent back
+    token_amount = sp.utils.mutez_to_nat(tez_amount) // sp.utils.mutez_to_nat(const_price)
+    payed_tez_amount = token_amount * sp.utils.mutez_to_nat(const_price)
+    scenario.verify(contract.balance ==  sp.utils.nat_to_mutez(payed_tez_amount) + balance)
+    # check that correct amount of tokens is issued
+    buyer_amount_of_last_buyed_tokens = scenario.compute(sp.as_nat(contract.data.ledger[buyer]- buyer_amount_of_tokens))
+    scenario.verify(buyer_amount_of_last_buyed_tokens == token_amount)
+    return token_amount
+
 def buy_price_helper_left(tez_amount, scenario, contract):
     return scenario.compute(2*sp.utils.mutez_to_nat(tez_amount)/contract.data.b + contract.data.total_tokens*contract.data.total_tokens)
 
 def buy_price_helper_right(buyer, buyer_amount_of_last_buyed_tokens, total_amount, scenario, contract):
     return scenario.compute(buyer_amount_of_last_buyed_tokens*buyer_amount_of_last_buyed_tokens + total_amount*total_amount + 2*total_amount*buyer_amount_of_last_buyed_tokens)
 
-def buy_price_helper_slope(buyer, tez_amount, buyer_old_token_amount, scenario, contract):
-    buyer_amount_of_tokens = scenario.compute(contract.data.ledger[buyer])
+def buy_price_helper_slope(buyer, tez_amount, buyer_old_token_amount, scenario, contract, first= False):
+    buyer_amount_of_tokens = 0
+    # check if user is in the ledger
+    if not first:
+        buyer_amount_of_tokens = scenario.compute(contract.data.ledger[buyer])
+    # check correct that buyer has the correct amount of tokens
     scenario.verify(buyer_amount_of_tokens == buyer_old_token_amount)
     total_amount = scenario.compute(contract.data.total_tokens)
     buy_price_square = buy_price_helper_left(tez_amount, scenario, contract)
+    # call buy entrypoint
     scenario += contract.buy().run(sender = buyer, amount = tez_amount)
     buyer_amount_of_last_buyed_tokens = scenario.compute(sp.as_nat(contract.data.ledger[buyer]- buyer_amount_of_tokens))
     right_side = buy_price_helper_right(buyer, buyer_amount_of_last_buyed_tokens, total_amount, scenario, contract)
+    # check if the correct amount of tokens is issued
+    # which is also a check of the buy price
     scenario += contract.square_root_test(x=buy_price_square, y=right_side)
     return buyer_amount_of_last_buyed_tokens
 
@@ -341,11 +365,14 @@ def initialization():
     buyer1 = sp.address("tz1xbuyer1")
     buyer2 = sp.address("tz1xbuyer2")
 
+    # initial price
+    initial_price = sp.tez(1)
+
     contract= PEQ(
         organization = organization, 
         b = 2000, 
         s = 1000, 
-        initial_price = sp.tez(1), 
+        initial_price = initial_price, 
         MFG = sp.tez(1000), 
         preminted = 0,
         MPT = 1, # minimal period of time in years
@@ -362,32 +389,18 @@ def initialization():
     scenario = sp.test_scenario()
     scenario += contract
     
-    # store contract balance
-    balance = scenario.compute(contract.balance)
+    buyer1_token_amount = buy_price_helper_initial(buyer1, (sp.tez(500) + sp.mutez(1000)), 0, initial_price, scenario, contract, True)
+    buyer2_token_amount = buy_price_helper_initial(buyer2, (sp.tez(200) + sp.mutez(3000)), 0, initial_price, scenario, contract, True)
+    buyer1_token_amount+= buy_price_helper_initial(buyer1, sp.tez(300), 0, initial_price, scenario, contract)
 
-    # call the buy entrypoint and send 500 tez and 1000 mutez
-    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(500) + sp.mutez(1000))
-    # check that the excess is sent back
-    scenario.verify(contract.balance == sp.tez(500) + balance)
-    # update balance
-    balance = scenario.compute(contract.balance)
-    # send 200 tez and 3000 mutez
-    scenario += contract.buy().run(sender = buyer2, amount = sp.tez(200) + sp.mutez(3000))
-    # check that the excess is sent back
-    scenario.verify(contract.balance ==  balance + sp.tez(200))
-    scenario += contract.buy().run(sender = buyer1, amount = sp.tez(300))
-    scenario.verify(contract.data.price == sp.tez(1))
+    # check that the price has not changed
+    scenario.verify(contract.data.price == initial_price)
 
-    buyer1_token_amount = 800
     buyer1_token_amount+= buy_price_helper_slope(buyer1, tez_amount= sp.tez(50), buyer_old_token_amount= buyer1_token_amount, scenario= scenario, contract= contract)
-    
-    buyer2_token_amount = 200
     buyer2_token_amount+=buy_price_helper_slope(buyer2, tez_amount= sp.tez(400), buyer_old_token_amount= buyer2_token_amount, scenario= scenario, contract= contract)
-    
     buyer1_token_amount+=buy_price_helper_slope(buyer1, tez_amount= sp.tez(100), buyer_old_token_amount= buyer1_token_amount, scenario= scenario, contract= contract)
     buyer1_token_amount+=buy_price_helper_slope(buyer1, tez_amount= sp.mutez(51245389), buyer_old_token_amount= buyer1_token_amount, scenario= scenario, contract= contract)
 
-    
     # now sell some tokens
     scenario += contract.sell(amount=100).run(sender = buyer1)
     # update buyer1_token_amount

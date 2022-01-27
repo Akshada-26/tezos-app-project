@@ -13,6 +13,11 @@ class Utils:
         sp.verify((y.value * y.value <= x) & (x < (y.value + 1) * (y.value + 1)))
         sp.result(y.value)
 
+    #define a private entry point for testing
+    @sp.entry_point(private = True)
+    def square_root_test(self, params):
+        sp.verify(self.square_root(params.x) == self.square_root(params.y))
+
 # PEQ contract sample
 # see https://github.com/C-ORG/whitepaper for the definitions
 
@@ -69,11 +74,6 @@ class PEQ(sp.Contract, Utils):
             phase              = 0,                                              # starting under MFG
             total_investment   = sp.tez(0)
             )
-
-    #define a private entry point for testing
-    @sp.entry_point(private = True)
-    def square_root_test(self, params):
-        sp.verify(self.square_root(params.x) == self.square_root(params.y))
 
     # sell_slope calculation after each transaction
     def modify_sell_slope(self, send_back= sp.tez(0)):
@@ -331,7 +331,7 @@ def buy_price_helper_slope(buyer, tez_amount, buyer_old_token_amount, scenario, 
     scenario += contract.buy().run(sender = buyer, amount = tez_amount)
     buyer_amount_of_last_buyed_tokens = scenario.compute(sp.as_nat(contract.data.ledger[buyer]- buyer_amount_of_tokens))
     right_side = buy_price_helper_right(buyer, buyer_amount_of_last_buyed_tokens, total_amount, scenario, contract)
-    scenario += contract.square_root_test(x=buy_price_square, y=right_side)
+    scenario += contract.square_root_test(x = buy_price_square, y = right_side)
     return buyer_amount_of_last_buyed_tokens
 
 @sp.add_test(name= "Initialization")

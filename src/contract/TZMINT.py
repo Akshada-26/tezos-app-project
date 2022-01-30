@@ -23,10 +23,12 @@ class TestHelper:
 
     @staticmethod
     def buy_price_helper_left(tez_amount, scenario, contract):
+        # left side of the equation, have a look at the content for more information
         return scenario.compute(2 * sp.utils.mutez_to_nat(tez_amount) / contract.data.buy_slope + contract.data.total_tokens * contract.data.total_tokens)
 
     @staticmethod
     def buy_price_helper_right(buyer, buyer_amount_of_last_buyed_tokens, total_amount, scenario, contract):
+        # right side of the equation, have a look at the content for more information
         return scenario.compute(buyer_amount_of_last_buyed_tokens*buyer_amount_of_last_buyed_tokens + total_amount*total_amount + 2*total_amount*buyer_amount_of_last_buyed_tokens)
 
     @staticmethod
@@ -47,6 +49,15 @@ class TestHelper:
         # which is also a check of the buy price
         scenario += contract.square_root_test(x = buy_price_square, y = right_side)
         return buyer_amount_of_last_buyed_tokens
+    
+    def sell_price_helper_slope(tokens, scenario, contract):
+        pay_amount = scenario.compute(sp.as_nat(contract.data.total_tokens * sp.as_nat(tokens) * contract.data.sell_slope -
+                        sp.as_nat(tokens * tokens) * contract.data.sell_slope / 2
+                        ) +
+                        contract.data.sell_slope * sp.as_nat(tokens) *
+                        contract.data.burned_tokens * contract.data.burned_tokens /
+                        sp.as_nat(2 * (contract.data.total_tokens - contract.data.burned_tokens)))
+        return pay_amount
 
 class Utils:
     # square root for buy and sell calculus
@@ -394,35 +405,55 @@ def initialization():
 
     buy_price_helper_initial = TestHelper.buy_price_helper_initial
     buy_price_helper_slope = TestHelper.buy_price_helper_slope
+    sell_price_helper_slope = TestHelper.sell_price_helper_slope
 
     scenario = sp.test_scenario()
     scenario += contract
 
+    # buy some tokens in the intial phase, verify the token amounts and the buy price
+    # and verify that the excess is sent back
     buyer1_token_amount  = buy_price_helper_initial(buyer1, (sp.tez(500) + sp.mutez(1000)), 0, initial_price, scenario, contract, True)
     buyer2_token_amount  = buy_price_helper_initial(buyer2, (sp.tez(200) + sp.mutez(3000)), 0, initial_price, scenario, contract, True)
     buyer1_token_amount += buy_price_helper_initial(buyer1, sp.tez(300), 0, initial_price, scenario, contract)
 
     # check that the price has not changed
     scenario.verify(contract.data.price == initial_price)
+    # check that MFG is reached but surpassed
+    scenario.verify(contract.data.MFG == contract.balance)
 
+    # buy some tokens in the slopy phase
+    # verify the amount of issued tokens, the buy price
     buyer1_token_amount += buy_price_helper_slope(buyer1, tez_amount= sp.tez(50), buyer_old_token_amount= buyer1_token_amount, scenario= scenario, contract= contract)
     buyer2_token_amount += buy_price_helper_slope(buyer2, tez_amount = sp.tez(400), buyer_old_token_amount = buyer2_token_amount, scenario = scenario, contract = contract)
     buyer1_token_amount += buy_price_helper_slope(buyer1, tez_amount = sp.tez(100), buyer_old_token_amount = buyer1_token_amount, scenario = scenario, contract = contract)
+    # verify that the excess is sent back
     buyer1_token_amount += buy_price_helper_slope(buyer1, tez_amount = sp.mutez(51245389), buyer_old_token_amount = buyer1_token_amount, scenario = scenario, contract = contract)
 
     # now sell some tokens
-    scenario += contract.sell(amount=100).run(sender = buyer1)
+    # check that the correct amount of tez is sent if one token is sold
+    tez_amount = 100
+    balance = scenario.compute(contract.balance)
+    pay_amount = sell_price_helper_slope(tez_amount, scenario, contract)
+    scenario += contract.sell(amount=tez_amount).run(sender = buyer1)
+    scenario.verify(contract.balance == balance- sp.utils.nat_to_mutez(pay_amount))
     # update buyer1_token_amount
-    buyer1_token_amount= sp.as_nat(buyer1_token_amount- 100)
+    buyer1_token_amount= sp.as_nat(buyer1_token_amount- tez_amount)
+    # verify the the amount of tokens for buyer1
+    scenario.verify(buyer1_token_amount == contract.data.ledger[buyer1])
 
-    # and see how the price changes if you buy again
+    # do some other buy calls and verify the token amount and the buy price
     buyer1_token_amount+=buy_price_helper_slope(buyer1, tez_amount= sp.tez(150), buyer_old_token_amount= buyer1_token_amount, scenario= scenario, contract= contract)
     buyer1_token_amount+=buy_price_helper_slope(buyer1, tez_amount= sp.tez(150), buyer_old_token_amount= buyer1_token_amount, scenario= scenario, contract= contract)
     buyer1_token_amount+=buy_price_helper_slope(buyer1, tez_amount= sp.tez(150), buyer_old_token_amount= buyer1_token_amount, scenario= scenario, contract= contract)
     buyer1_token_amount+=buy_price_helper_slope(buyer1, tez_amount= sp.tez(50), buyer_old_token_amount= buyer1_token_amount, scenario= scenario, contract= contract)
 
-    # Check price for selling 1 token
+    # check the correct amount of tez is sent if one token is sold
+    # this will also verify the price for a token
+    tez_amount = 1
+    balance = scenario.compute(contract.balance)
+    pay_amount = sell_price_helper_slope(tez_amount, scenario, contract)
     scenario += contract.sell(amount=1).run(sender = buyer1)
+    scenario.verify(contract.balance == balance- sp.utils.nat_to_mutez(pay_amount))
 
     # Check closing before MPT
     scenario += contract.close().run(sender = organization, valid=False, amount = sp.tez(2400), now= sp.timestamp_from_utc_now().add_days(360))

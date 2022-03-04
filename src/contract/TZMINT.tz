@@ -4,35 +4,35 @@
             (pair
                 (pair
                     (pair
-                        (nat %D)
-                        (nat %I))
-                    (pair
                         (mutez %MFG)
-                        (pair
-                            (timestamp %MPT)
-                            (nat %b))))
-                (pair
+                        (timestamp %MPT))
                     (pair
                         (string %base_currency)
-                        (nat %burned_tokens))
+                        (pair
+                            (nat %burned_tokens)
+                            (nat %buy_slope))))
+                (pair
                     (pair
                         (string %company_name)
+                        (int %company_v))
+                    (pair
+                        (nat %funds_ratio_for_reserve)
                         (pair
-                            (int %company_v)
-                            (string %govRights)))))
+                            (string %govRights)
+                            (map %ledger address nat)))))
             (pair
                 (pair
                     (pair
-                        (map %ledger address nat)
-                        (mutez %minimumInvestment))
+                        (mutez %minimumInvestment)
+                        (address %organization))
                     (pair
-                        (address %organization)
+                        (int %phase)
                         (pair
-                            (int %phase)
-                            (mutez %price))))
+                            (mutez %price)
+                            (nat %revenues_ratio_for_reserve))))
                 (pair
                     (pair
-                        (nat %s)
+                        (nat %sell_slope)
                         (pair
                             (int %stake_allocation)
                             (list %termination_events string)))
@@ -84,18 +84,11 @@
                             PUSH nat 2;
                             SWAP;
                             DUP;
-                            {
-                                DIP
-                                    3
-                                    {
-                                        DUP
-                                    };
-                                DIG 4
-                            };
+                            DUP 4;
                             EDIV;
                             IF_NONE
                                 {
-                                    PUSH int 67;
+                                    PUSH int 69;
                                     FAILWITH
                                 }
                                 {
@@ -105,7 +98,7 @@
                             EDIV;
                             IF_NONE
                                 {
-                                    PUSH int 67;
+                                    PUSH int 69;
                                     FAILWITH
                                 }
                                 {
@@ -138,14 +131,7 @@
                             PUSH nat 1;
                             ADD;
                             PUSH nat 1;
-                            {
-                                DIP
-                                    2
-                                    {
-                                        DUP
-                                    };
-                                DIG 3
-                            };
+                            DUP 3;
                             ADD;
                             MUL;
                             DIG 2;
@@ -166,16 +152,7 @@
                         }
                 };
             SWAP;
-            {
-                {
-                    DUP;
-                    CAR;
-                    DIP
-                        {
-                            CDR
-                        }
-                }
-            };
+            UNPAIR;
             IF_LEFT
                 {
                     IF_LEFT
@@ -185,9 +162,8 @@
                             SWAP;
                             DUP;
                             DUG 2;
-                            GET 3;
                             CAR;
-                            CAR;
+                            GET 8;
                             SENDER;
                             MEM;
                             IF
@@ -196,27 +172,19 @@
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 192;
+                                            PUSH int 256;
                                             FAILWITH
                                         }
                                         {
                                         };
-                                    {
-                                        DIP
-                                            2
-                                            {
-                                                DUP
-                                            };
-                                        DIG 3
-                                    };
-                                    GET 3;
+                                    DUP 3;
                                     CAR;
-                                    CAR;
+                                    GET 8;
                                     SENDER;
                                     GET;
                                     IF_NONE
                                         {
-                                            PUSH int 196;
+                                            PUSH int 260;
                                             FAILWITH
                                         }
                                         {
@@ -228,72 +196,32 @@
                                             SWAP;
                                             DUP;
                                             DUG 2;
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
+                                            UNPAIR;
+                                            UNPAIR;
                                             SWAP;
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
-                                            {
-                                                DIP
-                                                    5
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 6
-                                            };
+                                            UNPAIR;
+                                            SWAP;
+                                            UNPAIR;
+                                            SWAP;
+                                            UNPAIR;
+                                            SWAP;
+                                            DUP 7;
                                             ISNAT;
                                             IF_NONE
                                                 {
-                                                    PUSH int 192;
+                                                    PUSH int 256;
                                                     FAILWITH
                                                 }
                                                 {
                                                 };
-                                            DIG 7;
-                                            GET 3;
+                                            DIG 8;
                                             CAR;
-                                            CAR;
+                                            GET 8;
                                             SENDER;
                                             GET;
                                             IF_NONE
                                                 {
-                                                    PUSH int 198;
+                                                    PUSH int 262;
                                                     FAILWITH
                                                 }
                                                 {
@@ -302,7 +230,7 @@
                                             ISNAT;
                                             IF_NONE
                                                 {
-                                                    PUSH int 198;
+                                                    PUSH int 262;
                                                     FAILWITH
                                                 }
                                                 {
@@ -310,56 +238,33 @@
                                             SOME;
                                             SENDER;
                                             UPDATE;
-                                            PAIR;
-                                            PAIR;
+                                            SWAP;
                                             PAIR;
                                             SWAP;
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
+                                            PAIR;
                                             SWAP;
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
+                                            PAIR;
                                             SWAP;
-                                            DIG 5;
+                                            UNPAIR;
+                                            SWAP;
+                                            UNPAIR;
+                                            SWAP;
+                                            UNPAIR;
+                                            DIG 6;
                                             ISNAT;
                                             IF_NONE
                                                 {
-                                                    PUSH int 192;
+                                                    PUSH int 256;
                                                     FAILWITH
                                                 }
                                                 {
                                                 };
                                             ADD;
-                                            SWAP;
-                                            PAIR;
                                             PAIR;
                                             SWAP;
+                                            PAIR;
+                                            SWAP;
+                                            PAIR;
                                             PAIR;
                                             PAIR
                                         }
@@ -378,38 +283,11 @@
                             IF
                                 {
                                     DUP;
-                                    {
-                                        {
-                                            DUP;
-                                            CAR;
-                                            DIP
-                                                {
-                                                    CDR
-                                                }
-                                        }
-                                    };
+                                    UNPAIR;
                                     SWAP;
-                                    {
-                                        {
-                                            DUP;
-                                            CAR;
-                                            DIP
-                                                {
-                                                    CDR
-                                                }
-                                        }
-                                    };
+                                    UNPAIR;
                                     SWAP;
-                                    {
-                                        {
-                                            DUP;
-                                            CAR;
-                                            DIP
-                                                {
-                                                    CDR
-                                                }
-                                        }
-                                    };
+                                    UNPAIR;
                                     CDR;
                                     DIG 4;
                                     DUP;
@@ -435,7 +313,7 @@
                                     EDIV;
                                     IF_NONE
                                         {
-                                            PUSH int 74;
+                                            PUSH int 138;
                                             FAILWITH
                                         }
                                         {
@@ -454,16 +332,9 @@
                         }
                         {
                             PUSH int 2;
-                            {
-                                DIP
-                                    2
-                                    {
-                                        DUP
-                                    };
-                                DIG 3
-                            };
+                            DUP 3;
                             GET 3;
-                            GET 5;
+                            GET 3;
                             COMPARE;
                             NEQ;
                             IF
@@ -472,7 +343,8 @@
                                     DUP;
                                     CAR;
                                     CAR;
-                                    GET 3;
+                                    CAR;
+                                    CAR;
                                     SWAP;
                                     DUP;
                                     DUG 3;
@@ -487,17 +359,11 @@
                                             DUP;
                                             GET 9;
                                             AMOUNT;
-                                            {
-                                                DIP
-                                                    2
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 3
-                                            };
+                                            DUP 3;
                                             CAR;
                                             CAR;
-                                            GET 3;
+                                            CAR;
+                                            CAR;
                                             SUB;
                                             COMPARE;
                                             LT;
@@ -508,7 +374,7 @@
                                                     CONTRACT unit;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 181;
+                                                            PUSH int 245;
                                                             FAILWITH
                                                         }
                                                         {
@@ -521,7 +387,8 @@
                                                     DUG 4;
                                                     CAR;
                                                     CAR;
-                                                    GET 3;
+                                                    CAR;
+                                                    CAR;
                                                     SUB;
                                                     AMOUNT;
                                                     SUB;
@@ -531,7 +398,7 @@
                                                     SWAP;
                                                     DUP;
                                                     GET 3;
-                                                    GET 6;
+                                                    GET 5;
                                                     SWAP;
                                                     DUP;
                                                     GET 9;
@@ -540,7 +407,8 @@
                                                     DUG 4;
                                                     CAR;
                                                     CAR;
-                                                    GET 3;
+                                                    CAR;
+                                                    CAR;
                                                     SUB;
                                                     EDIV;
                                                     IF_NONE
@@ -554,7 +422,7 @@
                                                     ISNAT;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 87;
+                                                            PUSH int 151;
                                                             FAILWITH
                                                         }
                                                         {
@@ -572,63 +440,23 @@
                                                         }
                                                         {
                                                         };
-                                                    {
-                                                        DIP
-                                                            2
-                                                            {
-                                                                DUP
-                                                            };
-                                                        DIG 3
-                                                    };
-                                                    GET 3;
+                                                    DUP 3;
                                                     CAR;
-                                                    CAR;
+                                                    GET 8;
                                                     SENDER;
                                                     MEM;
                                                     IF
                                                         {
                                                             DIG 2;
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
+                                                            UNPAIR;
+                                                            UNPAIR;
                                                             SWAP;
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
+                                                            UNPAIR;
+                                                            SWAP;
+                                                            UNPAIR;
+                                                            SWAP;
+                                                            UNPAIR;
+                                                            SWAP;
                                                             DUP;
                                                             SENDER;
                                                             DUP;
@@ -636,118 +464,66 @@
                                                             GET;
                                                             IF_NONE
                                                                 {
-                                                                    PUSH int 93;
+                                                                    PUSH int 157;
                                                                     FAILWITH
                                                                 }
                                                                 {
                                                                 };
-                                                            {
-                                                                DIP
-                                                                    7
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 8
-                                                            };
+                                                            DUP 9;
                                                             CAR;
                                                             ADD;
                                                             SOME;
                                                             SWAP;
                                                             UPDATE;
-                                                            PAIR;
-                                                            PAIR;
+                                                            SWAP;
                                                             PAIR;
                                                             SWAP;
+                                                            PAIR;
+                                                            SWAP;
+                                                            PAIR;
+                                                            SWAP;
+                                                            PAIR;
                                                             PAIR;
                                                             DUG 2
                                                         }
                                                         {
                                                             DIG 2;
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
+                                                            UNPAIR;
+                                                            UNPAIR;
                                                             SWAP;
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
-                                                            {
-                                                                DIP
-                                                                    5
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 6
-                                                            };
+                                                            UNPAIR;
+                                                            SWAP;
+                                                            UNPAIR;
+                                                            SWAP;
+                                                            UNPAIR;
+                                                            SWAP;
+                                                            DUP 7;
                                                             CAR;
                                                             SOME;
                                                             SENDER;
                                                             UPDATE;
-                                                            PAIR;
-                                                            PAIR;
+                                                            SWAP;
                                                             PAIR;
                                                             SWAP;
+                                                            PAIR;
+                                                            SWAP;
+                                                            PAIR;
+                                                            SWAP;
+                                                            PAIR;
                                                             PAIR;
                                                             DUG 2
                                                         };
                                                     DIG 2;
                                                     DUP;
                                                     GET 10;
-                                                    {
-                                                        DIP
-                                                            2
-                                                            {
-                                                                DUP
-                                                            };
-                                                        DIG 3
-                                                    };
+                                                    DUP 3;
                                                     CAR;
                                                     ADD;
                                                     UPDATE 10;
                                                     DUG 2;
                                                     PUSH nat 0;
                                                     PUSH mutez 1;
-                                                    {
-                                                        DIP
-                                                            2
-                                                            {
-                                                                DUP
-                                                            };
-                                                        DIG 3
-                                                    };
+                                                    DUP 3;
                                                     CDR;
                                                     EDIV;
                                                     IF_NONE
@@ -767,19 +543,12 @@
                                                             CONTRACT unit;
                                                             IF_NONE
                                                                 {
-                                                                    PUSH int 104;
+                                                                    PUSH int 168;
                                                                     FAILWITH
                                                                 }
                                                                 {
                                                                 };
-                                                            {
-                                                                DIP
-                                                                    2
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 3
-                                                            };
+                                                            DUP 3;
                                                             CDR;
                                                             UNIT;
                                                             TRANSFER_TOKENS;
@@ -788,14 +557,7 @@
                                                         }
                                                         {
                                                         };
-                                                    {
-                                                        DIP
-                                                            2
-                                                            {
-                                                                DUP
-                                                            };
-                                                        DIG 3
-                                                    };
+                                                    DUP 3;
                                                     DUP;
                                                     GET 9;
                                                     DIG 2;
@@ -806,7 +568,8 @@
                                                     SWAP;
                                                     CAR;
                                                     CAR;
-                                                    GET 3;
+                                                    CAR;
+                                                    CAR;
                                                     SUB;
                                                     SUB;
                                                     ADD;
@@ -816,7 +579,7 @@
                                                 {
                                                     DUP;
                                                     GET 3;
-                                                    GET 6;
+                                                    GET 5;
                                                     AMOUNT;
                                                     EDIV;
                                                     IF_NONE
@@ -830,7 +593,7 @@
                                                     ISNAT;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 87;
+                                                            PUSH int 151;
                                                             FAILWITH
                                                         }
                                                         {
@@ -851,55 +614,22 @@
                                                     SWAP;
                                                     DUP;
                                                     DUG 2;
-                                                    GET 3;
                                                     CAR;
-                                                    CAR;
+                                                    GET 8;
                                                     SENDER;
                                                     MEM;
                                                     IF
                                                         {
                                                             SWAP;
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
+                                                            UNPAIR;
+                                                            UNPAIR;
                                                             SWAP;
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
+                                                            UNPAIR;
+                                                            SWAP;
+                                                            UNPAIR;
+                                                            SWAP;
+                                                            UNPAIR;
+                                                            SWAP;
                                                             DUP;
                                                             SENDER;
                                                             DUP;
@@ -907,118 +637,66 @@
                                                             GET;
                                                             IF_NONE
                                                                 {
-                                                                    PUSH int 93;
+                                                                    PUSH int 157;
                                                                     FAILWITH
                                                                 }
                                                                 {
                                                                 };
-                                                            {
-                                                                DIP
-                                                                    7
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 8
-                                                            };
+                                                            DUP 9;
                                                             CAR;
                                                             ADD;
                                                             SOME;
                                                             SWAP;
                                                             UPDATE;
-                                                            PAIR;
-                                                            PAIR;
+                                                            SWAP;
                                                             PAIR;
                                                             SWAP;
+                                                            PAIR;
+                                                            SWAP;
+                                                            PAIR;
+                                                            SWAP;
+                                                            PAIR;
                                                             PAIR;
                                                             SWAP
                                                         }
                                                         {
                                                             SWAP;
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
+                                                            UNPAIR;
+                                                            UNPAIR;
                                                             SWAP;
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
-                                                            {
-                                                                {
-                                                                    DUP;
-                                                                    CAR;
-                                                                    DIP
-                                                                        {
-                                                                            CDR
-                                                                        }
-                                                                }
-                                                            };
-                                                            {
-                                                                DIP
-                                                                    5
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 6
-                                                            };
+                                                            UNPAIR;
+                                                            SWAP;
+                                                            UNPAIR;
+                                                            SWAP;
+                                                            UNPAIR;
+                                                            SWAP;
+                                                            DUP 7;
                                                             CAR;
                                                             SOME;
                                                             SENDER;
                                                             UPDATE;
-                                                            PAIR;
-                                                            PAIR;
+                                                            SWAP;
                                                             PAIR;
                                                             SWAP;
+                                                            PAIR;
+                                                            SWAP;
+                                                            PAIR;
+                                                            SWAP;
+                                                            PAIR;
                                                             PAIR;
                                                             SWAP
                                                         };
                                                     SWAP;
                                                     DUP;
                                                     GET 10;
-                                                    {
-                                                        DIP
-                                                            2
-                                                            {
-                                                                DUP
-                                                            };
-                                                        DIG 3
-                                                    };
+                                                    DUP 3;
                                                     CAR;
                                                     ADD;
                                                     UPDATE 10;
                                                     SWAP;
                                                     PUSH nat 0;
                                                     PUSH mutez 1;
-                                                    {
-                                                        DIP
-                                                            2
-                                                            {
-                                                                DUP
-                                                            };
-                                                        DIG 3
-                                                    };
+                                                    DUP 3;
                                                     CDR;
                                                     EDIV;
                                                     IF_NONE
@@ -1038,19 +716,12 @@
                                                             CONTRACT unit;
                                                             IF_NONE
                                                                 {
-                                                                    PUSH int 104;
+                                                                    PUSH int 168;
                                                                     FAILWITH
                                                                 }
                                                                 {
                                                                 };
-                                                            {
-                                                                DIP
-                                                                    2
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 3
-                                                            };
+                                                            DUP 3;
                                                             CDR;
                                                             UNIT;
                                                             TRANSFER_TOKENS;
@@ -1073,53 +744,13 @@
                                         }
                                         {
                                             SWAP;
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
+                                            UNPAIR;
                                             SWAP;
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
-                                            SWAP;
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
+                                            UNPAIR;
+                                            UNPAIR;
                                             SWAP;
                                             CDR;
                                             PUSH int 1;
-                                            PAIR;
-                                            SWAP;
                                             PAIR;
                                             SWAP;
                                             PAIR;
@@ -1129,14 +760,7 @@
                                             DUP;
                                             DUG 2;
                                             GET 10;
-                                            {
-                                                DIP
-                                                    3
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 4
-                                            };
+                                            DUP 4;
                                             DIG 3;
                                             DUP;
                                             GET 10;
@@ -1145,14 +769,7 @@
                                             DUG 5;
                                             GET 10;
                                             MUL;
-                                            {
-                                                DIP
-                                                    4
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 5
-                                            };
+                                            DUP 5;
                                             CAR;
                                             CAR;
                                             GET 6;
@@ -1172,7 +789,7 @@
                                             EDIV;
                                             IF_NONE
                                                 {
-                                                    PUSH int 114;
+                                                    PUSH int 178;
                                                     FAILWITH
                                                 }
                                                 {
@@ -1182,54 +799,26 @@
                                             EXEC;
                                             SUB;
                                             PUSH nat 2;
-                                            {
-                                                DIP
-                                                    3
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 4
-                                            };
+                                            DUP 4;
                                             CAR;
                                             CAR;
                                             GET 6;
-                                            {
-                                                DIP
-                                                    2
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 3
-                                            };
+                                            DUP 3;
                                             ISNAT;
                                             IF_NONE
                                                 {
-                                                    PUSH int 122;
+                                                    PUSH int 186;
                                                     FAILWITH
                                                 }
                                                 {
                                                 };
-                                            {
-                                                DIP
-                                                    5
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 6
-                                            };
+                                            DUP 6;
                                             GET 10;
-                                            {
-                                                DIP
-                                                    4
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 5
-                                            };
+                                            DUP 5;
                                             ISNAT;
                                             IF_NONE
                                                 {
-                                                    PUSH int 122;
+                                                    PUSH int 186;
                                                     FAILWITH
                                                 }
                                                 {
@@ -1240,7 +829,7 @@
                                             EDIV;
                                             IF_NONE
                                                 {
-                                                    PUSH int 122;
+                                                    PUSH int 186;
                                                     FAILWITH
                                                 }
                                                 {
@@ -1256,18 +845,11 @@
                                             DUP;
                                             DUG 6;
                                             GET 10;
-                                            {
-                                                DIP
-                                                    4
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 5
-                                            };
+                                            DUP 5;
                                             ISNAT;
                                             IF_NONE
                                                 {
-                                                    PUSH int 122;
+                                                    PUSH int 186;
                                                     FAILWITH
                                                 }
                                                 {
@@ -1277,7 +859,7 @@
                                             EDIV;
                                             IF_NONE
                                                 {
-                                                    PUSH int 122;
+                                                    PUSH int 186;
                                                     FAILWITH
                                                 }
                                                 {
@@ -1292,14 +874,7 @@
                                             SUB;
                                             PUSH nat 0;
                                             PUSH mutez 1;
-                                            {
-                                                DIP
-                                                    2
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 3
-                                            };
+                                            DUP 3;
                                             EDIV;
                                             IF_NONE
                                                 {
@@ -1318,19 +893,12 @@
                                                     CONTRACT unit;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 135;
+                                                            PUSH int 199;
                                                             FAILWITH
                                                         }
                                                         {
                                                         };
-                                                    {
-                                                        DIP
-                                                            2
-                                                            {
-                                                                DUP
-                                                            };
-                                                        DIG 3
-                                                    };
+                                                    DUP 3;
                                                     UNIT;
                                                     TRANSFER_TOKENS;
                                                     CONS
@@ -1342,14 +910,7 @@
                                             DUP;
                                             GET 9;
                                             PUSH mutez 1;
-                                            {
-                                                DIP
-                                                    5
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 6
-                                            };
+                                            DUP 6;
                                             MUL;
                                             ADD;
                                             UPDATE 9;
@@ -1358,23 +919,16 @@
                                             ISNAT;
                                             IF_NONE
                                                 {
-                                                    PUSH int 141;
+                                                    PUSH int 205;
                                                     FAILWITH
                                                 }
                                                 {
                                                 };
-                                            {
-                                                DIP
-                                                    4
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 5
-                                            };
+                                            DUP 5;
                                             ISNAT;
                                             IF_NONE
                                                 {
-                                                    PUSH int 141;
+                                                    PUSH int 205;
                                                     FAILWITH
                                                 }
                                                 {
@@ -1393,36 +947,20 @@
                                             ISNAT;
                                             IF_NONE
                                                 {
-                                                    PUSH int 145;
+                                                    PUSH int 209;
                                                     FAILWITH
                                                 }
                                                 {
                                                 };
-                                            {
-                                                DIP
-                                                    4
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 5
-                                            };
-                                            {
-                                                DIP
-                                                    8
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 9
-                                            };
+                                            DUP 5;
+                                            DUP 9;
                                             CAR;
-                                            CAR;
-                                            CAR;
-                                            CDR;
+                                            GET 5;
                                             MUL;
                                             EDIV;
                                             IF_NONE
                                                 {
-                                                    PUSH int 145;
+                                                    PUSH int 209;
                                                     FAILWITH
                                                 }
                                                 {
@@ -1433,93 +971,40 @@
                                             AMOUNT;
                                             SUB;
                                             DIG 2;
-                                            {
-                                                DIP
-                                                    7
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 8
-                                            };
+                                            DUP 8;
                                             GET 3;
-                                            GET 3;
+                                            CAR;
+                                            CDR;
                                             CONTRACT unit;
                                             IF_NONE
                                                 {
-                                                    PUSH int 156;
+                                                    PUSH int 220;
                                                     FAILWITH
                                                 }
                                                 {
                                                 };
-                                            {
-                                                DIP
-                                                    2
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 3
-                                            };
+                                            DUP 3;
                                             UNIT;
                                             TRANSFER_TOKENS;
                                             CONS;
                                             DUG 2;
-                                            {
-                                                DIP
-                                                    7
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 8
-                                            };
-                                            GET 3;
+                                            DUP 8;
                                             CAR;
-                                            CAR;
+                                            GET 8;
                                             SENDER;
                                             MEM;
                                             IF
                                                 {
                                                     DIG 7;
-                                                    {
-                                                        {
-                                                            DUP;
-                                                            CAR;
-                                                            DIP
-                                                                {
-                                                                    CDR
-                                                                }
-                                                        }
-                                                    };
+                                                    UNPAIR;
+                                                    UNPAIR;
                                                     SWAP;
-                                                    {
-                                                        {
-                                                            DUP;
-                                                            CAR;
-                                                            DIP
-                                                                {
-                                                                    CDR
-                                                                }
-                                                        }
-                                                    };
-                                                    {
-                                                        {
-                                                            DUP;
-                                                            CAR;
-                                                            DIP
-                                                                {
-                                                                    CDR
-                                                                }
-                                                        }
-                                                    };
-                                                    {
-                                                        {
-                                                            DUP;
-                                                            CAR;
-                                                            DIP
-                                                                {
-                                                                    CDR
-                                                                }
-                                                        }
-                                                    };
+                                                    UNPAIR;
+                                                    SWAP;
+                                                    UNPAIR;
+                                                    SWAP;
+                                                    UNPAIR;
+                                                    SWAP;
                                                     DUP;
                                                     SENDER;
                                                     DUP;
@@ -1527,23 +1012,16 @@
                                                     GET;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 161;
+                                                            PUSH int 225;
                                                             FAILWITH
                                                         }
                                                         {
                                                         };
-                                                    {
-                                                        DIP
-                                                            12
-                                                            {
-                                                                DUP
-                                                            };
-                                                        DIG 13
-                                                    };
+                                                    DUP 14;
                                                     ISNAT;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 161;
+                                                            PUSH int 225;
                                                             FAILWITH
                                                         }
                                                         {
@@ -1552,68 +1030,33 @@
                                                     SOME;
                                                     SWAP;
                                                     UPDATE;
-                                                    PAIR;
-                                                    PAIR;
+                                                    SWAP;
                                                     PAIR;
                                                     SWAP;
+                                                    PAIR;
+                                                    SWAP;
+                                                    PAIR;
+                                                    SWAP;
+                                                    PAIR;
                                                     PAIR;
                                                     DUG 7
                                                 }
                                                 {
                                                     DIG 7;
-                                                    {
-                                                        {
-                                                            DUP;
-                                                            CAR;
-                                                            DIP
-                                                                {
-                                                                    CDR
-                                                                }
-                                                        }
-                                                    };
+                                                    UNPAIR;
+                                                    UNPAIR;
                                                     SWAP;
-                                                    {
-                                                        {
-                                                            DUP;
-                                                            CAR;
-                                                            DIP
-                                                                {
-                                                                    CDR
-                                                                }
-                                                        }
-                                                    };
-                                                    {
-                                                        {
-                                                            DUP;
-                                                            CAR;
-                                                            DIP
-                                                                {
-                                                                    CDR
-                                                                }
-                                                        }
-                                                    };
-                                                    {
-                                                        {
-                                                            DUP;
-                                                            CAR;
-                                                            DIP
-                                                                {
-                                                                    CDR
-                                                                }
-                                                        }
-                                                    };
-                                                    {
-                                                        DIP
-                                                            10
-                                                            {
-                                                                DUP
-                                                            };
-                                                        DIG 11
-                                                    };
+                                                    UNPAIR;
+                                                    SWAP;
+                                                    UNPAIR;
+                                                    SWAP;
+                                                    UNPAIR;
+                                                    SWAP;
+                                                    DUP 12;
                                                     ISNAT;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 163;
+                                                            PUSH int 227;
                                                             FAILWITH
                                                         }
                                                         {
@@ -1621,28 +1064,25 @@
                                                     SOME;
                                                     SENDER;
                                                     UPDATE;
-                                                    PAIR;
-                                                    PAIR;
+                                                    SWAP;
                                                     PAIR;
                                                     SWAP;
+                                                    PAIR;
+                                                    SWAP;
+                                                    PAIR;
+                                                    SWAP;
+                                                    PAIR;
                                                     PAIR;
                                                     DUG 7
                                                 };
                                             DIG 7;
                                             DUP;
                                             GET 10;
-                                            {
-                                                DIP
-                                                    7
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 8
-                                            };
+                                            DUP 8;
                                             ISNAT;
                                             IF_NONE
                                                 {
-                                                    PUSH int 166;
+                                                    PUSH int 230;
                                                     FAILWITH
                                                 }
                                                 {
@@ -1651,50 +1091,14 @@
                                             UPDATE 10;
                                             DUP;
                                             DUG 8;
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
+                                            UNPAIR;
                                             SWAP;
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
+                                            UNPAIR;
+                                            UNPAIR;
                                             SWAP;
-                                            {
-                                                {
-                                                    DUP;
-                                                    CAR;
-                                                    DIP
-                                                        {
-                                                            CDR
-                                                        }
-                                                }
-                                            };
+                                            UNPAIR;
                                             SWAP;
-                                            CAR;
+                                            CDR;
                                             PUSH mutez 1;
                                             DIG 13;
                                             DUP;
@@ -1705,7 +1109,6 @@
                                             GET 6;
                                             MUL;
                                             MUL;
-                                            SWAP;
                                             PAIR;
                                             SWAP;
                                             PAIR;
@@ -1716,14 +1119,7 @@
                                             PAIR;
                                             DUG 7;
                                             PUSH nat 0;
-                                            {
-                                                DIP
-                                                    8
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 9
-                                            };
+                                            DUP 9;
                                             GET 10;
                                             COMPARE;
                                             NEQ;
@@ -1739,46 +1135,12 @@
                                                     DROP;
                                                     DIG 4;
                                                     DROP;
-                                                    {
-                                                        DIP
-                                                            3
-                                                            {
-                                                                DUP
-                                                            };
-                                                        DIG 4
-                                                    };
-                                                    {
-                                                        {
-                                                            DUP;
-                                                            CAR;
-                                                            DIP
-                                                                {
-                                                                    CDR
-                                                                }
-                                                        }
-                                                    };
+                                                    DUP 4;
+                                                    UNPAIR;
                                                     SWAP;
-                                                    {
-                                                        {
-                                                            DUP;
-                                                            CAR;
-                                                            DIP
-                                                                {
-                                                                    CDR
-                                                                }
-                                                        }
-                                                    };
+                                                    UNPAIR;
                                                     SWAP;
-                                                    {
-                                                        {
-                                                            DUP;
-                                                            CAR;
-                                                            DIP
-                                                                {
-                                                                    CDR
-                                                                }
-                                                        }
-                                                    };
+                                                    UNPAIR;
                                                     CDR;
                                                     DIG 7;
                                                     DUP;
@@ -1806,7 +1168,7 @@
                                                     EDIV;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 74;
+                                                            PUSH int 138;
                                                             FAILWITH
                                                         }
                                                         {
@@ -1847,17 +1209,11 @@
                     IF_LEFT
                         {
                             PUSH int 0;
-                            {
-                                DIP
-                                    2
-                                    {
-                                        DUP
-                                    };
-                                DIG 3
-                            };
+                            DUP 3;
                             CAR;
                             CAR;
-                            GET 5;
+                            CAR;
+                            CDR;
                             NOW;
                             SUB;
                             COMPARE;
@@ -1870,16 +1226,9 @@
                                     FAILWITH
                                 };
                             PUSH int 1;
-                            {
-                                DIP
-                                    2
-                                    {
-                                        DUP
-                                    };
-                                DIG 3
-                            };
+                            DUP 3;
                             GET 3;
-                            GET 5;
+                            GET 3;
                             COMPARE;
                             EQ;
                             IF
@@ -1893,7 +1242,8 @@
                             DUP;
                             DUG 2;
                             GET 3;
-                            GET 3;
+                            CAR;
+                            CDR;
                             SENDER;
                             COMPARE;
                             EQ;
@@ -1917,8 +1267,8 @@
                             DIG 2;
                             DUP;
                             CAR;
-                            GET 3;
-                            CDR;
+                            CAR;
+                            GET 5;
                             SWAP;
                             DUP;
                             DUG 4;
@@ -1927,7 +1277,7 @@
                             ISNAT;
                             IF_NONE
                                 {
-                                    PUSH int 270;
+                                    PUSH int 334;
                                     FAILWITH
                                 }
                                 {
@@ -1951,17 +1301,9 @@
                                 {
                                 };
                             NIL operation;
-                            {
-                                DIP
-                                    4
-                                    {
-                                        DUP
-                                    };
-                                DIG 5
-                            };
-                            GET 3;
+                            DUP 5;
                             CAR;
-                            CAR;
+                            GET 8;
                             ITER
                                 {
                                     DUP;
@@ -1970,20 +1312,13 @@
                                     CONTRACT unit;
                                     IF_NONE
                                         {
-                                            PUSH int 279;
+                                            PUSH int 343;
                                             FAILWITH
                                         }
                                         {
                                         };
                                     PUSH mutez 1;
-                                    {
-                                        DIP
-                                            5
-                                            {
-                                                DUP
-                                            };
-                                        DIG 6
-                                    };
+                                    DUP 6;
                                     DIG 4;
                                     CDR;
                                     MUL;
@@ -2001,53 +1336,13 @@
                             DIG 2;
                             DROP;
                             SWAP;
-                            {
-                                {
-                                    DUP;
-                                    CAR;
-                                    DIP
-                                        {
-                                            CDR
-                                        }
-                                }
-                            };
+                            UNPAIR;
                             SWAP;
-                            {
-                                {
-                                    DUP;
-                                    CAR;
-                                    DIP
-                                        {
-                                            CDR
-                                        }
-                                }
-                            };
-                            {
-                                {
-                                    DUP;
-                                    CAR;
-                                    DIP
-                                        {
-                                            CDR
-                                        }
-                                }
-                            };
-                            SWAP;
-                            {
-                                {
-                                    DUP;
-                                    CAR;
-                                    DIP
-                                        {
-                                            CDR
-                                        }
-                                }
-                            };
+                            UNPAIR;
+                            UNPAIR;
                             SWAP;
                             CDR;
                             PUSH int 2;
-                            PAIR;
-                            SWAP;
                             PAIR;
                             SWAP;
                             PAIR;
@@ -2062,7 +1357,7 @@
                                     DROP;
                                     DUP;
                                     GET 3;
-                                    GET 5;
+                                    GET 3;
                                     PUSH int 1;
                                     COMPARE;
                                     EQ;
@@ -2075,18 +1370,9 @@
                                         };
                                     PUSH mutez 1;
                                     PUSH nat 100;
-                                    {
-                                        DIP
-                                            2
-                                            {
-                                                DUP
-                                            };
-                                        DIG 3
-                                    };
-                                    CAR;
-                                    CAR;
-                                    CAR;
-                                    CAR;
+                                    DUP 3;
+                                    GET 3;
+                                    GET 6;
                                     PUSH mutez 1;
                                     AMOUNT;
                                     EDIV;
@@ -2102,7 +1388,7 @@
                                     EDIV;
                                     IF_NONE
                                         {
-                                            PUSH int 288;
+                                            PUSH int 352;
                                             FAILWITH
                                         }
                                         {
@@ -2110,45 +1396,25 @@
                                         };
                                     MUL;
                                     NIL operation;
-                                    {
-                                        DIP
-                                            2
-                                            {
-                                                DUP
-                                            };
-                                        DIG 3
-                                    };
+                                    DUP 3;
                                     GET 3;
-                                    GET 3;
+                                    CAR;
+                                    CDR;
                                     CONTRACT unit;
                                     IF_NONE
                                         {
-                                            PUSH int 296;
+                                            PUSH int 360;
                                             FAILWITH
                                         }
                                         {
                                         };
-                                    {
-                                        DIP
-                                            2
-                                            {
-                                                DUP
-                                            };
-                                        DIG 3
-                                    };
+                                    DUP 3;
                                     AMOUNT;
                                     SUB;
                                     UNIT;
                                     TRANSFER_TOKENS;
                                     CONS;
-                                    {
-                                        DIP
-                                            2
-                                            {
-                                                DUP
-                                            };
-                                        DIG 3
-                                    };
+                                    DUP 3;
                                     GET 10;
                                     DIG 4;
                                     DIG 4;
@@ -2159,14 +1425,7 @@
                                     DUG 6;
                                     GET 10;
                                     MUL;
-                                    {
-                                        DIP
-                                            5
-                                            {
-                                                DUP
-                                            };
-                                        DIG 6
-                                    };
+                                    DUP 6;
                                     CAR;
                                     CAR;
                                     GET 6;
@@ -2188,7 +1447,7 @@
                                     EDIV;
                                     IF_NONE
                                         {
-                                            PUSH int 299;
+                                            PUSH int 363;
                                             FAILWITH
                                         }
                                         {
@@ -2197,80 +1456,39 @@
                                     ADD;
                                     EXEC;
                                     SUB;
-                                    {
-                                        DIP
-                                            2
-                                            {
-                                                DUP
-                                            };
-                                        DIG 3
-                                    };
-                                    {
-                                        {
-                                            DUP;
-                                            CAR;
-                                            DIP
-                                                {
-                                                    CDR
-                                                }
-                                        }
-                                    };
+                                    DUP 3;
+                                    UNPAIR;
+                                    UNPAIR;
                                     SWAP;
-                                    {
-                                        {
-                                            DUP;
-                                            CAR;
-                                            DIP
-                                                {
-                                                    CDR
-                                                }
-                                        }
-                                    };
-                                    {
-                                        {
-                                            DUP;
-                                            CAR;
-                                            DIP
-                                                {
-                                                    CDR
-                                                }
-                                        }
-                                    };
-                                    {
-                                        {
-                                            DUP;
-                                            CAR;
-                                            DIP
-                                                {
-                                                    CDR
-                                                }
-                                        }
-                                    };
-                                    {
-                                        DIP
-                                            5
-                                            {
-                                                DUP
-                                            };
-                                        DIG 6
-                                    };
+                                    UNPAIR;
+                                    SWAP;
+                                    UNPAIR;
+                                    SWAP;
+                                    UNPAIR;
+                                    SWAP;
+                                    DUP 7;
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 308;
+                                            PUSH int 372;
                                             FAILWITH
                                         }
                                         {
                                         };
                                     SOME;
-                                    DIG 8;
+                                    DIG 9;
                                     GET 3;
-                                    GET 3;
+                                    CAR;
+                                    CDR;
                                     UPDATE;
-                                    PAIR;
-                                    PAIR;
+                                    SWAP;
                                     PAIR;
                                     SWAP;
+                                    PAIR;
+                                    SWAP;
+                                    PAIR;
+                                    SWAP;
+                                    PAIR;
                                     PAIR;
                                     DUP;
                                     GET 10;
@@ -2278,7 +1496,7 @@
                                     ISNAT;
                                     IF_NONE
                                         {
-                                            PUSH int 311;
+                                            PUSH int 375;
                                             FAILWITH
                                         }
                                         {
@@ -2289,16 +1507,9 @@
                                 }
                                 {
                                     PUSH int 0;
-                                    {
-                                        DIP
-                                            2
-                                            {
-                                                DUP
-                                            };
-                                        DIG 3
-                                    };
+                                    DUP 3;
                                     GET 3;
-                                    GET 5;
+                                    GET 3;
                                     COMPARE;
                                     EQ;
                                     IF
@@ -2306,9 +1517,8 @@
                                             SWAP;
                                             DUP;
                                             DUG 2;
-                                            GET 3;
                                             CAR;
-                                            CAR;
+                                            GET 8;
                                             SENDER;
                                             MEM;
                                             IF
@@ -2317,27 +1527,19 @@
                                                     ISNAT;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 210;
+                                                            PUSH int 274;
                                                             FAILWITH
                                                         }
                                                         {
                                                         };
-                                                    {
-                                                        DIP
-                                                            2
-                                                            {
-                                                                DUP
-                                                            };
-                                                        DIG 3
-                                                    };
-                                                    GET 3;
+                                                    DUP 3;
                                                     CAR;
-                                                    CAR;
+                                                    GET 8;
                                                     SENDER;
                                                     GET;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 210;
+                                                            PUSH int 274;
                                                             FAILWITH
                                                         }
                                                         {
@@ -2350,22 +1552,15 @@
                                                             ISNAT;
                                                             IF_NONE
                                                                 {
-                                                                    PUSH int 213;
+                                                                    PUSH int 277;
                                                                     FAILWITH
                                                                 }
                                                                 {
                                                                 };
                                                             PUSH mutez 1;
-                                                            {
-                                                                DIP
-                                                                    3
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 4
-                                                            };
+                                                            DUP 4;
                                                             GET 3;
-                                                            GET 6;
+                                                            GET 5;
                                                             EDIV;
                                                             IF_NONE
                                                                 {
@@ -2376,17 +1571,9 @@
                                                                 };
                                                             CAR;
                                                             MUL;
-                                                            {
-                                                                DIP
-                                                                    2
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 3
-                                                            };
-                                                            GET 3;
+                                                            DUP 3;
                                                             CAR;
-                                                            CAR;
+                                                            GET 8;
                                                             SENDER;
                                                             MEM;
                                                             IF
@@ -2397,27 +1584,19 @@
                                                                     ISNAT;
                                                                     IF_NONE
                                                                         {
-                                                                            PUSH int 192;
+                                                                            PUSH int 256;
                                                                             FAILWITH
                                                                         }
                                                                         {
                                                                         };
-                                                                    {
-                                                                        DIP
-                                                                            3
-                                                                            {
-                                                                                DUP
-                                                                            };
-                                                                        DIG 4
-                                                                    };
-                                                                    GET 3;
+                                                                    DUP 4;
                                                                     CAR;
-                                                                    CAR;
+                                                                    GET 8;
                                                                     SENDER;
                                                                     GET;
                                                                     IF_NONE
                                                                         {
-                                                                            PUSH int 196;
+                                                                            PUSH int 260;
                                                                             FAILWITH
                                                                         }
                                                                         {
@@ -2426,80 +1605,33 @@
                                                                     GE;
                                                                     IF
                                                                         {
-                                                                            {
-                                                                                DIP
-                                                                                    2
-                                                                                    {
-                                                                                        DUP
-                                                                                    };
-                                                                                DIG 3
-                                                                            };
-                                                                            {
-                                                                                {
-                                                                                    DUP;
-                                                                                    CAR;
-                                                                                    DIP
-                                                                                        {
-                                                                                            CDR
-                                                                                        }
-                                                                                }
-                                                                            };
+                                                                            DUP 3;
+                                                                            UNPAIR;
+                                                                            UNPAIR;
                                                                             SWAP;
-                                                                            {
-                                                                                {
-                                                                                    DUP;
-                                                                                    CAR;
-                                                                                    DIP
-                                                                                        {
-                                                                                            CDR
-                                                                                        }
-                                                                                }
-                                                                            };
-                                                                            {
-                                                                                {
-                                                                                    DUP;
-                                                                                    CAR;
-                                                                                    DIP
-                                                                                        {
-                                                                                            CDR
-                                                                                        }
-                                                                                }
-                                                                            };
-                                                                            {
-                                                                                {
-                                                                                    DUP;
-                                                                                    CAR;
-                                                                                    DIP
-                                                                                        {
-                                                                                            CDR
-                                                                                        }
-                                                                                }
-                                                                            };
-                                                                            {
-                                                                                DIP
-                                                                                    6
-                                                                                    {
-                                                                                        DUP
-                                                                                    };
-                                                                                DIG 7
-                                                                            };
+                                                                            UNPAIR;
+                                                                            SWAP;
+                                                                            UNPAIR;
+                                                                            SWAP;
+                                                                            UNPAIR;
+                                                                            SWAP;
+                                                                            DUP 8;
                                                                             ISNAT;
                                                                             IF_NONE
                                                                                 {
-                                                                                    PUSH int 192;
+                                                                                    PUSH int 256;
                                                                                     FAILWITH
                                                                                 }
                                                                                 {
                                                                                 };
-                                                                            DIG 8;
-                                                                            GET 3;
+                                                                            DIG 9;
                                                                             CAR;
-                                                                            CAR;
+                                                                            GET 8;
                                                                             SENDER;
                                                                             GET;
                                                                             IF_NONE
                                                                                 {
-                                                                                    PUSH int 198;
+                                                                                    PUSH int 262;
                                                                                     FAILWITH
                                                                                 }
                                                                                 {
@@ -2508,7 +1640,7 @@
                                                                             ISNAT;
                                                                             IF_NONE
                                                                                 {
-                                                                                    PUSH int 198;
+                                                                                    PUSH int 262;
                                                                                     FAILWITH
                                                                                 }
                                                                                 {
@@ -2516,63 +1648,33 @@
                                                                             SOME;
                                                                             SENDER;
                                                                             UPDATE;
-                                                                            PAIR;
-                                                                            PAIR;
+                                                                            SWAP;
                                                                             PAIR;
                                                                             SWAP;
-                                                                            {
-                                                                                {
-                                                                                    DUP;
-                                                                                    CAR;
-                                                                                    DIP
-                                                                                        {
-                                                                                            CDR
-                                                                                        }
-                                                                                }
-                                                                            };
+                                                                            PAIR;
                                                                             SWAP;
-                                                                            {
-                                                                                {
-                                                                                    DUP;
-                                                                                    CAR;
-                                                                                    DIP
-                                                                                        {
-                                                                                            CDR
-                                                                                        }
-                                                                                }
-                                                                            };
-                                                                            {
-                                                                                {
-                                                                                    DUP;
-                                                                                    CAR;
-                                                                                    DIP
-                                                                                        {
-                                                                                            CDR
-                                                                                        }
-                                                                                }
-                                                                            };
+                                                                            PAIR;
                                                                             SWAP;
-                                                                            {
-                                                                                DIP
-                                                                                    6
-                                                                                    {
-                                                                                        DUP
-                                                                                    };
-                                                                                DIG 7
-                                                                            };
+                                                                            UNPAIR;
+                                                                            SWAP;
+                                                                            UNPAIR;
+                                                                            SWAP;
+                                                                            UNPAIR;
+                                                                            DUP 8;
                                                                             ISNAT;
                                                                             IF_NONE
                                                                                 {
-                                                                                    PUSH int 192;
+                                                                                    PUSH int 256;
                                                                                     FAILWITH
                                                                                 }
                                                                                 {
                                                                                 };
                                                                             ADD;
-                                                                            SWAP;
-                                                                            PAIR;
                                                                             PAIR;
                                                                             SWAP;
+                                                                            PAIR;
+                                                                            SWAP;
+                                                                            PAIR;
                                                                             PAIR;
                                                                             PAIR;
                                                                             DUG 2
@@ -2587,78 +1689,30 @@
                                                             CONTRACT unit;
                                                             IF_NONE
                                                                 {
-                                                                    PUSH int 220;
+                                                                    PUSH int 284;
                                                                     FAILWITH
                                                                 }
                                                                 {
                                                                 };
                                                             PUSH mutez 1;
-                                                            {
-                                                                DIP
-                                                                    3
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 4
-                                                            };
+                                                            DUP 4;
                                                             MUL;
                                                             UNIT;
                                                             TRANSFER_TOKENS;
                                                             CONS;
                                                             PUSH nat 0;
-                                                            {
-                                                                DIP
-                                                                    4
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 5
-                                                            };
+                                                            DUP 5;
                                                             GET 10;
                                                             COMPARE;
                                                             NEQ;
                                                             IF
                                                                 {
-                                                                    {
-                                                                        DIP
-                                                                            3
-                                                                            {
-                                                                                DUP
-                                                                            };
-                                                                        DIG 4
-                                                                    };
-                                                                    {
-                                                                        {
-                                                                            DUP;
-                                                                            CAR;
-                                                                            DIP
-                                                                                {
-                                                                                    CDR
-                                                                                }
-                                                                        }
-                                                                    };
+                                                                    DUP 4;
+                                                                    UNPAIR;
                                                                     SWAP;
-                                                                    {
-                                                                        {
-                                                                            DUP;
-                                                                            CAR;
-                                                                            DIP
-                                                                                {
-                                                                                    CDR
-                                                                                }
-                                                                        }
-                                                                    };
+                                                                    UNPAIR;
                                                                     SWAP;
-                                                                    {
-                                                                        {
-                                                                            DUP;
-                                                                            CAR;
-                                                                            DIP
-                                                                                {
-                                                                                    CDR
-                                                                                }
-                                                                        }
-                                                                    };
+                                                                    UNPAIR;
                                                                     CDR;
                                                                     DIG 7;
                                                                     DUP;
@@ -2686,7 +1740,7 @@
                                                                     EDIV;
                                                                     IF_NONE
                                                                         {
-                                                                            PUSH int 74;
+                                                                            PUSH int 138;
                                                                             FAILWITH
                                                                         }
                                                                         {
@@ -2717,31 +1771,16 @@
                                             NIL operation
                                         };
                                     PUSH int 1;
-                                    {
-                                        DIP
-                                            3
-                                            {
-                                                DUP
-                                            };
-                                        DIG 4
-                                    };
+                                    DUP 4;
                                     GET 3;
-                                    GET 5;
+                                    GET 3;
                                     COMPARE;
                                     EQ;
                                     IF
                                         {
-                                            {
-                                                DIP
-                                                    2
-                                                    {
-                                                        DUP
-                                                    };
-                                                DIG 3
-                                            };
-                                            GET 3;
+                                            DUP 3;
                                             CAR;
-                                            CAR;
+                                            GET 8;
                                             SENDER;
                                             MEM;
                                             IF
@@ -2752,27 +1791,19 @@
                                                     ISNAT;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 227;
+                                                            PUSH int 291;
                                                             FAILWITH
                                                         }
                                                         {
                                                         };
-                                                    {
-                                                        DIP
-                                                            3
-                                                            {
-                                                                DUP
-                                                            };
-                                                        DIG 4
-                                                    };
-                                                    GET 3;
+                                                    DUP 4;
                                                     CAR;
-                                                    CAR;
+                                                    GET 8;
                                                     SENDER;
                                                     GET;
                                                     IF_NONE
                                                         {
-                                                            PUSH int 227;
+                                                            PUSH int 291;
                                                             FAILWITH
                                                         }
                                                         {
@@ -2784,8 +1815,8 @@
                                                             DIG 2;
                                                             DUP;
                                                             CAR;
-                                                            GET 3;
-                                                            CDR;
+                                                            CAR;
+                                                            GET 5;
                                                             SWAP;
                                                             DUP;
                                                             DUG 4;
@@ -2796,7 +1827,7 @@
                                                             ISNAT;
                                                             IF_NONE
                                                                 {
-                                                                    PUSH int 230;
+                                                                    PUSH int 294;
                                                                     FAILWITH
                                                                 }
                                                                 {
@@ -2804,38 +1835,24 @@
                                                             DIG 3;
                                                             DUP;
                                                             CAR;
-                                                            GET 3;
-                                                            CDR;
+                                                            CAR;
+                                                            GET 5;
                                                             SWAP;
                                                             DUP;
                                                             DUG 5;
                                                             CAR;
-                                                            GET 3;
-                                                            CDR;
-                                                            {
-                                                                DIP
-                                                                    4
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 5
-                                                            };
+                                                            CAR;
+                                                            GET 5;
+                                                            DUP 5;
                                                             ISNAT;
                                                             IF_NONE
                                                                 {
-                                                                    PUSH int 230;
+                                                                    PUSH int 294;
                                                                     FAILWITH
                                                                 }
                                                                 {
                                                                 };
-                                                            {
-                                                                DIP
-                                                                    6
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 7
-                                                            };
+                                                            DUP 7;
                                                             GET 5;
                                                             CAR;
                                                             MUL;
@@ -2844,21 +1861,14 @@
                                                             EDIV;
                                                             IF_NONE
                                                                 {
-                                                                    PUSH int 230;
+                                                                    PUSH int 294;
                                                                     FAILWITH
                                                                 }
                                                                 {
                                                                     CAR
                                                                 };
                                                             PUSH nat 2;
-                                                            {
-                                                                DIP
-                                                                    4
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 5
-                                                            };
+                                                            DUP 5;
                                                             GET 5;
                                                             CAR;
                                                             DIG 4;
@@ -2869,7 +1879,7 @@
                                                             ISNAT;
                                                             IF_NONE
                                                                 {
-                                                                    PUSH int 230;
+                                                                    PUSH int 294;
                                                                     FAILWITH
                                                                 }
                                                                 {
@@ -2878,46 +1888,25 @@
                                                             EDIV;
                                                             IF_NONE
                                                                 {
-                                                                    PUSH int 230;
+                                                                    PUSH int 294;
                                                                     FAILWITH
                                                                 }
                                                                 {
                                                                     CAR
                                                                 };
-                                                            {
-                                                                DIP
-                                                                    4
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 5
-                                                            };
+                                                            DUP 5;
                                                             GET 5;
                                                             CAR;
-                                                            {
-                                                                DIP
-                                                                    4
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 5
-                                                            };
+                                                            DUP 5;
                                                             ISNAT;
                                                             IF_NONE
                                                                 {
-                                                                    PUSH int 230;
+                                                                    PUSH int 294;
                                                                     FAILWITH
                                                                 }
                                                                 {
                                                                 };
-                                                            {
-                                                                DIP
-                                                                    6
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 7
-                                                            };
+                                                            DUP 7;
                                                             GET 10;
                                                             MUL;
                                                             MUL;
@@ -2925,59 +1914,36 @@
                                                             ISNAT;
                                                             IF_NONE
                                                                 {
-                                                                    PUSH int 230;
+                                                                    PUSH int 294;
                                                                     FAILWITH
                                                                 }
                                                                 {
                                                                 };
                                                             ADD;
-                                                            {
-                                                                DIP
-                                                                    3
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 4
-                                                            };
-                                                            GET 3;
+                                                            DUP 4;
                                                             CAR;
-                                                            CAR;
+                                                            GET 8;
                                                             SENDER;
                                                             MEM;
                                                             IF
                                                                 {
-                                                                    {
-                                                                        DIP
-                                                                            2
-                                                                            {
-                                                                                DUP
-                                                                            };
-                                                                        DIG 3
-                                                                    };
+                                                                    DUP 3;
                                                                     ISNAT;
                                                                     IF_NONE
                                                                         {
-                                                                            PUSH int 192;
+                                                                            PUSH int 256;
                                                                             FAILWITH
                                                                         }
                                                                         {
                                                                         };
-                                                                    {
-                                                                        DIP
-                                                                            4
-                                                                            {
-                                                                                DUP
-                                                                            };
-                                                                        DIG 5
-                                                                    };
-                                                                    GET 3;
+                                                                    DUP 5;
                                                                     CAR;
-                                                                    CAR;
+                                                                    GET 8;
                                                                     SENDER;
                                                                     GET;
                                                                     IF_NONE
                                                                         {
-                                                                            PUSH int 196;
+                                                                            PUSH int 260;
                                                                             FAILWITH
                                                                         }
                                                                         {
@@ -2986,80 +1952,33 @@
                                                                     GE;
                                                                     IF
                                                                         {
-                                                                            {
-                                                                                DIP
-                                                                                    3
-                                                                                    {
-                                                                                        DUP
-                                                                                    };
-                                                                                DIG 4
-                                                                            };
-                                                                            {
-                                                                                {
-                                                                                    DUP;
-                                                                                    CAR;
-                                                                                    DIP
-                                                                                        {
-                                                                                            CDR
-                                                                                        }
-                                                                                }
-                                                                            };
+                                                                            DUP 4;
+                                                                            UNPAIR;
+                                                                            UNPAIR;
                                                                             SWAP;
-                                                                            {
-                                                                                {
-                                                                                    DUP;
-                                                                                    CAR;
-                                                                                    DIP
-                                                                                        {
-                                                                                            CDR
-                                                                                        }
-                                                                                }
-                                                                            };
-                                                                            {
-                                                                                {
-                                                                                    DUP;
-                                                                                    CAR;
-                                                                                    DIP
-                                                                                        {
-                                                                                            CDR
-                                                                                        }
-                                                                                }
-                                                                            };
-                                                                            {
-                                                                                {
-                                                                                    DUP;
-                                                                                    CAR;
-                                                                                    DIP
-                                                                                        {
-                                                                                            CDR
-                                                                                        }
-                                                                                }
-                                                                            };
-                                                                            {
-                                                                                DIP
-                                                                                    7
-                                                                                    {
-                                                                                        DUP
-                                                                                    };
-                                                                                DIG 8
-                                                                            };
+                                                                            UNPAIR;
+                                                                            SWAP;
+                                                                            UNPAIR;
+                                                                            SWAP;
+                                                                            UNPAIR;
+                                                                            SWAP;
+                                                                            DUP 9;
                                                                             ISNAT;
                                                                             IF_NONE
                                                                                 {
-                                                                                    PUSH int 192;
+                                                                                    PUSH int 256;
                                                                                     FAILWITH
                                                                                 }
                                                                                 {
                                                                                 };
-                                                                            DIG 9;
-                                                                            GET 3;
+                                                                            DIG 10;
                                                                             CAR;
-                                                                            CAR;
+                                                                            GET 8;
                                                                             SENDER;
                                                                             GET;
                                                                             IF_NONE
                                                                                 {
-                                                                                    PUSH int 198;
+                                                                                    PUSH int 262;
                                                                                     FAILWITH
                                                                                 }
                                                                                 {
@@ -3068,7 +1987,7 @@
                                                                             ISNAT;
                                                                             IF_NONE
                                                                                 {
-                                                                                    PUSH int 198;
+                                                                                    PUSH int 262;
                                                                                     FAILWITH
                                                                                 }
                                                                                 {
@@ -3076,63 +1995,33 @@
                                                                             SOME;
                                                                             SENDER;
                                                                             UPDATE;
-                                                                            PAIR;
-                                                                            PAIR;
+                                                                            SWAP;
                                                                             PAIR;
                                                                             SWAP;
-                                                                            {
-                                                                                {
-                                                                                    DUP;
-                                                                                    CAR;
-                                                                                    DIP
-                                                                                        {
-                                                                                            CDR
-                                                                                        }
-                                                                                }
-                                                                            };
+                                                                            PAIR;
                                                                             SWAP;
-                                                                            {
-                                                                                {
-                                                                                    DUP;
-                                                                                    CAR;
-                                                                                    DIP
-                                                                                        {
-                                                                                            CDR
-                                                                                        }
-                                                                                }
-                                                                            };
-                                                                            {
-                                                                                {
-                                                                                    DUP;
-                                                                                    CAR;
-                                                                                    DIP
-                                                                                        {
-                                                                                            CDR
-                                                                                        }
-                                                                                }
-                                                                            };
+                                                                            PAIR;
                                                                             SWAP;
-                                                                            {
-                                                                                DIP
-                                                                                    7
-                                                                                    {
-                                                                                        DUP
-                                                                                    };
-                                                                                DIG 8
-                                                                            };
+                                                                            UNPAIR;
+                                                                            SWAP;
+                                                                            UNPAIR;
+                                                                            SWAP;
+                                                                            UNPAIR;
+                                                                            DUP 9;
                                                                             ISNAT;
                                                                             IF_NONE
                                                                                 {
-                                                                                    PUSH int 192;
+                                                                                    PUSH int 256;
                                                                                     FAILWITH
                                                                                 }
                                                                                 {
                                                                                 };
                                                                             ADD;
-                                                                            SWAP;
-                                                                            PAIR;
                                                                             PAIR;
                                                                             SWAP;
+                                                                            PAIR;
+                                                                            SWAP;
+                                                                            PAIR;
                                                                             PAIR;
                                                                             PAIR;
                                                                             DUG 3
@@ -3147,34 +2036,20 @@
                                                             CONTRACT unit;
                                                             IF_NONE
                                                                 {
-                                                                    PUSH int 243;
+                                                                    PUSH int 307;
                                                                     FAILWITH
                                                                 }
                                                                 {
                                                                 };
                                                             PUSH mutez 1;
-                                                            {
-                                                                DIP
-                                                                    3
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 4
-                                                            };
+                                                            DUP 4;
                                                             MUL;
                                                             UNIT;
                                                             TRANSFER_TOKENS;
                                                             CONS;
                                                             SWAP;
                                                             PUSH nat 0;
-                                                            {
-                                                                DIP
-                                                                    4
-                                                                    {
-                                                                        DUP
-                                                                    };
-                                                                DIG 5
-                                                            };
+                                                            DUP 5;
                                                             GET 10;
                                                             COMPARE;
                                                             NEQ;
@@ -3184,46 +2059,12 @@
                                                                     DROP;
                                                                     DIG 3;
                                                                     DROP;
-                                                                    {
-                                                                        DIP
-                                                                            2
-                                                                            {
-                                                                                DUP
-                                                                            };
-                                                                        DIG 3
-                                                                    };
-                                                                    {
-                                                                        {
-                                                                            DUP;
-                                                                            CAR;
-                                                                            DIP
-                                                                                {
-                                                                                    CDR
-                                                                                }
-                                                                        }
-                                                                    };
+                                                                    DUP 3;
+                                                                    UNPAIR;
                                                                     SWAP;
-                                                                    {
-                                                                        {
-                                                                            DUP;
-                                                                            CAR;
-                                                                            DIP
-                                                                                {
-                                                                                    CDR
-                                                                                }
-                                                                        }
-                                                                    };
+                                                                    UNPAIR;
                                                                     SWAP;
-                                                                    {
-                                                                        {
-                                                                            DUP;
-                                                                            CAR;
-                                                                            DIP
-                                                                                {
-                                                                                    CDR
-                                                                                }
-                                                                        }
-                                                                    };
+                                                                    UNPAIR;
                                                                     CDR;
                                                                     DIG 6;
                                                                     DUP;
@@ -3251,7 +2092,7 @@
                                                                     EDIV;
                                                                     IF_NONE
                                                                         {
-                                                                            PUSH int 74;
+                                                                            PUSH int 138;
                                                                             FAILWITH
                                                                         }
                                                                         {

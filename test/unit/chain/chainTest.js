@@ -21,8 +21,8 @@ describe("TzKTI Wrapper", function() {
             const blockchain = chainWrapper(config),
                 storage = await blockchain.storage();
 
-            expect(storage).to.have.property("I");
-            expect(storage).to.have.property("D");
+            expect(storage).to.have.property("funds_ratio_for_reserve");
+            expect(storage).to.have.property("revenues_ratio_for_reserve");
             expect(storage).to.have.property("buy_slope");
             expect(storage).to.have.property("sell_slope");
             expect(storage).to.have.property("MFG");

@@ -4,7 +4,7 @@
 
 exports.configuration = () => {
     return {
-        "contractAddress": process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "KT1RU9DAsYCd9uC1jwwiWvprZycjx3y1DmcZ",
+        "contractAddress": process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || "KT1TeK2JqF4AAtuxwGnoQAVhtZHoceCAGhPs",
         "orgAccount": "tz1QMVhWbyyoEamxyPm3D46dRbG3sNGoXqRQ",
         "chain": process.env.NEXT_PUBLIC_CHAIN || "hangzhounet",
         "apiEndpoint": process.env.NEXT_PUBLIC_INDEXER_API_ENDPOINT || "https://api.hangzhou2net.tzkt.io/",

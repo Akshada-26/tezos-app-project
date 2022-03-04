@@ -91,8 +91,8 @@ class PEQ(sp.Contract, Utils):
                 buy_slope,
                 sell_slope,
                 preminted,
-                I,
-                D,
+                funds_ratio_for_reserve,
+                revenues_ratio_for_reserve,
                 minimumInvestment =sp.tez(1),
                 burned_tokens = 0,
                 company_valuation,
@@ -116,8 +116,8 @@ class PEQ(sp.Contract, Utils):
                                             (datetime.now() + timedelta(days = 365 * MPT)).timestamp()
                                         )
                                     ), # minimum period of time
-            I             = I,          # percentage of the funds being held in the cash reserve
-            D             = D,          # percentage of the revenues being funneled into cash reserve
+            funds_ratio_for_reserve    = funds_ratio_for_reserve,   # percentage of the funds being held in the cash reserve
+            revenues_ratio_for_reserve = revenues_ratio_for_reserve,   # percentage of the revenues being funneled into cash reserve
             buy_slope     = buy_slope,
             sell_slope    = sell_slope,
             minimumInvestment  = minimumInvestment,
@@ -208,7 +208,7 @@ class PEQ(sp.Contract, Utils):
         # calculate buyback reserve from amount I*amount/100
         buyback_reserve = sp.local(
             "buyback_reserve",
-            sp.utils.nat_to_mutez(self.data.I * tez_amount.value / sp.as_nat(100))
+            sp.utils.nat_to_mutez(self.data.funds_ratio_for_reserve * tez_amount.value / sp.as_nat(100))
             )
 
         company_pay = sp.local(
@@ -218,7 +218,7 @@ class PEQ(sp.Contract, Utils):
 
         # send (100-I) * amount/100 of the received tez to the organization
         sp.send(self.data.organization, company_pay.value)
-        # this will keep I * amount/100 in this contract as buyback reserve
+        # this will keep funds_ratio_for_reserve * amount/100 in this contract as buyback reserve
 
         # check if the address owns tokens
         sp.if self.data.ledger.contains(sp.sender):
@@ -278,7 +278,7 @@ class PEQ(sp.Contract, Utils):
                     "pay_amount",
                     sp.utils.mutez_to_nat(self.data.price) * sp.as_nat(amount)
                 )
-                # burn the amount of tokens selled
+                # burn the amount of tokens sold
                 self.burn_intern(amount)
                 # send pay_amount tez to the sender of the transaction
                 sp.send(sp.sender, sp.utils.nat_to_mutez(pay_amount.value))
@@ -301,7 +301,7 @@ class PEQ(sp.Contract, Utils):
                         self.data.burned_tokens * self.data.burned_tokens /
                         sp.as_nat(2 * (self.data.total_tokens - self.data.burned_tokens) )
                 )
-                # burn the amount of tokens selled
+                # burn the amount of tokens sold
                 self.burn_intern(amount)
                 # send pay_amount tez to the sender of the transaction
                 sp.send(sp.sender, sp.utils.nat_to_mutez(pay_amount.value))
@@ -350,27 +350,27 @@ class PEQ(sp.Contract, Utils):
         sp.verify(self.data.phase == 1)
         # see https://github.com/C-ORG/whitepaper#-revenues---pay
         buyback_reserve = sp.local(
-            "local_amount",
+            "local_amount", 
             sp.utils.nat_to_mutez(
-                sp.utils.mutez_to_nat(sp.amount) * self.data.D / 100
+                sp.utils.mutez_to_nat(sp.amount) * self.data.revenues_ratio_for_reserve / 100
                 )
             )
         # send sp.amount - buyback_reserve to organization
-        d = sp.amount - buyback_reserve.value
-        sp.send(self.data.organization, d)
+        amount_to_sent = sp.amount - buyback_reserve.value
+        sp.send(self.data.organization, amount_to_sent)
 
         # create the same amount of tokens a buy call would do
         token_amount = sp.local(
-        "token_amount",
+        "token_amount", 
         self.square_root(
-            2 * sp.utils.mutez_to_nat(d) / self.data.buy_slope +
+            2 * sp.utils.mutez_to_nat(d) /self.data.buy_slope + 
             self.data.total_tokens * self.data.total_tokens
             ) - self.data.total_tokens
         )
 
-        # give those tokes to the organisation
+        # give those tokens to the organization
         self.data.ledger[self.data.organization] = sp.as_nat(token_amount.value)
-
+                
         # increase total amount of the tokens
         self.data.total_tokens += sp.as_nat(token_amount.value)
 
@@ -393,8 +393,8 @@ def initialization():
         MFG = sp.tez(1000),
         preminted = 0,
         MPT = 1, # minimal period of time in years
-        I = 90,
-        D = 80,
+        funds_ratio_for_reserve = 90,
+        revenues_ratio_for_reserve = 80,
         company_valuation = 1000000,
         total_allocation = 4000,
         stake_allocation = 500,

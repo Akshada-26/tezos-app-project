@@ -134,12 +134,12 @@ exports.chainWrapper = (options) => {
         },
         "sellSlope": (storageData) => {
             return cachedData(storageData, requestStorage, (data) => {
-                return parseInt(data.s, 10);
+                return parseInt(data.sell_slope, 10);
             });
         },
         "buySlope": (storageData) => {
             return cachedData(storageData, requestStorage, (data) => {
-                return parseInt(data.b, 10);
+                return parseInt(data.buy_slope, 10);
             });
         },
         "i": (storageData) => {

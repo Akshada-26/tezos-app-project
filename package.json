@@ -1,7 +1,10 @@
 {
   "name": "tzcso",
-  "version": "0.0.1",
-  "description": "Tezos CSO application sample",
+  "version": "1.0.0",
+  "description": "Tezos Rolling SAFE sample application - Smart contract and wrapper functions",
+  "license": "MIT",
+  "author": "B9lab Ltd",
+  "homepage": "https://tezos.b9lab.com",
   "main": "index.js",
   "scripts": {
     "pretest": "npm run lint",
@@ -13,10 +16,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://git.b9lab.com/client-projects/tezos-portal/tezos-app-project.git"
+    "url": "https://github.com/b9lab/tezos-app-project.git"
   },
-  "author": "B9lab",
-  "license": "UNLICENSED",
   "devDependencies": {
     "chai": "4.2.0",
     "chai-as-promised": "7.1.1",

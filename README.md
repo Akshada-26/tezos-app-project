@@ -9,6 +9,7 @@ You can find the deployed [TZMINT web application](https://tzmint.b9lab.com) onl
 
 After cloning, in the root folder, run:
 
+
 ```shell
 $ npm install
 ```
